@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<style>
+
+path {
+  fill: #ccc;
+  stroke: #fff;
+  stroke-width: .5px;
+}
+
+path:hover {
+  fill: red;
+}
+
+</style>
+</head>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script>
+
+
+var width = 900,
+    height = 900;
+
+var path = d3.geo.path();
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+
+d3.json("zips_wash_topo.json", function(wa) {
+  var wash = topojson.feature(wa, wa.objects.wash);
+
+  var projection = d3.geo.albers()
+      .parallels([44, 50])
+      .scale(1000)
+      .translate([width / 2, height / 2]);
+
+  var path = d3.geo.path()
+    .projection(projection);
+
+  svg.append("path")
+      .datum(wash)
+      .attr("d", path);
+});
+
+</script>
+
+</body>
