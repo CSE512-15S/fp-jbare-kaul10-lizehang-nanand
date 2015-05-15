@@ -21,7 +21,7 @@ path:hover {
 <script>
 
 
-var width = 900,
+var width = 1500,
     height = 900;
 
 var path = d3.geo.path();
@@ -35,9 +35,12 @@ d3.json("zips_wash_topo.json", function(wa) {
   var wash = topojson.feature(wa, wa.objects.wash);
 
   var projection = d3.geo.albers()
-      .parallels([44, 50])
-      .scale(1000)
-      .translate([width / 2, height / 2]);
+      .rotate([119, 0])
+      .center([-3, 48])
+      .parallels([35, 50])
+      .scale(11000)
+      .translate([width / 4, height / 4])
+      .precision(.1);
 
   var path = d3.geo.path()
     .projection(projection);
