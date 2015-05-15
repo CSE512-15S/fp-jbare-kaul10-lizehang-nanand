@@ -24,14 +24,12 @@ path:hover {
 var width = 1500,
     height = 900;
 
-var path = d3.geo.path();
-
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
 
-d3.json("zips_wash_topo.json", function(wa) {
+d3.json("zips_wash_topo.json", function(error, wa) {
   var wash = topojson.feature(wa, wa.objects.wash);
 
   var projection = d3.geo.albers()
@@ -45,9 +43,19 @@ d3.json("zips_wash_topo.json", function(wa) {
   var path = d3.geo.path()
     .projection(projection);
 
-  svg.append("path")
-      .datum(wash)
+  svg.selectAll("path")
+      .data(wash.features)
+    .enter().append("path")
       .attr("d", path);
+
+  // svg.append("path")
+  //     .datum(wash)
+  //     .attr("d", path);
+
+  // svg.selectAll("path")
+  //     .datum(wash)
+  //     .enter().append("path")
+  //     .attr("d", path);
 });
 
 </script>
