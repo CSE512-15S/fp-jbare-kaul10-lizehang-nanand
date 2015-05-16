@@ -1,56 +1,69 @@
 <!DOCTYPE html>
 <head>
-<meta charset="utf-8">
-<style>
+  <meta charset="utf-8">
+  <style>
 
-path {
-  fill: #ccc;
-  stroke: #fff;
-  stroke-width: .5px;
-}
+    path {
+      fill: #ccc;
+      stroke: #fff;
+      stroke-width: .5px;
+    }
 
-path:hover {
-  fill: red;
-}
+    path:hover {
+      fill: red;
+    }
 
-</style>
+  </style>
 </head>
 <body>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="http://d3js.org/topojson.v1.min.js"></script>
-<script>
-  var width = 1500,
-      height = 900;
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://d3js.org/topojson.v1.min.js"></script>
+  <script type="text/javascript" src="index.js"></script>
+  <script>
 
-  var svg = d3.select("body").append("svg")
-      .attr("width", width)
-      .attr("height", height);
+    var width = 1500,
+        height = 900;
 
-  var dataset = "zips_wash_topo.json";
-  //var dataset = "zips_wash_topo.json";
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
 
-  d3.json(dataset, function(error, wa) {
-    var wash = topojson.feature(wa, wa.objects.wash);
+    var dataset = "zips_wash_topo.json";
 
-    var projection = d3.geo.albers()
-        .rotate([119, 0])
-        .center([-3, 48])
-        .parallels([35, 50])
-        .scale(11000)
-        .translate([width / 4, height / 4])
-        .precision(.1);
+    d3.json(dataset, function(error, wa) {
+      var wash = topojson.feature(wa, wa.objects.wash);
 
-    var path = d3.geo.path()
-      .projection(projection);
+      var projection = d3.geo.albers()
+          .rotate([119, 0])
+          .center([-3, 48])
+          .parallels([35, 50])
+          .scale(11000)
+          .translate([width / 4, height / 4])
+          .precision(.1);
 
-    svg.selectAll("path")
-        .data(wash.features)
-      .enter().append("path")
-        .attr("d", path);
-        //.attr("class", "puma");
-  });
-  
+      var path = d3.geo.path()
+        .projection(projection);
 
-</script>
+      //Declaring the tool tip variable 
+    	var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 0])
+        .html(function(d) {
+           return "<strong>Name:</strong> <span style='color:red'>" + wa.objects.wash.geometries[0].properties.name +
+           "</span><br><strong>Zip Code:</strong> <span style='color:red'>" + wa.objects.wash.geometries[0].properties.zip + "</span>";
+      })
+
+      //Calling the tool tip within the svg
+    	svg.call(tip);
+
+      svg.selectAll("path")
+          .data(wash.features)
+          .enter().append("path")
+          .attr("d", path)
+          .on('mouseover', tip.show)
+          .on('mouseout', tip.hide);
+    });
+
+  </script>
 
 </body>
