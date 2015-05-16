@@ -18,6 +18,7 @@ path:hover {
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
+<script type="text/javascript" src="index.js"></script>
 <script>
 
 
@@ -43,10 +44,25 @@ d3.json("zips_wash_topo.json", function(error, wa) {
   var path = d3.geo.path()
     .projection(projection);
 
+  //Declaring the tool tip variable 
+	var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d) {
+       return "<strong>Name:</strong> <span style='color:red'>" + wa.objects.wash.geometries[0].properties.name +
+       "</span><br><strong>Zip Code:</strong> <span style='color:red'>" + wa.objects.wash.geometries[0].properties.zip + "</span>";
+  })
+
+  //Calling the tool tip within the svg
+	svg.call(tip);
+
   svg.selectAll("path")
       .data(wash.features)
-    .enter().append("path")
-      .attr("d", path);
+      .enter().append("path")
+      .attr("d", path)
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
+      ;
 
   // svg.append("path")
   //     .datum(wash)
