@@ -31,6 +31,10 @@
 
     var dataset = "zips_wash_topo.json";
 
+    var colorScale = d3.scale.linear()
+        .domain([0, 1])
+        .range(["white", "red"]);
+
     d3.json(dataset, function(error, wa) {
       var wash = topojson.feature(wa, wa.objects.wash);
 
@@ -50,8 +54,12 @@
         .attr('class', 'd3-tip')
         .offset([-10, 0])
         .html(function(d) {
-          return "<strong style='color:red'>Name:</strong> <span style='color:red'>" + d.properties.name +
-          "</span><br><strong style='color:red'>Zip Code:</strong> <span style='color:red'>" + d.properties.zip + "</span>";
+          return "<strong style='color:black'>Name:</strong> <span style='color:black'>" + d.properties.name +
+          "</span><br><strong style='color:black'>Zip Code:</strong> <span style='color:black'>" + d.properties.zip + 
+          "</span><br><strong style='color:black'>Utility:</strong> <span style='color:black'>" + 
+          ((getUtilities(d.properties.zip) !== 0) ? (getUtilities(d.properties.zip))[0] : "N/A" ) + 
+          "</span><br><strong style='color:black'>Carbon Impact:</strong> <span style='color:black'>" + 
+          ((getUtilities(d.properties.zip) !== 0) ? getUtilityStats((getUtilities(d.properties.zip))[0])[1] : "N/A" );
            
       })
 
@@ -64,9 +72,10 @@
           .attr("d", path)
           .style("fill", function(d) {
             if (getUtilities(d.properties.zip) !== 0) {
-              return multiplyHexColor("111111", getUtilityStats((getUtilities(d.properties.zip))[0])[1]);
+              return colorScale( getUtilityStats((getUtilities(d.properties.zip))[0])[1] );
+              // return multiplyHexColor("111111", getUtilityStats((getUtilities(d.properties.zip))[0])[1]);
             } else {
-              return "#ffffff";
+              return colorScale(0);
             }
           })
           .on('mouseover', tip.show)
