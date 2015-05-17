@@ -4,9 +4,9 @@
   <style>
 
     path {
-      fill: #ccc;
-      stroke: #fff;
-      stroke-width: .5px;
+      
+      stroke: #ccc;
+      stroke-width: 1px;
     }
 
     path:hover {
@@ -19,6 +19,7 @@
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
   <script type="text/javascript" src="index.js"></script>
+  <script type="text/javascript" src="helperFunctions.js"></script>
   <script>
 
     var width = 1500,
@@ -37,7 +38,7 @@
           .rotate([119, 0])
           .center([-3, 48])
           .parallels([35, 50])
-          .scale(11000)
+          .scale(10000)
           .translate([width / 4, height / 4])
           .precision(.1);
 
@@ -49,8 +50,9 @@
         .attr('class', 'd3-tip')
         .offset([-10, 0])
         .html(function(d) {
-           return "<strong>Name:</strong> <span style='color:red'>" + wa.objects.wash.geometries[0].properties.name +
-           "</span><br><strong>Zip Code:</strong> <span style='color:red'>" + wa.objects.wash.geometries[0].properties.zip + "</span>";
+          return "<strong style='color:red'>Name:</strong> <span style='color:red'>" + d.properties.name +
+          "</span><br><strong style='color:red'>Zip Code:</strong> <span style='color:red'>" + d.properties.zip + "</span>";
+           
       })
 
       //Calling the tool tip within the svg
@@ -58,8 +60,15 @@
 
       svg.selectAll("path")
           .data(wash.features)
-          .enter().append("path")
+          .enter().append("path")          
           .attr("d", path)
+          .style("fill", function(d) {
+            if (getUtilities(d.properties.zip) !== 0) {
+              return multiplyHexColor("111111", getUtilityStats((getUtilities(d.properties.zip))[0])[1]);
+            } else {
+              return "#ffffff";
+            }
+          })
           .on('mouseover', tip.show)
           .on('mouseout', tip.hide);
     });
