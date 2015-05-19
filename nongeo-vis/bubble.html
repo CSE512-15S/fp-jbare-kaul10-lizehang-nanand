@@ -656,7 +656,7 @@ var y0 = d3.scale.ordinal()
     .range([150]);
 
 var r = d3.scale.sqrt()
-    .domain([0, 1e9])
+    .domain([0, 1e3])
     .range([0, 1]);
 
 var z = d3.scale.threshold()
@@ -720,27 +720,28 @@ titleX.append("tspan")
     .text("per year");
 
 // "http://graphics8.nytimes.com/newsgraphics/2013/05/13/corporate-wKWH/ee84b0191a75f5c652087293ab0efd4710e21f94/BEDROOMS.tsv"
-d3.csv("Utility_data/electricity.csv", type, function(error, BEDROOMS) {
+d3.csv("Utility_data/electricity.csv", type, function(error, tabdata) {
   var MONEYPYs = d3.nest()
       .key(function(d) { return d.MONEYPY; })
-      .entries(BEDROOMS);
+      .entries(tabdata);
 
   // Compute the overall rate for all data.
   // var overallRate = rate(d3.sum(BEDROOMS, NWEIGHT), d3.sum(BEDROOMS, NWEIGHT));
-  var totalWeight = d3.sum(BEDROOMS, NWEIGHT);
+  var totalWeight = d3.sum(tabdata, NWEIGHT);
+  
   // Compute the overall rate by MONEYPY.
   MONEYPYs.forEach(function(d) {
-    d.rate = rate(d3.sum(d.values, NWEIGHT), totalWeight);
+    d.weight  = normalize(d3.sum(d.values, NWEIGHT), totalWeight);
   });
 
-  // Sort MONEYPYs by ascending overall rate.
+  // Sort MONEYPYs by ascending levels.
   MONEYPYs.sort(function(a, b) {
-    return a.rate - b.rate;
+    return a.values[0].income_group_level  - b.values[0].income_group_level ;
   });
 
-  // Compute the rate for each sample.
-  BEDROOMS.forEach(function(d) {
-    d.rate = rate(d.NWEIGHT, totalWeight);
+  // Compute the weight  for each sample.
+  tabdata.forEach(function(d) {
+    d.weight  = normalize(d.NWEIGHT, totalWeight);
   });
 
   height = 120 * MONEYPYs.length;
@@ -767,19 +768,19 @@ d3.csv("Utility_data/electricity.csv", type, function(error, BEDROOMS) {
       .call(yAxisWrap);
 
   var sampleClip = svg.append("defs").selectAll("clipPath")
-      .data(BEDROOMS)
+      .data(tabdata)
     .enter().append("clipPath")
       .attr("id", function(d, i) { return "g-clip-sample-" + i; })
     .append("circle")
       .attr("cx", function(d) { return d.cx; })
       .attr("cy", function(d) { return d.cy - y0(nameAll); })
-      .attr("r", function(d) { return r(d.NWEIGHT) + 30; });
+      .attr("r", function(d) { return r(d.NWEIGHT); });
 
   var gVoronoi = svg.append("g")
       .attr("class", "g-voronoi")
 
   gVoronoi.selectAll("path")
-      .data(BEDROOMS)
+      .data(tabdata)
     .enter().append("path")
       .attr("clip-path", function(d, i) { return "url(#g-clip-sample-" + i + ")"; })
       .on("mouseover", mouseover)
@@ -815,13 +816,13 @@ d3.csv("Utility_data/electricity.csv", type, function(error, BEDROOMS) {
       .attr("cx", function(d) { return d.cx; })
       .attr("cy", function(d) { return d.cy - y(d.MONEYPY) + y0(nameAll); })
       .attr("r", function(d) { return r(d.NWEIGHT); })
-      .style("fill", function(d) { return isNaN(d.rate) ? null : z(d.wKWH); })
+      .style("fill", function(d) { return isNaN(d.weight ) ? null : z(d.wKWH); })
       .on("mouseover", mouseover)
       .on("mouseout", mouseout);
 
   var MONEYPYOverall = MONEYPY.append("g")
       .attr("class", "g-overall")
-      .attr("transform", function(d) { return "translate(" + x(d.rate) + "," + (y0(nameAll) - y(d.key)) + ")"; })
+      .attr("transform", function(d) { return "translate(" + x(d.weight ) + "," + (y0(nameAll) - y(d.key)) + ")"; })
       .style("stroke-opacity", 0)
       .style("fill-opacity", 0);
 
@@ -834,7 +835,7 @@ d3.csv("Utility_data/electricity.csv", type, function(error, BEDROOMS) {
 
   // MONEYPYOverallText.append("tspan")
   //     .attr("x", 0)
-  //     .text(function(d) { return formatPercent(d.rate); });
+  //     .text(function(d) { return formatPercent(d.weight ); });
 
   // MONEYPYOverallText.filter(function(d, i) { return !i; }).append("tspan")
   //     .attr("x", 0)
@@ -867,9 +868,9 @@ d3.csv("Utility_data/electricity.csv", type, function(error, BEDROOMS) {
 
   var currentView = "overall";
 
-  // d3.selectAll(".g-content button[data-view]")
-  //     .datum(function(d) { return this.getAttribute("data-view"); })
-  //     .on("click", transitionView);
+  d3.selectAll(".g-content button[data-view]")
+      .datum(function(d) { return this.getAttribute("data-view"); })
+      .on("click", transitionView);
 
   // var searchInput = d3.select(".g-search input")
   //     .on("keyup", keyuped);
@@ -915,138 +916,138 @@ d3.csv("Utility_data/electricity.csv", type, function(error, BEDROOMS) {
   //   }
   // }
 
-  // function transitionView(view) {
-  //   if (currentView === view) view = view === "overall" ? "MONEYPY" : "overall";
-  //   d3.selectAll(".g-buttons button[data-view]").classed("g-active", function(v) { return v === view; })
-  //   switch (currentView = view) {
-  //     case "overall": return void transitionOverall();
-  //     case "MONEYPY": return void transitionMONEYPY();
-  //   }
-  // }
+  function transitionView(view) {
+    if (currentView === view) view = view === "overall" ? "MONEYPY" : "overall";
+    d3.selectAll(".g-buttons button[data-view]").classed("g-active", function(v) { return v === view; })
+    switch (currentView = view) {
+      case "overall": return void transitionOverall();
+      case "MONEYPY": return void transitionMONEYPY();
+    }
+  }
 
-  // function transitionOverall() {
-  //   gVoronoi.style("display", "none");
+  function transitionOverall() {
+    gVoronoi.style("display", "none");
 
-  //   var transition = d3.transition()
-  //       .duration(750);
+    var transition = d3.transition()
+        .duration(750);
 
-  //   transition.select("svg")
-  //       .delay(720)
-  //       .attr("height", 420 + margin.top + margin.bottom)
-  //       .each("end", function() {
-  //         gVoronoi.call(updateVoronoi,
-  //           function(d) { return d.cx; },
-  //           function(d) { return d.cy + y0(nameAll); },
-  //           420);
-  //       });
+    transition.select("svg")
+        .delay(720)
+        .attr("height", 420 + margin.top + margin.bottom)
+        .each("end", function() {
+          gVoronoi.call(updateVoronoi,
+            function(d) { return d.cx; },
+            function(d) { return d.cy + y0(nameAll); },
+            420);
+        });
 
-  //   transition.select(".g-annotations-overall")
-  //       .each("start", function() { this.style.display = "block"; })
-  //       .style("opacity", 1);
+    transition.select(".g-annotations-overall")
+        .each("start", function() { this.style.display = "block"; })
+        .style("opacity", 1);
 
-  //   transition.select(".g-MONEYPY-notes")
-  //       .style("opacity", 0)
-  //       .each("end", function() { this.style.display = "none"; });
+    transition.select(".g-MONEYPY-notes")
+        .style("opacity", 0)
+        .each("end", function() { this.style.display = "none"; });
 
-  //   transition.selectAll(".g-y-axis-MONEYPY")
-  //       .style("stroke-opacity", 0)
-  //       .style("fill-opacity", 0);
+    transition.selectAll(".g-y-axis-MONEYPY")
+        .style("stroke-opacity", 0)
+        .style("fill-opacity", 0);
 
-  //   transition.selectAll(".g-y-axis-overall")
-  //       .style("stroke-opacity", 1)
-  //       .style("fill-opacity", 1);
+    transition.selectAll(".g-y-axis-overall")
+        .style("stroke-opacity", 1)
+        .style("fill-opacity", 1);
 
-  //   var transitionOverall = transition.select(".g-overall-all")
-  //       .delay(x(overallRate))
-  //       .style("stroke-opacity", 1)
-  //       .style("fill-opacity", 1);
+    // var transitionOverall = transition.select(".g-overall-all")
+    //     .delay(x(overallRate))
+    //     .style("stroke-opacity", 1)
+    //     .style("fill-opacity", 1);
 
-  //   transitionOverall.select("line")
-  //       .attr("y2", +127);
+    // transitionOverall.select("line")
+    //     .attr("y2", +127);
 
-  //   transitionOverall.select("text")
-  //       .attr("y", -106);
+    // transitionOverall.select("text")
+    //     .attr("y", -106);
 
-  //   var transitionMONEYPYOverall = transition.selectAll(".g-MONEYPY .g-overall")
-  //       .delay(function(d) { return x(d.rate); })
-  //       .attr("transform", function(d) { return "translate(" + x(d.rate) + "," + (y0(nameAll) - y(d.key)) + ")"; })
-  //       .style("stroke-opacity", 0)
-  //       .style("fill-opacity", 0);
+    // var transitionMONEYPYOverall = transition.selectAll(".g-MONEYPY .g-overall")
+    //     .delay(function(d) { return x(d.weight ); })
+    //     .attr("transform", function(d) { return "translate(" + x(d.weight ) + "," + (y0(nameAll) - y(d.key)) + ")"; })
+    //     .style("stroke-opacity", 0)
+    //     .style("fill-opacity", 0);
 
-  //   transitionMONEYPYOverall.select("line")
-  //       .attr("y1", -100)
-  //       .attr("y2", +127);
+    // transitionMONEYPYOverall.select("line")
+    //     .attr("y1", -100)
+    //     .attr("y2", +127);
 
-  //   transitionMONEYPYOverall.select("text")
-  //       .attr("y", -106);
+    // transitionMONEYPYOverall.select("text")
+    //     .attr("y", -106);
 
-  //   transition.selectAll(".g-MONEYPY-sample circle")
-  //       .delay(function(d) { return d.cx; })
-  //       .attr("cx", function(d) { return d.cx; })
-  //       .attr("cy", function(d) { return d.cy - y(d.MONEYPY) + y0(nameAll); });
-  // }
+    transition.selectAll(".g-MONEYPY-sample circle")
+        .delay(function(d) { return d.cx; })
+        .attr("cx", function(d) { return d.cx; })
+        .attr("cy", function(d) { return d.cy - y(d.MONEYPY) + y0(nameAll); });
+  }
 
-  // function transitionMONEYPY() {
-  //   gVoronoi.style("display", "none");
+  function transitionMONEYPY() {
+    gVoronoi.style("display", "none");
 
-  //   var transition = d3.transition()
-  //       .duration(750);
+    var transition = d3.transition()
+        .duration(750);
 
-  //   transition.select("svg")
-  //       .attr("height", height + margin.top + margin.bottom)
-  //     .transition()
-  //       .delay(720)
-  //       .each("end", function() {
-  //         gVoronoi.call(updateVoronoi,
-  //           function(d) { return d.x; },
-  //           function(d) { return y(d.MONEYPY) + d.y; },
-  //           height);
-  //       });
+    transition.select("svg")
+        .attr("height", height + margin.top + margin.bottom)
+      .transition()
+        .delay(720)
+        .each("end", function() {
+          gVoronoi.call(updateVoronoi,
+            function(d) { return d.x; },
+            function(d) { return y(d.MONEYPY) + d.y; },
+            height);
+        });
 
-  //   transition.select(".g-annotations-overall")
-  //       .style("opacity", 0)
-  //       .each("end", function() { this.style.display = "none"; });
+    transition.select(".g-annotations-overall")
+        .style("opacity", 0)
+        .each("end", function() { this.style.display = "none"; });
 
-  //   transition.select(".g-MONEYPY-notes")
-  //       .delay(250)
-  //       .each("start", function() { this.style.display = "block"; })
-  //       .style("opacity", 1);
+    transition.select(".g-MONEYPY-notes")
+        .delay(250)
+        .each("start", function() { this.style.display = "block"; })
+        .style("opacity", 1);
 
-  //   transition.selectAll(".g-y-axis-MONEYPY,.g-MONEYPY-note")
-  //       .delay(250)
-  //       .style("stroke-opacity", 1)
-  //       .style("fill-opacity", 1);
+    transition.selectAll(".g-y-axis-MONEYPY,.g-MONEYPY-note")
+        .delay(250)
+        .style("stroke-opacity", 1)
+        .style("fill-opacity", 1);
 
-  //   transition.selectAll(".g-y-axis-overall")
-  //       .style("stroke-opacity", 0)
-  //       .style("fill-opacity", 0);
+    transition.selectAll(".g-y-axis-overall")
+        .style("stroke-opacity", 0)
+        .style("fill-opacity", 0);
 
-  //   var transitionOverall = transition.select(".g-overall-all")
-  //       .delay(x(overallRate))
-  //       .style("stroke-opacity", 0)
-  //       .style("fill-opacity", 0);
+    var transitionOverall = transition.select(".g-overall-all")
+        .delay(x(totalWeight))
+        .style("stroke-opacity", 0)
+        .style("fill-opacity", 0);
 
-  //   transitionOverall.select("line")
-  //       .attr("y2", height - y0(nameAll));
+    transitionOverall.select("line")
+        .attr("y2", height - y0(nameAll));
 
-  //   var transitionMONEYPYOverall = transition.selectAll(".g-MONEYPY .g-overall")
-  //       .delay(function(d) { return x(d.rate); })
-  //       .attr("transform", function(d) { return "translate(" + x(d.rate) + ",0)"; })
-  //       .style("stroke-opacity", 1)
-  //       .style("fill-opacity", 1);
+    var transitionMONEYPYOverall = transition.selectAll(".g-MONEYPY .g-overall")
+        .delay(function(d) { return x(d.weight ); })
+        .attr("transform", function(d) { return "translate(" + x(d.weight ) + ",0)"; })
+        .style("stroke-opacity", 1)
+        .style("fill-opacity", 1);
 
-  //   transitionMONEYPYOverall.select("line")
-  //       .attr("y1", -25)
-  //       .attr("y2", +25);
+    transitionMONEYPYOverall.select("line")
+        .attr("y1", -25)
+        .attr("y2", +25);
 
-  //   transitionMONEYPYOverall.select("text")
-  //       .attr("y", -31);
+    transitionMONEYPYOverall.select("text")
+        .attr("y", -31);
 
-  //   transition.selectAll(".g-MONEYPY-sample circle")
-  //       .delay(function(d) { return d.x; })
-  //       .attr("cx", function(d) { return d.x; })
-  //       .attr("cy", function(d) { return d.y; });
-  // }
+    transition.selectAll(".g-MONEYPY-sample circle")
+        .delay(function(d) { return d.x; })
+        .attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+  }
 
   function updateVoronoi(gVoronoi, x, y, height) {
     sampleClip
@@ -1055,8 +1056,8 @@ d3.csv("Utility_data/electricity.csv", type, function(error, BEDROOMS) {
 
     gVoronoi
         .style("display", null)
-      .selectAll("path")
-        .data(d3.geom.voronoi().x(x).y(y)(BEDROOMS))
+        .selectAll("path")
+        .data(d3.geom.voronoi().x(x).y(y)(tabdata))
         .attr("d", function(d) { return "M" + d.join("L") + "Z"; })
         .datum(function(d) { return d.point; });
   }
@@ -1084,7 +1085,7 @@ d3.csv("Utility_data/electricity.csv", type, function(error, BEDROOMS) {
 
     tipMetric.select(".g-tip-metric-value").text(function(name) {
       switch (name) {
-        case "weight": return isNaN(d.rate) ? "N.A." : formatPercent(d.rate);
+        case "weight": return isNaN(d.weight ) ? "N.A." : formatPercent(d.weight );
         case "KWH": return formatNumber(d.wKWH);
         case "MONEYPY": return d.MONEYPY;
         case "BEDROOMS": return formatCount(d.BEDROOMS);
@@ -1164,10 +1165,10 @@ function renderChartKey(g) {
       .attr("class", "g-MONEYPY");
 
   gSizeInstance.append("circle")
-      .attr("r", function(d) {return r(d * 4539100 * 1e6) });
+      .attr("r", function(d) {return r(d * 4539100) });
 
   gSizeInstance.append("text")
-      .attr("x", function(d) { return r(d* 4539100* 1e6) + 4; })
+      .attr("x", function(d) { return r(d* 4539100) + 4; })
       .attr("dy", ".35em")
       .text(function(d) { return formatPercent(d); });
 
@@ -1214,16 +1215,19 @@ function NWEIGHT(d) {
   return d.NWEIGHT;
 }
 
-function rate(wKWH, NWEIGHT) {
-  return NWEIGHT <= 0 ? NaN : wKWH / NWEIGHT;
+function normalize(weighted_variable, totalweight) {
+  return totalweight <= 0 ? NaN : weighted_variable / totalweight;
 }
 
 function type(d) {
-  d.x = +d.x;
-  d.y = +d.y;
+  d.income_group_level = +d.income_group_level;
+  d.x = +d.cx;
+  d.y = +d.cy;
+  // squash y range when plotting for sub
+  d.y /= 3;
   d.cx = +d.cx;
   d.cy = +d.cy;
-  d.NWEIGHT *= 1e6;
+  d.cr = +d.cr;
   return d;
 }
 

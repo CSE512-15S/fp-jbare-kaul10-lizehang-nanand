@@ -1,5 +1,6 @@
 library(ggplot2)
 library(plyr)
+source(packcircle.r)
 # load utility data
 recs <- read.csv("Utility_data/recs2009_public.csv")
 # get interesting variables
@@ -49,6 +50,9 @@ recs.table.elec <- aggregate(wKWH ~ MONEYPY + BEDROOMS + UR + KOWNRENT,
 recs.table.elec <-cbind(recs.table.elec, 
 					    NWEIGHT = aggregate(NWEIGHT ~ MONEYPY + BEDROOMS + UR + KOWNRENT, sum,  data = recs.sub)$NWEIGHT)
 recs.table.elec$wKWH <- recs.table.elec$wKWH / recs.table.elec$NWEIGHT
+recs.table.elec$income_group_level <- mapvalues(recs.table.elec$MONEYPY, 
+										from = income.levels, 
+										to = seq(1:length(income.levels)))
 # ## test plot
 # g <- ggplot(aes(x = BEDROOMS, y = MONEYPY), data = recs.table.elec)
 # g <- g + geom_point(aes(color = UR, size = wKWH))
@@ -60,14 +64,16 @@ set.seed(1)
 cx <- recs.table.elec$wKWH
 # squash too large KWH
 cx[cx > 3e4] <- rnorm(length(which(cx > 3e4)), mean = 3e4, sd = 1e2)
-cx <- jitter(cx, 0.5)
-# rescale (decide scale ratio between cx and cy)
-cx <- cx / max(cx) *760
-cy <- rnorm(length(cx)) * 30
-# check collision (eyeball test)
-plot(cx, cy, cex = recs.table.elec$NWEIGHT/5e4)
+cx <- cx / max(cx) * 800
+# pack circles
+xrange <- diff(range(cx))
+newcoord <- pack.circles(rfix = sqrt((recs.table.elec$NWEIGHT/1e3)), xfix = cx, 
+			 max.iter=500, size=c(xrange, 160)) 
+
+cy <- newcoord[, 2] - 80
+cx <- newcoord[, 1] + min(cx)
 # output file
-out <- cbind(cx, cy, recs.table.elec)
+out <- cbind(cx, cy, cr, recs.table.elec)
 write.csv(out, file = "Utility_data/electricity.csv")
 
 
