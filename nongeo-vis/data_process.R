@@ -1,6 +1,6 @@
 library(ggplot2)
 library(plyr)
-source(packcircle.r)
+source("packcircle.r")
 # load utility data
 recs <- read.csv("Utility_data/recs2009_public.csv")
 # get interesting variables
@@ -53,6 +53,9 @@ recs.table.elec$wKWH <- recs.table.elec$wKWH / recs.table.elec$NWEIGHT
 recs.table.elec$income_group_level <- mapvalues(recs.table.elec$MONEYPY, 
 										from = income.levels, 
 										to = seq(1:length(income.levels)))
+recs.table.elec <- recs.table.elec[-which(recs.table.elec$BEDROOMS == 0), ]
+recs.table.elec <- recs.table.elec[-which(recs.table.elec$BEDROOMS == 13), ]
+
 # ## test plot
 # g <- ggplot(aes(x = BEDROOMS, y = MONEYPY), data = recs.table.elec)
 # g <- g + geom_point(aes(color = UR, size = wKWH))
@@ -63,8 +66,8 @@ recs.table.elec$income_group_level <- mapvalues(recs.table.elec$MONEYPY,
 set.seed(1)
 cx <- recs.table.elec$wKWH
 # squash too large KWH
-cx[cx > 3e4] <- rnorm(length(which(cx > 3e4)), mean = 3e4, sd = 1e2)
-cx <- cx / max(cx) * 800
+cx[cx > 3e4] <- rnorm(length(which(cx > 3e4)), mean = 3.2e4, sd = 1e2)
+cx <- cx / 3e4 * 800
 # pack circles
 xrange <- diff(range(cx))
 newcoord <- pack.circles(rfix = sqrt((recs.table.elec$NWEIGHT/1e3)), xfix = cx, 
@@ -73,7 +76,7 @@ newcoord <- pack.circles(rfix = sqrt((recs.table.elec$NWEIGHT/1e3)), xfix = cx,
 cy <- newcoord[, 2] - 80
 cx <- newcoord[, 1] + min(cx)
 # output file
-out <- cbind(cx, cy, cr, recs.table.elec)
+out <- cbind(cx, cy, recs.table.elec)
 write.csv(out, file = "Utility_data/electricity.csv")
 
 

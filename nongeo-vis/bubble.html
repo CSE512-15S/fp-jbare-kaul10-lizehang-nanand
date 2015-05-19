@@ -632,7 +632,7 @@ Effective tax rates cannot be computed for several dozen BEDROOMS because they l
 <script>(function() {
 
 var margin = {top: 20, right: 95, bottom: 10, left: 125},
-    width = 970 - margin.left - margin.right,
+    width = 970 - margin.left ,
     height,
     tickExtension = 20; // extend grid lines beyond scale range
 
@@ -662,11 +662,14 @@ var r = d3.scale.sqrt()
 var z = d3.scale.threshold()
     .domain([7000, 12000, 20000, 24000, 30000])
     .range(["#b35806", "#f1a340", "#fee0b6", "#d8daeb", "#998ec3", "#542788"].reverse());
+// var z_bed = d3.scale.threshold()
+//     .domain([1, 2, 3, 4, 5, 6, 7])
+//     .range(["#b35806", "#f1a340", "#fee0b6", "#d8daeb", "#fd8d3c", "#998ec3", "#542788"].reverse());
 
 var xAxis = d3.svg.axis()
     .scale(x)
     .orient("top")
-    .ticks(5)
+    .ticks(6)
     .tickFormat(formatNumber);
 
 var yAxis = d3.svg.axis()
@@ -817,6 +820,7 @@ d3.csv("Utility_data/electricity.csv", type, function(error, tabdata) {
       .attr("cy", function(d) { return d.cy - y(d.MONEYPY) + y0(nameAll); })
       .attr("r", function(d) { return r(d.NWEIGHT); })
       .style("fill", function(d) { return isNaN(d.weight ) ? null : z(d.wKWH); })
+      // .style("fill", function(d) { return isNaN(d.weight ) ? null : z_bed(d.BEDROOMS); })
       .on("mouseover", mouseover)
       .on("mouseout", mouseout);
 
@@ -1103,7 +1107,7 @@ d3.csv("Utility_data/electricity.csv", type, function(error, tabdata) {
 
 function renderChartKey(g) {
   var formatPercent = d3.format(".2%"),
-      formatNumber = d3.format(",.1s");
+      formatNumber = d3.format(",.2s");
 
   // A position encoding for the key only.
   var x = d3.scale.linear()
@@ -1115,6 +1119,7 @@ function renderChartKey(g) {
       .orient("bottom")
       .tickSize(13)
       .tickValues(z.domain())
+      // .tickValues(z_bed.domain())
       .tickFormat(function(d) { return formatNumber(d); });
 
   g.append("text")
@@ -1129,6 +1134,7 @@ function renderChartKey(g) {
 
   gColor.selectAll("rect")
       .data(z.range().map(function(d, i) {
+      // .data(z_bed.range().map(function(d, i) {
         return {
           x0: i ? x(z.domain()[i - 1]) : x.range()[0],
           x1: i < 4 ? x(z.domain()[i]) : x.range()[1],
@@ -1223,6 +1229,7 @@ function type(d) {
   d.income_group_level = +d.income_group_level;
   d.x = +d.cx;
   d.y = +d.cy;
+  d.BEDROOMS = +d.BEDROOMS;
   // squash y range when plotting for sub
   d.y /= 3;
   d.cx = +d.cx;
