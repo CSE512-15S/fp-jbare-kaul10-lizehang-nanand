@@ -714,3 +714,20 @@ function getUtilityStats(utility) {
   }
 
 }
+
+function getAllUtilities(zipcode) {
+  var utilities = getUtilities(zipcode);
+
+  var allUtilities = {};
+
+  var carbonImpacts = [];
+  var names = [];
+
+
+  for (var i = 0; i < utilities.length; i++) {
+
+
+  }
+
+
+}

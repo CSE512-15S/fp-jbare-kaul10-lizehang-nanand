@@ -16,6 +16,11 @@
   </style>
 </head>
 <body>
+  <h1>Carbon Tax Calculator: Statewide Impact Visualization</h1>
+  <form action="">
+    <input type="radio" name="utilityMode" value="bestCase" checked>Best Case<br>
+    <input type="radio" name="utilityMode" value="worstCase">Worst Case
+  </form>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
   <script type="text/javascript" src="index.js"></script>
@@ -36,14 +41,14 @@
         .domain([0, 1])
         .range(["white", "red"]);
    
-                var g = svg.append("g");
-               
-                var projection = d3.geo.albers()
+    var g = svg.append("g");
+   
+    var projection = d3.geo.albers()
           .rotate([119, 0])
           .center([-3, 48])
           .parallels([35, 50])
-          .scale(10000)
-          .translate([width / 4, height / 4])
+          .scale(8000)
+          .translate([width / 5, height / 6])
           .precision(.1);
  
                
@@ -57,10 +62,11 @@
       
  
       //Declaring the tool tip variable
-                var tip = d3.tip()
+      var tip = d3.tip()
         .attr('class', 'd3-tip')
         .offset([-10, 0])
         .html(function(d) {
+
           return "<strong style='color:black'>Name:</strong> <span style='color:black'>" + d.properties.name +
           "</span><br><strong style='color:black'>Zip Code:</strong> <span style='color:black'>" + d.properties.zip +
           "</span><br><strong style='color:black'>Utility:</strong> <span style='color:black'>" +
@@ -71,7 +77,7 @@
       })
  
       //Calling the tool tip within the svg
-                g.call(tip);
+      g.call(tip);
  
       g.selectAll("path")
           .data(wash.features)
@@ -87,33 +93,35 @@
           })
           .on('mouseover', tip.show)
           .on('mouseout', tip.hide)
-                                  .on('click',clicked);
+          .on('click',clicked);
+
+
     });
                
-                function clicked(d) {
-  var x, y, k;
- 
-  if (d && centered !== d) {
-    var centroid = path.centroid(d);
-    x = centroid[0];
-    y = centroid[1];
-    k = 4;
-    centered = d;
-  } else {
-    x = width / 2;
-    y = height / 2;
-    k = 1;
-    centered = null;
-  }
- 
-  g.selectAll("path")
-      .classed("active", centered && function(d) { return d === centered; });
- 
-  g.transition()
-      .duration(750)
-      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-      .style("stroke-width", 1.5 / k + "px");
-}
+    function clicked(d) {
+      var x, y, k;
+     
+      if (d && centered !== d) {
+        var centroid = path.centroid(d);
+        x = centroid[0];
+        y = centroid[1];
+        k = 4;
+        centered = d;
+      } else {
+        x = width / 2;
+        y = height / 2;
+        k = 1;
+        centered = null;
+      }
+     
+      g.selectAll("path")
+          .classed("active", centered && function(d) { return d === centered; });
+     
+      g.transition()
+          .duration(750)
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+          .style("stroke-width", 1.5 / k + "px");
+    }
  
   </script>
  
