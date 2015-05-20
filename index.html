@@ -11,7 +11,38 @@
  
     path:hover {
       fill: red;
+      cursor:pointer;
     }
+    
+    .d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  padding-right: 50px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+ 
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 8px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+ 
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
  
   </style>
 </head>
@@ -38,7 +69,7 @@
     var dataset = "zips_wash_topo.json";
  
     var colorScale = d3.scale.linear()
-        .domain([0, 1])
+        .domain([0, 2])
         .range(["white", "red"]);
    
     var g = svg.append("g");
@@ -66,12 +97,11 @@
         .attr('class', 'd3-tip')
         .offset([-10, 0])
         .html(function(d) {
-
-          return "<strong style='color:black'>Name:</strong> <span style='color:black'>" + d.properties.name +
-          "</span><br><strong style='color:black'>Zip Code:</strong> <span style='color:black'>" + d.properties.zip +
-          "</span><br><strong style='color:black'>Utility:</strong> <span style='color:black'>" +
+          return "<strong style='color:white'>Name:</strong> <span style='color:white'>" + d.properties.name +
+          "</span><br><strong style='color:white'>Zip Code:</strong> <span style='color:white'>" + d.properties.zip +
+          "</span><br><strong style='color:white'>Utility:</strong> <span style='color:white'>" +
           ((getUtilities(d.properties.zip) !== 0) ? (getUtilities(d.properties.zip))[0] : "N/A" ) +
-          "</span><br><strong style='color:black'>Carbon Impact:</strong> <span style='color:black'>" +
+          "</span><br><strong style='color:white'>Carbon Impact:</strong> <span style='color:white'>" +
           ((getUtilities(d.properties.zip) !== 0) ? getUtilityStats((getUtilities(d.properties.zip))[0])[1] : "N/A" );
           
       })
