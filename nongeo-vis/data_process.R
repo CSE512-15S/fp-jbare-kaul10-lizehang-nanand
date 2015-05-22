@@ -18,7 +18,7 @@ recs <- read.csv("Utility_data/recs2009_public.csv")
 #       total fuel oil: GALLONFO
 #		total kerosene: GALLONKER
 #       total wood: BTUWOOD 
-vnames.recs <- c("REPORTABLE_DOMAIN", "NWEIGHT", "MONEYPY", "NHSLDMEM", "BEDROOMS", "UR", "KOWNRENT", "HDD65", "KWH", "CUFEETNG", "GALLONLP", "GALLONFO", "GALLONKER", "BTUWOOD")
+vnames.recs <- c("REPORTABLE_DOMAIN", "NWEIGHT", "MONEYPY", "NHSLDMEM", "BEDROOMS", "UR", "KOWNRENT", "HDD65", "KWH", "CUFEETNG", "GALLONLP", "GALLONFO", "GALLONKER", "BTUWOOD", "TOTALBTU")
 recs.sub <- recs[, match(vnames.recs, colnames(recs))]
 recs.sub <- recs.sub[which(recs.sub$REPORTABLE_DOMAIN == 27), ]
 recs.sub$BEDROOMS[which(recs.sub$BEDROOMS == -2)] <- NA
@@ -27,8 +27,7 @@ recs.sub <- data.frame(recs.sub)
 ## finish cleaning recs data, 466 sample, sum up to weight 113,616,229 population
 write.csv(recs.sub, file = "Utility_data/WA-OR-AK-HI.csv", row.names = FALSE)
 
-# calculate weighted KWH
-recs.sub$wKWH <- recs.sub$KWH * recs.sub$NWEIGHT
+
 # levels to use for categorical data
 urban.levels <- c("Urban", "Rural")
 rent.levels <- c("Owned", "Rent", "Occupied without payment")
@@ -43,6 +42,36 @@ income.levels <- c("Less than $2,500", "$2,500 to $4,999", "$5,000 to $7,499",
 recs.sub$UR <- mapvalues(recs.sub$UR, from = c("U", "R"), to = urban.levels)
 recs.sub$KOWNRENT <- mapvalues(recs.sub$KOWNRENT, from = 1:3, to = rent.levels)
 recs.sub$MONEYPY <- mapvalues(recs.sub$MONEYPY, from = 1:24, to = income.levels)
+recs.sub$MONEYPY <- factor(recs.sub$MONEYPY, 
+							levels = income.levels)
+
+# aggregate by only income, for electricity consumption
+# calculate weighted KWH
+recs.sub$wKWH <- recs.sub$KWH * recs.sub$NWEIGHT
+
+table.income <- aggregate(wKWH ~ MONEYPY, sum, data = recs.sub)
+table.income.norm <- aggregate(NWEIGHT ~ MONEYPY, sum, data = recs.sub)
+table.income$wKWH <- table.income$wKWH / table.income.norm$NWEIGHT
+table.income <- table.income[match(income.levels, table.income$MONEYPY), ]
+boxplot(recs.sub$KWH ~ recs.sub$MONEYPY, las = 2, cex.axis = .5, outline = F, 
+		main = "Electricity consumption")
+lines(1:24, table.income$wKWH, col = "red", lwd = 3)
+points(1:24, table.income$wKWH, col = "red")
+
+# aggregate by only income, for total BTU
+# calculate weighted KWH
+recs.sub$wTOTALBTU <- recs.sub$TOTALBTU * recs.sub$NWEIGHT
+
+table.income <- aggregate(wTOTALBTU ~ MONEYPY, sum, data = recs.sub)
+table.income.norm <- aggregate(NWEIGHT ~ MONEYPY, sum, data = recs.sub)
+table.income$wTOTALBTU <- table.income$wTOTALBTU / table.income.norm$NWEIGHT
+table.income <- table.income[match(income.levels, table.income$MONEYPY), ]
+boxplot(recs.sub$TOTALBTU ~ recs.sub$MONEYPY, las = 2, cex.axis = .5, outline = F, 
+		main = "TotalBTU")
+lines(1:24, table.income$wTOTALBTU, col = "red", lwd = 3)
+points(1:24, table.income$wTOTALBTU, col = "red")
+
+
 
 # aggregate into weighted average
 recs.table.elec <- aggregate(wKWH ~ MONEYPY + BEDROOMS + UR + KOWNRENT, 
