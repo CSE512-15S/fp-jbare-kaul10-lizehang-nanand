@@ -239,7 +239,7 @@ background-image:none !important;
 
 </style>
 <!--[if lte IE 8]>
-  <img src="http://graphics8.nytimes.com/newsgraphics/2013/05/13/corporate-wKWH/ee84b0191a75f5c652087293ab0efd4710e21f94/fallback.png" alt="chart" width="970">
+  <img src="http://graphics8.nytimes.com/newsgraphics/2013/05/13/corporate-TaxHigh/ee84b0191a75f5c652087293ab0efd4710e21f94/fallback.png" alt="chart" width="970">
 <![endif]-->
 <!--[if gt IE 8]><!-->
 <style>
@@ -552,7 +552,7 @@ background-image:none !important;
 <div class="g-arrow g-arrow-vertical" style="left:50%;height:90px;"></div>
 <div class="g-arrow g-arrow-horizontal" style="left:10%;width:80%;bottom:95px;"></div>
 </div>
-About one of every seven BEDROOMS had an effective tax rate lower than 10 percent, including <b>Amazon</b> at 6 percent and <b>Verizon</b> at 9 percent. Nine BEDROOMS paid no wKWH at all.
+About one of every seven BEDROOMS had an effective tax rate lower than 10 percent, including <b>Amazon</b> at 6 percent and <b>Verizon</b> at 9 percent. Nine BEDROOMS paid no TaxHigh at all.
 </div>
 <div class="g-annotation" style="left:260px;">
 <div class="g-arrows">
@@ -561,7 +561,7 @@ About one of every seven BEDROOMS had an effective tax rate lower than 10 percen
 Each circle represents a sample, sized by its market NWEIGHT. The largest is <b>Apple</b>, at more than $400 billion, with an effective tax rate of 14 percent.
 </div>
 <div class="g-annotation" style="left:440px;">
-Combining NWEIGHT and wKWH for all S.&P.&#xa0;500 BEDROOMS gives an effective tax rate of 29.1 percent. But rates vary widely by industry.
+Combining NWEIGHT and TaxHigh for all S.&P.&#xa0;500 BEDROOMS gives an effective tax rate of 29.1 percent. But rates vary widely by industry.
 <button class="g-button" data-view="MONEYPY" style="margin-top:20px;">Show Industries</button>
 </div>
 <div class="g-annotation" style="left:600px;">
@@ -572,13 +572,13 @@ Combining NWEIGHT and wKWH for all S.&P.&#xa0;500 BEDROOMS gives an effective ta
 <div class="g-arrow g-arrow-horizontal" style="bottom:54px;left:-50px;width:266px;"></div>
 <div class="g-arrow g-arrow-vertical" style="left:50%;height:49px;"></div>
 </div>
-Three big energy firms paid the most wKWH in absolute terms: <b>Exxon</b> $146 billion; <b>Chevron</b> $85 billion; and <b>ConocoPhillips</b> $58 billion.
+Three big energy firms paid the most TaxHigh in absolute terms: <b>Exxon</b> $146 billion; <b>Chevron</b> $85 billion; and <b>ConocoPhillips</b> $58 billion.
 </div>
 <div class="g-annotation" style="left:780px;">
 <div class="g-arrows">
 <div class="g-arrow g-arrow-vertical" style="left:92px;height:87px;"></div>
 </div>
-Effective tax rates cannot be computed for several dozen BEDROOMS because they lost money over the six-year period. For example, <b>A.I.G.</b> lost $83 billion while paying $8 billion in wKWH. These BEDROOMS are still included in overall tax rate calculations.
+Effective tax rates cannot be computed for several dozen BEDROOMS because they lost money over the six-year period. For example, <b>A.I.G.</b> lost $83 billion while paying $8 billion in TaxHigh. These BEDROOMS are still included in overall tax rate calculations.
 </div>
 </div>
 </div> -->
@@ -605,9 +605,9 @@ Effective tax rates cannot be computed for several dozen BEDROOMS because they l
 <span class="g-tip-metric-name">Sampling weight</span>
 <span class="g-tip-metric-value">0.18%</span>
 </div>
-<div class="g-tip-metric" data-name="KWH">
-<span class="g-tip-metric-name">Average KWH</span>
-<span class="g-tip-metric-value">10562</span>
+<div class="g-tip-metric" data-name="Tax">
+<span class="g-tip-metric-name">Average Tax</span>
+<span class="g-tip-metric-value">138</span>
 </div>
 <div class="g-tip-metric" data-name="MONEYPY">
 <span class="g-tip-metric-name">Household income</span>
@@ -639,13 +639,14 @@ var margin = {top: 20, right: 95, bottom: 10, left: 125},
 var formatPercent = d3.format(".2%"),
     formatTenthPercent = d3.format(".1%"),
     formatNumber = d3.format(",.2s"), 
+    formatMoney = d3.format("$,.2f"), 
     formatCount = d3.format(",.0s");
 
 var nameAll = "Electricity Usage";
 
 var x = d3.scale.linear()
-    .domain([0, 30000])
-    .rangeRound([0, width - 60])
+    .domain([0, 300])
+    .rangeRound([0, width - 210])
     .clamp(true)
     .nice();
 
@@ -660,7 +661,7 @@ var r = d3.scale.sqrt()
     .range([0, 1]);
 
 var z = d3.scale.threshold()
-    .domain([7000, 12000, 20000, 24000, 30000])
+    .domain([75, 100, 150, 200, 300, 1000000])
     .range(["#b35806", "#f1a340", "#fee0b6", "#d8daeb", "#998ec3", "#542788"].reverse());
 // var z_bed = d3.scale.threshold()
 //     .domain([1, 2, 3, 4, 5, 6, 7])
@@ -705,7 +706,7 @@ var tickLast = gx.selectAll(".g-x .tick:last-of-type");
 tickLast.select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
     .attr("transform", "translate(" + width + ",0)")
   .select("text")
-    .text("\u2265" + "30k");
+    .text("\u2265" + " $300");
 
 var titleX = gx.append("text")
     .attr("class", "g-title")
@@ -715,15 +716,15 @@ var titleX = gx.append("text")
 titleX.append("tspan")
     .attr("x", -20)
     .style("font-weight", "bold")
-    .text("KWH");
+    .text("Tax");
 
 titleX.append("tspan")
     .attr("x", -20)
     .attr("dy", "1em")
     .text("per year");
 
-// "http://graphics8.nytimes.com/newsgraphics/2013/05/13/corporate-wKWH/ee84b0191a75f5c652087293ab0efd4710e21f94/BEDROOMS.tsv"
-d3.csv("Utility_data/electricity.csv", type, function(error, tabdata) {
+// "http://graphics8.nytimes.com/newsgraphics/2013/05/13/corporate-TaxHigh/ee84b0191a75f5c652087293ab0efd4710e21f94/BEDROOMS.tsv"
+d3.csv("Utility_data/TaxDollar.csv", type, function(error, tabdata) {
   var MONEYPYs = d3.nest()
       .key(function(d) { return d.MONEYPY; })
       .entries(tabdata);
@@ -775,8 +776,8 @@ d3.csv("Utility_data/electricity.csv", type, function(error, tabdata) {
     .enter().append("clipPath")
       .attr("id", function(d, i) { return "g-clip-sample-" + i; })
     .append("circle")
-      .attr("cx", function(d) { return d.cx; })
-      .attr("cy", function(d) { return d.cy - y0(nameAll); })
+      .attr("cx", function(d) { return d.cx_high; })
+      .attr("cy", function(d) { return d.cy_high - y0(nameAll); })
       .attr("r", function(d) { return r(d.NWEIGHT); });
 
   var gVoronoi = svg.append("g")
@@ -790,8 +791,8 @@ d3.csv("Utility_data/electricity.csv", type, function(error, tabdata) {
       .on("mouseout", mouseout);
 
   gVoronoi.call(updateVoronoi,
-      function(d) { return d.cx; },
-      function(d) { return d.cy + y0(nameAll); },
+      function(d) { return d.cx_high; },
+      function(d) { return d.cy_high + y0(nameAll); },
       420);
 
   var MONEYPY = svg.append("g")
@@ -816,10 +817,10 @@ d3.csv("Utility_data/electricity.csv", type, function(error, tabdata) {
     .selectAll("circle")
       .data(function(d) { return d.values; })
     .enter().append("circle")
-      .attr("cx", function(d) { return d.cx; })
-      .attr("cy", function(d) { return d.cy - y(d.MONEYPY) + y0(nameAll); })
+      .attr("cx", function(d) { return d.cx_high; })
+      .attr("cy", function(d) { return d.cy_high - y(d.MONEYPY) + y0(nameAll); })
       .attr("r", function(d) { return r(d.NWEIGHT); })
-      .style("fill", function(d) { return isNaN(d.weight ) ? null : z(d.wKWH); })
+      .style("fill", function(d) { return isNaN(d.weight ) ? null : z(d.TaxHigh); })
       // .style("fill", function(d) { return isNaN(d.weight ) ? null : z_bed(d.BEDROOMS); })
       .on("mouseover", mouseover)
       .on("mouseout", mouseout);
@@ -941,7 +942,7 @@ d3.csv("Utility_data/electricity.csv", type, function(error, tabdata) {
         .each("end", function() {
           gVoronoi.call(updateVoronoi,
             function(d) { return d.cx; },
-            function(d) { return d.cy + y0(nameAll); },
+            function(d) { return d.cy_high + y0(nameAll); },
             420);
         });
 
@@ -986,9 +987,9 @@ d3.csv("Utility_data/electricity.csv", type, function(error, tabdata) {
     //     .attr("y", -106);
 
     transition.selectAll(".g-MONEYPY-sample circle")
-        .delay(function(d) { return d.cx; })
-        .attr("cx", function(d) { return d.cx; })
-        .attr("cy", function(d) { return d.cy - y(d.MONEYPY) + y0(nameAll); });
+        .delay(function(d) { return d.cx_high; })
+        .attr("cx", function(d) { return d.cx_high; })
+        .attr("cy", function(d) { return d.cy_high - y(d.MONEYPY) + y0(nameAll); });
   }
 
   function transitionMONEYPY() {
@@ -1076,7 +1077,7 @@ d3.csv("Utility_data/electricity.csv", type, function(error, tabdata) {
     MONEYPYsample.filter(function(c) { return c === d; }).classed("g-active", true);
 
     var dx, dy;
-    if (currentView === "overall") dx = d.cx, dy = d.cy + y0(nameAll);
+    if (currentView === "overall") dx = d.cx_high, dy = d.cy_high + y0(nameAll);
     else dx = d.x, dy = d.y + y(d.MONEYPY);
     dy -= 69, dx += 50; // margin fudge factors
 
@@ -1090,7 +1091,7 @@ d3.csv("Utility_data/electricity.csv", type, function(error, tabdata) {
     tipMetric.select(".g-tip-metric-value").text(function(name) {
       switch (name) {
         case "weight": return isNaN(d.weight ) ? "N.A." : formatPercent(d.weight );
-        case "KWH": return formatNumber(d.wKWH);
+        case "Tax": return formatMoney(d.TaxHigh);
         case "MONEYPY": return d.MONEYPY;
         case "BEDROOMS": return formatCount(d.BEDROOMS);
         case "KOWNRENT": return d.KOWNRENT;
@@ -1107,11 +1108,12 @@ d3.csv("Utility_data/electricity.csv", type, function(error, tabdata) {
 
 function renderChartKey(g) {
   var formatPercent = d3.format(".2%"),
+      formatMoney = d3.format("$,.2f"), 
       formatNumber = d3.format(",.2s");
 
   // A position encoding for the key only.
   var x = d3.scale.linear()
-      .domain([0, 30000])
+      .domain([0, 320])
       .range([0, 240]);
 
   var xAxis = d3.svg.axis()
@@ -1213,8 +1215,8 @@ function yAxisWrap(g) {
       });
 }
 
-function wKWH(d) {
-  return d.wKWH;
+function TaxHigh(d) {
+  return d.TaxHigh;
 }
 
 function NWEIGHT(d) {
@@ -1227,13 +1229,14 @@ function normalize(weighted_variable, totalweight) {
 
 function type(d) {
   d.income_group_level = +d.income_group_level;
-  d.x = +d.cx;
-  d.y = +d.cy;
+  d.x = +d.cx_high;
+  d.y = +d.cy_high;
+  d.TaxHigh = +d.TaxHigh;
   d.BEDROOMS = +d.BEDROOMS;
   // squash y range when plotting for sub
   d.y /= 3;
-  d.cx = +d.cx;
-  d.cy = +d.cy;
+  d.cx_high = +d.cx_high;
+  d.cy_high = +d.cy_high;
   d.cr = +d.cr;
   return d;
 }
@@ -1241,16 +1244,16 @@ function type(d) {
 // var MONEYPYNoteByName = {
 //   "Utilities": "Utilities benefited from the 2009 stimulus bill, which included tax breaks for BEDROOMS that make capital-intensive investments, like power plants.",
 //   "Information technology": "Technology BEDROOMS can often move operations overseas for accounting purposes. And younger firms tend to have recent losses, holding down the MONEYPY&rsquo;s overall rate.",
-//   "Industrials": "As with the corporate MONEYPY, large industrial BEDROOMS &mdash; like <b>Boeing</b>, <b>Caterpillar</b>, <b>General Electric</b> and <b>Honeywell</b> &mdash; pay lower wKWH on average than small BEDROOMS.",
+//   "Industrials": "As with the corporate MONEYPY, large industrial BEDROOMS &mdash; like <b>Boeing</b>, <b>Caterpillar</b>, <b>General Electric</b> and <b>Honeywell</b> &mdash; pay lower TaxHigh on average than small BEDROOMS.",
 //   "Telecom": "<b>Verizon</b> had a much lower effective tax rate than its rival <b>AT&T</b>, despite having similar profits over the six-year period.",
 //   "Health care": "Within health care, managed care BEDROOMS pay relatively higher tax rates, and makers of equipment, supplies and technology pay relatively lower rates.",
-//   "Pharma": "Tax breaks for research and the ability to locate operations in low-tax countries have helped pharmaceutical and biotech BEDROOMS to pay low wKWH.",
+//   "Pharma": "Tax breaks for research and the ability to locate operations in low-tax countries have helped pharmaceutical and biotech BEDROOMS to pay low TaxHigh.",
 //   "Consumer products": "Movie studios and packaged-food sample pay more than 30 percent, on average. Soft-drink BEDROOMS pay only 19 percent, and restaurant BEDROOMS, 25 percent.",
 //   "Materials": "The materials industry (chemicals, minerals, etc.) exemplifies a point often made by tax experts: within industries, tax rates vary greatly, in ways that often evade simple explanation.",
 //   "Financials": "As financial firms have recovered from the crisis, some have paid relatively high tax rates.",
 //   "Retailers": "Brick-and-mortar retailers, like <b>Bed Bath & Beyond</b> and <b>Home Depot</b>, tend to pay high tax rates. Online retailers, like <b>Amazon</b>, face low rates.",
 //   "Energy": "Large oil BEDROOMS typically pay high rates, but some economists argue that the high rates do not cover the pollution costs imposed on society.",
-//   "Insurance": "Many insurers pay lower-than-average rates. But <b>A.I.G.</b> &mdash; which had an $83 billion loss while paying $8 billion in wKWH &mdash; drives the MONEYPY&rsquo;s average up."
+//   "Insurance": "Many insurers pay lower-than-average rates. But <b>A.I.G.</b> &mdash; which had an $83 billion loss while paying $8 billion in TaxHigh &mdash; drives the MONEYPY&rsquo;s average up."
 // };
 
 })()</script>
