@@ -16,3 +16,6 @@ http://cse512-15s.github.io/fp-jbare-kaul10-lizehang-nanand/
 
 #Software instructions:
 
+#Division of Labor:
+
+#Research/Development Process:
