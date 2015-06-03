@@ -3,6 +3,15 @@
   <meta charset="utf-8">
   <style>
  
+ .bar {
+  fill: steelblue;
+}
+ 
+.bar:hover {
+  fill: orangered ;
+}
+
+ 
     path {
      
       stroke: #ccc;
@@ -10,9 +19,18 @@
     }
  
     path:hover {
-      fill: red;
+      fill: orange;
       cursor:pointer;
     }
+	
+	#pumasmap {
+  fill: gray;
+}
+ 
+#pumasmap.active {
+  fill: red;
+}
+ 
     
     .d3-tip {
   line-height: 1;
@@ -48,243 +66,162 @@
 </head>
 <body>
   <h1>Carbon Tax Calculator: Statewide Impact Visualization</h1>
-  <form action="">
-    <input type="radio" name="utilityMode" value="bestCase" checked>Best Case<br>
-    <input type="radio" name="utilityMode" value="worstCase">Worst Case
-  </form>
   <br>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
   <script type="text/javascript" src="index.js"></script>
   <script type="text/javascript" src="helperFunctions.js"></script>
-  <div id="option">
-    <input name="updateButton" 
-           type="button" 
-           value="Pumas data" 
-           onclick="updateDataPumas()" />
-	<input name="updateButton" 
-           type="button" 
-           value="Zipcode data" 
-           onclick="updateDataZip()" />
-  </div>
-
+</div>
   <script>
-    function updateDataZip() {
-
-      d3.select("svg")
-         .remove();
-  	   
-      var width = 1000,
-          height = 900,
-          centered;
+ 
+    var width = 1500,
+        height = 900,
+        centered;
+ 
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+ 
+    var dataset = "pumas_wash_topo.json";
+ 
+    var colorScale = d3.scale.linear()
+        .domain([0, 2])
+        .range(["white", "red"]);
    
-      var svg = d3.select("body").append("svg")
-          .attr("width", width)
-          .attr("height", height);
+    var g = svg.append("g");
    
-      var dataset = "zips_wash_topo.json";
-   
-      var colorScale = d3.scale.linear()
-          .domain([0, 2])
-          .range(["white", "red"]);
+    var projection = d3.geo.albers()
+          .rotate([119, 0])
+          .center([-3, 48])
+          .parallels([35, 50])
+          .scale(8000)
+          .translate([width / 5, height / 6])
+          .precision(.1);
+ 
+               
+                var path = d3.geo.path()
+        .projection(projection);
+               
+    d3.json(dataset, function(error, wa) {
+      var wash = topojson.feature(wa, wa.objects.wash);
+ 
      
-      var g = svg.append("g");
-     
-      var projection = d3.geo.albers()
-            .rotate([119, 0])
-            .center([-3, 48])
-            .parallels([35, 50])
-            .scale(8000)
-            .translate([300, 200])
-            .precision(.1);
-   
-                 
-                  var path = d3.geo.path()
-          .projection(projection);
-                 
-      d3.json(dataset, function(error, wa) {
-        var wash = topojson.feature(wa, wa.objects.wash);
-   
-       
-        
-   
-        //Declaring the tool tip variable
-        var tip = d3.tip()
-          .attr('class', 'd3-tip')
-          .offset([-10, 0])
-          .html(function(d) {
-            console.log(d);
-            return "<strong style='color:white'>Name:</strong> <span style='color:white'>" + d.properties.name +
-            "</span><br><strong style='color:white'>Zip Code:</strong> <span style='color:white'>" + d.properties.zip +
-            "</span><br><strong style='color:white'>Utility:</strong> <span style='color:white'>" +
-            ((getUtilities(d.properties.zip) !== 0) ? (getUtilities(d.properties.zip))[0] : "N/A" ) +
-            "</span><br><strong style='color:white'>Carbon Impact:</strong> <span style='color:white'>" +
-            ((getUtilities(d.properties.zip) !== 0) ? getUtilityStats((getUtilities(d.properties.zip))[0])[1] : "N/A" );
-            
-        })
-   
-        //Calling the tool tip within the svg
-        g.call(tip);
-   
-        g.selectAll("path")
-            .data(wash.features)
-            .enter().append("path")         
-            .attr("d", path)
-            .style("fill", function(d) {
-              if (getUtilities(d.properties.zip) !== 0) {
-                return colorScale( getUtilityStats((getUtilities(d.properties.zip))[0])[1] );
-                // return multiplyHexColor("111111", getUtilityStats((getUtilities(d.properties.zip))[0])[1]);
-              } else {
-                return colorScale(0);
-              }
-            })
-            .on('mouseover', tip.show)
-            .on('mouseout', tip.hide)
-            .on('click',clicked);
-
-
-      });
-                 
-      function clicked(d) {
-        var x, y, k;
-       
-        if (d && centered !== d) {
-          var centroid = path.centroid(d);
-          x = centroid[0];
-          y = centroid[1];
-          k = 4;
-          centered = d;
-        } else {
-          x = width / 2;
-          y = height / 2;
-          k = 1;
-          centered = null;
-        }
-       
-        g.selectAll("path")
-            .classed("active", centered && function(d) { return d === centered; });
-       
-        g.transition()
-            .duration(750)
-            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-            .style("stroke-width", 1.5 / k + "px");
-      }
-  	}
-	
-    //Update data section (Called from the onclick)
-    function updateDataPumas() {
-
-        d3.select("svg")
-           .remove();
-
-        var width = 1300,
-            height = 600,
-            centered;
-     
-        var map = d3.select("body").append("svg")
-            .attr("width", width)
-            .attr("height", height);
-
-        var detail = map.append("g")
-              .attr("class", "detail")
-              .attr("transform", "translate(" + 800 + "," + 200 +")" )
-              .attr("width", 400)
-              .attr("height", height);
-
-        var dataset = "pumas_wash_topo.json";
-     
-        var colorScale = d3.scale.linear()
-            .domain([0, 2])
-            .range(["white", "red"]);
-       
-        var mapGroup = map.append("g");
-       
-        var projection = d3.geo.albers()
-              .rotate([119, 0])
-              .center([-3, 48])
-              .parallels([35, 50])
-              .scale(8000)
-              .translate([300, 200])
-              .precision(.1);
-     
-                   
-        var path = d3.geo.path()
-            .projection(projection);
-                   
-        d3.json(dataset, function(error, wa) {
-          var wash = topojson.feature(wa, wa.objects.wash);
-     
-         
+      
+ 
+      //Declaring the tool tip variable
+      //var tip = d3.tip()
+        //.attr('class', 'd3-tip')
+        //.offset([-10, 0])
+        //.html(function(d) {
+          //return "<strong style='color:white'>Name:</strong> <span style='color:white'>" + d.properties.name;
+		  //+          "</span><br><strong style='color:white'>Zip Code:</strong> <span style='color:white'>" + d.properties.zip +
+          //"</span><br><strong style='color:white'>Utility:</strong> <span style='color:white'>" +
+          //((getUtilities(d.properties.zip) !== 0) ? (getUtilities(d.properties.zip))[0] : "N/A" ) +
+          //"</span><br><strong style='color:white'>Carbon Impact:</strong> <span style='color:white'>" +
+          //((getUtilities(d.properties.zip) !== 0) ? getUtilityStats((getUtilities(d.properties.zip))[0])[1] : "N/A" );
           
+      //})
+ 
+      //Calling the tool tip within the svg
+     // g.call(tip);
+ 
+      g.selectAll("path")
+          .data(wash.features)
+          .enter().append("path")         
+          .attr("d", path)
+		  .attr("id","pumasmap")
+		  //.on('mouseover', function(d) {
+           //d3.select(this).style("background-color","orange");})
+          //.on('mouseout', tip.hide)
+          .on('click',clicked);
+
+
+    });
+               
+    function clicked(d) {
+    
+
+	var x, y, k;
      
-          //Declaring the tool tip variable
-          var tip = d3.tip()
-            .attr('class', 'd3-tip')
-            .offset([-10, 0])
-            .html(function(d) {
-              console.log(d);
-              return "<strong style='color:white'>Name:</strong> <span style='color:white'>" + d.properties.name;/* +
-              "</span><br><strong style='color:white'>Zip Code:</strong> <span style='color:white'>" + d.properties.zip +
-              "</span><br><strong style='color:white'>Utility:</strong> <span style='color:white'>" +
-              ((getUtilities(d.properties.zip) !== 0) ? (getUtilities(d.properties.zip))[0] : "N/A" ) +
-              "</span><br><strong style='color:white'>Carbon Impact:</strong> <span style='color:white'>" +
-              ((getUtilities(d.properties.zip) !== 0) ? getUtilityStats((getUtilities(d.properties.zip))[0])[1] : "N/A" );*/
-              
-          })
+      if (d && centered !== d) {
+        var centroid = path.centroid(d);
+        x = centroid[0];
+        y = centroid[1];
+        k = 1.2;
+        centered = d;
+      } else {
+        x = width / 2;
+        y = height / 2;
+        k = 1;
+        centered = null;
+      }
      
-          //Calling the tool tip within the svg
-          mapGroup.call(tip);
+      g.selectAll("path")
+          .classed("active", centered && function(d) { return d === centered; });
      
-          mapGroup.selectAll("path")
-              .data(wash.features)
-              .enter().append("path")         
-              .attr("d", path)
-              .style("fill", function(d) {
-                console.log(d);
-                return colorScale(0);
-              })
-              .on('mouseover', tip.show)
-              .on('mouseout', tip.hide)
-              .on('click',clicked);
-
-
-        });
-                   
-        function clicked(d) {
-          d3.csv("PUMS_data/PUMS_less.csv", function(d) {
-            return {
-              wfr:d.wfr
-            };
-          }, function(error, rows) {
-
-          });
-
-          var x, y, k;
-         
-          if (d && centered !== d) {
-            var centroid = path.centroid(d);
-            x = centroid[0];
-            y = centroid[1];
-            k = 4;
-            centered = d;
-          } else {
-            x = width / 2;
-            y = height / 2;
-            k = 1;
-            centered = null;
-          }
-         
-          mapGroup.selectAll("path")
-              .classed("active", centered && function(d) { return d === centered; });
-         
-          mapGroup.transition()
-              .duration(750)
-              .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-              .style("stroke-width", 1.5 / k + "px");
-        }
-
-
-    }
+      g.transition()
+          .duration(750)
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+          .style("stroke-width", 1.5 / k + "px");
+    
+var margin = {top: 300, right: 20, bottom: 10, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
+ 
+var formatPercent = d3.format(".0%");
+var sortOrder=false; 
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1);
+ 
+var y = d3.scale.linear()
+    .range([height-150, 0]);
+ 
+//var xAxis = d3.svg.axis()
+  //  .scale(x)
+   // .orient("bottom");
+ 
+var yAxis = d3.svg.axis()
+    .scale(y)
+		.orient("left");
+		
+		
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+ 
+var dataset = "utilityCarbonImpact.csv";
+ 
+d3.csv(dataset, function(error, data) {
+ 
+ x.domain(data.map(function(d) { return d.code; }));
+  y.domain([0,d3.max(data, function(d) { return d.naturalGas; })]);
+ 
+  svg.append("g")
+      .attr("class", "y axis")
+      //.call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      //.text("MatchesPlayed");
+ 
+  svg.selectAll(".bar")
+      .data(data)
+	  //.on('mouseover', tip.show)
+      //.on('mouseout', tip.hide)
+    .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.code); })
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) { return y(d.naturalGas); })
+      .attr("height", function(d) { return height - y(d.naturalGas); })
+	  ;
+ 
+    });
+}
  
   </script>
  
