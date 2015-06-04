@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="style/style.css">
+
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript" src="javascripts/global_init.js"></script>
+<h1>Some header</h1>
+<h2>Some description</h2>
+<p></p>
+
+<div class="container" padding="0px">
+    <div id="bubble">
+    	<svg id="svg"/>
+	</div>
+</div>
+
+<div class="container">
+	<div id="map"></div>
+</div>
+
+<div id="tooltip" class="hidden">
+	<p><span id="value"/></p>
+</div>
+
+<div id="selectionboxes">
+	<p id="dimensionsHeader">Select the case to be displayed:</p>
+	<select id="dimensions" onchange="SelectDimension()">
+		<option value="best">Best Case</option>
+		<option value="worst">Worst Case</option>
+		<option value="average">Average Case</option>
+	</select>
+
+	<br/><br/>
+
+</div>
+
+<div class="container">
+	<div id="barplot">
+		<h3><center>Net tax in area selected</center></h3>
+		<svg id="barplot_svg">
+		</svg>
+	</div>
+</div>
+
+<div class="g-graphic">
+<!-- <div class="g-search">
+<input type="text" placeholder="Find a sample or industry&hellip;">
+<button style="display:none;" class="g-search-clear">X</button>
+</div>
+ -->
+ <div class="g-buttons">
+<button class="g-button g-active" data-view="overall">The Overall Picture</button>
+<button class="g-button" data-view="MONEYPY">The View by Income</button>
+</div>
+</div>
+<div class="g-notes"></div>
+<div class="g-tip" style="width:235px;height:130px;display:none;">
+<div class="g-tip-shadow"></div>
+<!-- <svg class="g-tip-box" width="180" height="437">
+<path transform="translate(75,141)" d="M0.5,-6.5l5,-5H74.5v-79H-74.5v79H-5Z"></path> -->
+</svg>
+<div class="g-tip-content">
+<div class="g-tip-title">Sample Mean</div>
+<div class="g-tip-metric" data-name="weight">
+<span class="g-tip-metric-name">Sampling weight</span>
+<span class="g-tip-metric-value">0.18%</span>
+</div>
+<div class="g-tip-metric" data-name="Tax">
+<span class="g-tip-metric-name">Average Tax</span>
+<span class="g-tip-metric-value">138</span>
+</div>
+<div class="g-tip-metric" data-name="MONEYPY">
+<span class="g-tip-metric-name">Household income</span>
+<span class="g-tip-metric-value">10</span>
+</div>
+<div class="g-tip-metric" data-name="BEDROOMS">
+<span class="g-tip-metric-name">Number of bedrooms</span>
+<span class="g-tip-metric-value"></span>
+</div>
+<div class="g-tip-metric" data-name="KOWNRENT">
+<span class="g-tip-metric-name">Own the house?</span>
+<span class="g-tip-metric-value">1</span>
+</div>
+<div class="g-tip-metric" data-name="UR">
+<span class="g-tip-metric-name">Urban area?</span>
+<span class="g-tip-metric-value">1</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- load dependencies -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://graphics8.nytimes.com/js/common.js"></script>
+<script type="text/javascript" src="http://graphics8.nytimes.com/js/common/screen/DropDown.js"></script>
+<script type="text/javascript" src="http://graphics8.nytimes.com/js/fileit.js"></script>
+<script type="text/javascript" src="http://graphics8.nytimes.com/js/util/tooltip.js"></script>
+<script type="text/javascript" src="http://graphics8.nytimes.com/js/common/sharetools/2.0/shareTools.js"></script>
+<script type="text/javascript" src="http://graphics8.nytimes.com/js/app/save/crossPlatformSave.js"></script>
+<script src="javascripts/nytimes-lib.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+
+
+<script type="text/javascript" src="javascripts/index.js"></script>
+<script type="text/javascript" src="javascripts/helperFunctions.js"></script>
+<script type="text/javascript" src="javascripts/mapplot.js"></script>
+<script type="text/javascript" src="javascripts/bubbleplot.js"></script>
+<script type="text/javascript" src="javascripts/barplot.js"></script>
+<script type="text/javascript" src="javascripts/main.js"></script>
+
+
+</body>
+</html>

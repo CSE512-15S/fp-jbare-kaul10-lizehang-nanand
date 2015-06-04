@@ -69,8 +69,8 @@
   <br>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
-  <script type="text/javascript" src="index.js"></script>
-  <script type="text/javascript" src="helperFunctions.js"></script>
+  <script type="text/javascript" src="javascripts/index.js"></script>
+  <script type="text/javascript" src="javascripts/helperFunctions.js"></script>
 </div>
   <script>
  
@@ -82,7 +82,7 @@
         .attr("width", width)
         .attr("height", height);
  
-    var dataset = "pumas_wash_topo.json";
+    var dataset = "data/pumas_wash_topo.json";
  
     var colorScale = d3.scale.linear()
         .domain([0, 2])
@@ -191,7 +191,7 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
  
-var dataset = "utilityCarbonImpact.csv";
+var dataset = "data/Utility_data/utilityCarbonImpact.csv";
  
 d3.csv(dataset, function(error, data) {
  
