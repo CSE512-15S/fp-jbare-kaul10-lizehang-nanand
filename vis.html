@@ -61,11 +61,19 @@
       top: 100%;
       left: 0;
     }
+	
+	select {
+    visibility: hidden;
+}
  
   </style>
 </head>
 <body>
   <h1>Carbon Tax Calculator: Statewide Impact Visualization</h1>
+  <select style="margin-left: 1800px" id="menu">
+  <option value="naturalGas" onchange="ng()">Natural Gas</option>
+  <option value="carbonTaxImpact" onchange="cti()">Carbon Tax</option>
+</select>
   <br>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
@@ -73,11 +81,13 @@
   <script type="text/javascript" src="javascripts/helperFunctions.js"></script>
   <script>
  
-    var width = 1500,
-        height = 900,
+    var width = 1000,
+        height = 1000,
         centered;
- 
+    var svg1;
+	
     var svg = d3.select("body").append("svg")
+		.style("float","left")
         .attr("width", width)
         .attr("height", height);
  
@@ -87,7 +97,8 @@
         .domain([0, 2])
         .range(["white", "red"]);
    
-    var g = svg.append("g");
+    var g = svg.append("g")
+	           .attr("transform", "translate(300,100)");
    
     var projection = d3.geo.albers()
           .rotate([119, 0])
@@ -136,12 +147,35 @@
           .on('mouseout', tip.hide)
           .on('click',clicked);
 
-
+		  
+		
     });
+	
+	var margin = {top: 300, right: 20, bottom: 10, left: 40},
+          width = 960 - margin.left - margin.right,
+          height = 600 - margin.top - margin.bottom;
+		  
+	 svg1 = d3.select("body").append("svg").attr("class","rectsvg")
+		  .style("float","left")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+       
+
+	
+	
+	
+	
                
     function clicked(d) {
-    
-
+	
+ document.getElementById("menu").style.visibility="visible";	
+ 
+	d3.selectAll(".bar").remove();
+	//d3.select(".svgrect").remove();
+	
+	//d3.selectAll(".bar").remove();
     	var x, y, k;
          
           if (d && centered !== d) {
@@ -162,12 +196,12 @@
          
           g.transition()
               .duration(750)
-              .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+              //.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
               .style("stroke-width", 1.5 / k + "px");
     
-      var margin = {top: 300, right: 20, bottom: 10, left: 40},
+      /*var margin = {top: 300, right: 20, bottom: 10, left: 40},
           width = 960 - margin.left - margin.right,
-          height = 600 - margin.top - margin.bottom;
+          height = 600 - margin.top - margin.bottom;*/
        
       var formatPercent = d3.format(".0%");
       var sortOrder=false; 
@@ -181,17 +215,19 @@
         //  .scale(x)
          // .orient("bottom");
        
-      var yAxis = d3.svg.axis()
-          .scale(y)
-      		.orient("left");
+     
       		
-      		
-      var svg = d3.select("body").append("svg")
+      /*var svg = d3.select("body").append("svg").attr("class","rectsvg")
+		  .style("float","right")
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom)
         .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");*/
        
+	   var yAxis = d3.svg.axis()
+          .scale(y)
+      		.orient("left");
+      		
       var dataset = "data/Utility_data/utilityCarbonImpact.csv";
        
       d3.csv(dataset, function(error, data) {
@@ -199,7 +235,7 @@
        x.domain(data.map(function(d) { return d.code; }));
         y.domain([0,d3.max(data, function(d) { return d.naturalGas; })]);
        
-        svg.append("g")
+        svg1.append("g")
             .attr("class", "y axis")
             //.call(yAxis)
           .append("text")
@@ -209,20 +245,37 @@
             .style("text-anchor", "end")
             //.text("MatchesPlayed");
        
-        svg.selectAll(".bar")
+        svg1.selectAll(".bar")
             .data(data)
+			.enter().append("rect")
+			.attr("x",function(d,i){return i*x.rangeBand();})
+			.attr("y",height)
+			.attr("height",0)
+			.transition()
+			//.ease("elastic")
+			.duration(2000)
+			
       	  //.on('mouseover', tip.show)
             //.on('mouseout', tip.hide)
-          .enter().append("rect")
             .attr("class", "bar")
             .attr("x", function(d) { return x(d.code); })
-            .attr("width", x.rangeBand())
+            .attr("width", x.rangeBand()-3)
             .attr("y", function(d) { return y(d.naturalGas); })
             .attr("height", function(d) { return height - y(d.naturalGas); })
       	  ;
  
       });
-    }
+    
+	//try
+	d3.select('#opts')
+  .on('change', function() {
+    var newData = eval(d3.select(this).property('value'));
+    updateLegend(newData);
+});
+
+	
+	}
+	
  
   </script>
  
