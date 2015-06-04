@@ -5,8 +5,19 @@
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script type="text/javascript" src="javascripts/global_init.js"></script>
-<h1>Some header</h1>
+<h1>Carbon Tax Statewide Impact Visualization</h1>
 <h2>Some description</h2>
+<div id="selectionboxes">
+  <p id="dimensionsHeader">Select the case to be displayed:</p>
+  <select id="dimensions" onchange="SelectDimension()">
+    <option value="best">Best Case</option>
+    <option value="worst">Worst Case</option>
+    <option value="average">Average Case</option>
+  </select>
+
+  <br/><br/>
+
+</div>
 <p></p>
 
 <div class="container" padding="0px">
@@ -21,18 +32,6 @@
 
 <div id="tooltip" class="hidden">
 	<p><span id="value"/></p>
-</div>
-
-<div id="selectionboxes">
-	<p id="dimensionsHeader">Select the case to be displayed:</p>
-	<select id="dimensions" onchange="SelectDimension()">
-		<option value="best">Best Case</option>
-		<option value="worst">Worst Case</option>
-		<option value="average">Average Case</option>
-	</select>
-
-	<br/><br/>
-
 </div>
 
 <div class="container">

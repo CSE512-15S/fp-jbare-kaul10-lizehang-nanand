@@ -72,11 +72,12 @@ div.bar {
 
 /*  */
 #selectionboxes {
-	position: absolute;
+	/*position: absolute;*/
 	width: auto;
 	height: auto;
-	left: 340px;
-	top: 140px;
+  
+	/*left: 340px;
+	top: 140px;*/
 	/*TODO need to fill in position here*/
 }
 
