@@ -11,16 +11,59 @@ svg {
 	font-family: "Arial", Arial;
 }
 
+.bar {
+  fill: steelblue;
+}
+
+.bar:hover {
+  fill: orangered ;
+}
+
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  padding-right: 50px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 8px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+select {
+  visibility: hidden;
+}
+
 /* test bar style */
-div.bar {
+/*div.bar {
 		display: inline-block;
 		width: 20px;
-		height: 75px;	/* Gets overriden by D3-assigned height below */
+		height: 75px;	
 		margin-right: 2px;
-	}
+	}*/
 
 /* Style of the x-axis line */
-.axis path,
+/*.axis path,
 .axis line {
 	fill: none;
 	stroke: none;
@@ -29,17 +72,17 @@ div.bar {
 	font-family: Arial;
 	font-size: 11 px;
 	shape-rendering: crispEdges;
-}
+}*/
 
 /* Style of box drawn for brushing */
-.brush .extent {
+/*.brush .extent {
 	stroke: #fff;
 	fill-opacity: .125;
 	shape-rendering: crispEdges;
-}
+}*/
 
 /* Style of tooltip */
-#tooltip {
+/*#tooltip {
 	position: absolute;
 	text-align: center;
 	width: auto;
@@ -58,7 +101,7 @@ div.bar {
 }
 #tooltip.hidden {
 	display:none;
-}
+}*/
 
 /*.on("mouseover", function(d) {      
             div.transition()        
@@ -90,14 +133,14 @@ div.bar {
 	/*TODO need to fill in position here*/
 }
 
-.d3-tip {
+/*.d3-tip {
   line-height: 1;
   font-weight: bold;
   padding: 12px;
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
   border-radius: 2px;
-}
+}*/
 
 .NYT5Style .masthead-tools #bar1-twopanel  {
     display: inline;
