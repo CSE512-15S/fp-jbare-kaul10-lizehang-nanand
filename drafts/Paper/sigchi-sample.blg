@@ -1,0 +1,12 @@
+This is BibTeX, Version 0.99dThe top-level auxiliary file: sigchi-sample.aux
+The style file: acm-sigchi.bst
+Database file #1: sample.bib
+I was expecting a `,' or a `}'---line 33 of file sample.bib
+ :   pages = 562
+ :              --571
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 43 of file sample.bib
+ :   pages = 555
+ :              --573
+I'm skipping whatever remains of this entry
+(There were 2 error messages)
