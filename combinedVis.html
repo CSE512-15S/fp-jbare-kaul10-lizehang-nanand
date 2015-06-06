@@ -20,19 +20,17 @@
 </div>
 <p></p>
 
-<div class="container" padding="0px">
-    <div id="bubble">
-    	<svg id="svg"/>
-	</div>
-</div>
+
 
 <div class="container">
-	<div id="map"></div>
+	<div id="map">
+    <svg id="map_svg"></svg>
+  </div>
 </div>
 
-<div id="tooltip" class="hidden">
+<!-- <div id="tooltip" class="hidden">
 	<p><span id="value"/></p>
-</div>
+</div> -->
 
 <div class="container">
 	<div id="barplot">
@@ -42,17 +40,25 @@
 	</div>
 </div>
 
+<div class="container" padding="0px">
+  <div id="bubble">
+    <svg id="bubble_svg"></svg>
+  </div>
+</div>
+
 <div class="g-graphic">
-<!-- <div class="g-search">
-<input type="text" placeholder="Find a sample or industry&hellip;">
-<button style="display:none;" class="g-search-clear">X</button>
+  <!-- <div class="g-search">
+  <input type="text" placeholder="Find a sample or industry&hellip;">
+  <button style="display:none;" class="g-search-clear">X</button>
+  </div>
+   -->
+  <div class="g-buttons">
+    <button class="g-button g-active" data-view="overall">The Overall Picture</button>
+    <button class="g-button" data-view="MONEYPY">The View by Income</button>
+  </div>
 </div>
- -->
- <div class="g-buttons">
-<button class="g-button g-active" data-view="overall">The Overall Picture</button>
-<button class="g-button" data-view="MONEYPY">The View by Income</button>
-</div>
-</div>
+
+
 <div class="g-notes"></div>
 <div class="g-tip" style="width:235px;height:130px;display:none;">
 <div class="g-tip-shadow"></div>

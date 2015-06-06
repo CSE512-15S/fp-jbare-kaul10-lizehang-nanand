@@ -11,6 +11,46 @@ svg {
 	font-family: "Arial", Arial;
 }
 
+#selectionboxes {
+  /*position: absolute;*/
+  width: auto;
+  height: auto;
+  
+  /*left: 340px;
+  top: 140px;*/
+  /*TODO need to fill in position here*/
+}
+
+.g-graphic {
+  float: left;
+  /*position: absolute;
+  width: auto;
+  height: auto;
+  left: 800px;
+  top: 100px;*/
+  /*TODO need to fill in position here*/
+}
+
+#map {
+  float: left;
+  /*position: absolute;
+  width: auto;
+  height: auto;
+  left: 800px;
+  top: 100px;*/
+  /*TODO need to fill in position here*/
+}
+
+#barplot {
+  float: left;
+  /*position: absolute;
+  width: auto;
+  height: auto;
+  left: 800px;
+  top: 100px;*/
+  /*TODO need to fill in position here*/
+}
+
 .bar {
   fill: steelblue;
 }
@@ -50,9 +90,9 @@ svg {
   left: 0;
 }
 
-select {
+/*select {
   visibility: hidden;
-}
+}*/
 
 /* test bar style */
 /*div.bar {
@@ -114,24 +154,7 @@ select {
             })   */
 
 /*  */
-#selectionboxes {
-	/*position: absolute;*/
-	width: auto;
-	height: auto;
-  
-	/*left: 340px;
-	top: 140px;*/
-	/*TODO need to fill in position here*/
-}
 
-#barplot {
-	position: absolute;
-	width: auto;
-	height: auto;
-	left: 760px;
-	top: 100px;
-	/*TODO need to fill in position here*/
-}
 
 /*.d3-tip {
   line-height: 1;

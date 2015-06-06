@@ -2,15 +2,12 @@
 var map_generator = function(){
   //START by setting up overall layout of page
   var margin = {top: 10, right: 30, bottom: 30, left: 30},
-      width = 1300 - margin.left - margin.right,
+      width = 800 - margin.left - margin.right,
       height = 700 - margin.top - margin.bottom;
-
-  var detailWidth = 400,
-      detailHeight = 400;
       
   var centered;
 
-  
+  var parsedDataset;
 
   //THEN load the PUMS dataset and do everything else inside this
   //Loading the PUMS once like this is faster then loading it a bunch of different times
@@ -19,21 +16,19 @@ var map_generator = function(){
 
   // function to draw the map area (does it need any data from pums_less?)
   // input variable being the whole dataset
-  var draw = function(rows){
-    var map = d3.select("#map")
-      .append("svg")
+  var draw = function(){
+    var map = d3.select("#map_svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
-      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")")
+      .attr("id", "mapGroup");
 
     var tooltipGroup = map.append("g");
 
-    var detail = map.append("g")
-        .attr("class", "detail")
-        .attr("transform", "translate(" + 800 + "," + 0 +")" )
-        .attr("width", 400)
-        .attr("height", height);
+    //console.log(map);
+
+    
 
     //THEN set up all the map stuff
     var mapDataset = "data/pumas_wash_topo.json";
@@ -76,6 +71,7 @@ var map_generator = function(){
           .data(wash.features)
           .enter().append("path")         
           .attr("d", path)
+          .attr("class", "pumaPath")
           .style("stroke","#ccc")
           .style("stroke-width", "1px")
           .style("fill","gray")
@@ -109,70 +105,70 @@ var map_generator = function(){
       
       //THEN figure out what to do when an area of the map is clicked
       function clicked(pumaClicked) {
+        barplot.update(pumaClicked);
+        // //console.log(pumaClicked);
 
-        //console.log(pumaClicked);
-
-        d3.selectAll(".bar").remove();
-        d3.selectAll("#bar-x-axis").remove();
+        // d3.selectAll(".bar").remove();
+        // d3.selectAll("#bar-x-axis").remove();
     
-        //document.getElementById("menu").style.visibility="visible"; 
+        // //document.getElementById("menu").style.visibility="visible"; 
 
-        // A formatter for counts.
-        var formatCount = d3.format(",.0f");
+        // // A formatter for counts.
+        // var formatCount = d3.format(",.0f");
 
-        //Filter the data based on which PUMA was clicked
-        var rowsFiltered = rows.filter(function(d){ return d.puma == parseInt(pumaClicked.properties.puma); });
+        // //Filter the data based on which PUMA was clicked
+        // var rowsFiltered = rows.filter(function(d){ return d.puma == parseInt(pumaClicked.properties.puma); });
 
-        var values = [];
-        var i = 0;
-        for (i = 0; i < rowsFiltered.length; i++) {
-          values.push(rowsFiltered[i].netBest);
-        }
+        // var values = [];
+        // var i = 0;
+        // for (i = 0; i < rowsFiltered.length; i++) {
+        //   values.push(rowsFiltered[i].netBest);
+        // }
 
-        var domain = d3.extent(values);
-        domain[0] = 100 * Math.floor(domain[0]/100);
-        domain[1] = 100 * Math.ceil(domain[1]/100);
+        // var domain = d3.extent(values);
+        // domain[0] = 1000 * Math.floor(domain[0]/1000);
+        // domain[1] = 1000 * Math.ceil(domain[1]/1000);
 
-        var x = d3.scale.linear()
-          .domain(domain)
-          .range([0, detailWidth]);
+        // var x = d3.scale.linear()
+        //   .domain(domain)
+        //   .range([0, detailWidth]);
 
-        // Generate a histogram using uniformly-spaced bins.
-        var data = d3.layout.histogram()
-            .bins(x.ticks(40))
-            (values);
+        // // Generate a histogram using uniformly-spaced bins.
+        // var data = d3.layout.histogram()
+        //     .bins(x.ticks(80))
+        //     (values);
 
 
-        var y = d3.scale.linear()
-            .domain([0, d3.max(data, function(d) { 
-              return d.y; 
-            })])
-            .range([detailHeight, 0]);
+        // var y = d3.scale.linear()
+        //     .domain([0, d3.max(data, function(d) { 
+        //       return d.y; 
+        //     })])
+        //     .range([detailHeight, 0]);
 
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
+        // var xAxis = d3.svg.axis()
+        //     .scale(x)
+        //     .orient("bottom");
 
-        var bar = detail.selectAll(".bar")
-            .data(data)
-            .enter().append("g")
-            .attr("class", "bar")
-            .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+        // var bar = detail.selectAll(".bar")
+        //     .data(data)
+        //     .enter().append("g")
+        //     .attr("class", "bar")
+        //     .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
 
-        //console.log(d3.extent(values) + " " + data[0].dx + " " + x(data[0].dx));
+        // //console.log(d3.extent(values) + " " + data[0].dx + " " + x(data[0].dx));
 
-        bar.append("rect")
-            .attr("x", 1)
-            .attr("width", 10)//x(data[0].dx) - 1)
-            .attr("height", function(d) { 
-              return detailHeight - y(d.y); 
-            });
+        // bar.append("rect")
+        //     .attr("x", 1)
+        //     .attr("width", 4)//x(data[0].dx) - 1)
+        //     .attr("height", function(d) { 
+        //       return detailHeight - y(d.y); 
+        //     });
 
-        detail.append("g")
-            .attr("class", "x axis")
-            .attr("id", "bar-x-axis")
-            .attr("transform", "translate(0," + detailHeight + ")")
-            .call(xAxis);
+        // detail.append("g")
+        //     .attr("class", "x axis")
+        //     .attr("id", "bar-x-axis")
+        //     .attr("transform", "translate(0," + detailHeight + ")")
+        //     .call(xAxis);
 
       }
   };
@@ -194,6 +190,7 @@ var map_generator = function(){
           netBest: +d.netBest
         };
       }, function(error, rows) {
+        parsedDataset = rows;
         draw(rows);
       });
   };
