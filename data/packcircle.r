@@ -112,6 +112,7 @@ pack.circles <- function(rfix, xfix,
         }
       }
     }
+    cat(".")
     if (!moved) break
   }
 
