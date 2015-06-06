@@ -91,7 +91,7 @@ titleX.append("tspan")
     .attr("dy", "1em")
     .text("per year");
 
-// "http://graphics8.nytimes.com/newsgraphics/2013/05/13/corporate-TaxHigh/ee84b0191a75f5c652087293ab0efd4710e21f94/PUMA10.tsv"
+// "http://graphics8.nytimes.com/newsgraphics/2013/05/13/corporate-netAvg/ee84b0191a75f5c652087293ab0efd4710e21f94/PUMA10.tsv"
 d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
   var MONEYPYs = d3.nest()
       .key(function(d) { return d.income_group_level; })
@@ -188,7 +188,7 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
       .attr("cx", function(d) { return x(d.cx_avg); })
       .attr("cy", function(d) { return d.cy_avg - y(d.income_group_level) + y0(nameAll); })
       .attr("r", function(d) { return r(d.count); })
-      .style("fill", function(d) { return isNaN(d.weight ) ? null : z(d.TaxHigh); })
+      .style("fill", function(d) { return isNaN(d.weight ) ? null : z(d.netAvg); })
       // .style("fill", function(d) { return isNaN(d.weight ) ? null : z_bed(d.PUMA10); })
       .on("mouseover", mouseover)
       .on("mouseout", mouseout);
@@ -314,9 +314,9 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
             420);
         });
 
-    transition.select(".g-annotations-overall")
-        .each("start", function() { this.style.display = "block"; })
-        .style("opacity", 1);
+    // transition.select(".g-annotations-overall")
+    //     .each("start", function() { this.style.display = "block"; })
+    //     .style("opacity", 1);
 
     transition.select(".g-selected-notes")
         .style("opacity", 0)
@@ -376,9 +376,9 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
             height);
         });
 
-    transition.select(".g-annotations-overall")
-        .style("opacity", 0)
-        .each("end", function() { this.style.display = "none"; });
+    // transition.select(".g-annotations-overall")
+    //     .style("opacity", 0)
+    //     .each("end", function() { this.style.display = "none"; });
 
     transition.select(".g-selected-notes")
         .delay(250)
@@ -434,11 +434,11 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
         .datum(function(d) { return d.point; });
   }
 
-  function mouseoverAnnotation(re) {
-    var matches = MONEYPYsample.filter(function(d) { return re.test(d.name) || re.test(d.alias); }).classed("g-active", true);
-    if (d3.sum(matches, function(d) { return d.length; }) === 1) mouseover(matches.datum());
-    else tip.style("display", "none");
-  }
+  // function mouseoverAnnotation(re) {
+  //   var matches = MONEYPYsample.filter(function(d) { return re.test(d.name) || re.test(d.alias); }).classed("g-active", true);
+  //   if (d3.sum(matches, function(d) { return d.length; }) === 1) mouseover(matches.datum());
+  //   else tip.style("display", "none");
+  // }
 
   function mouseover(d) {
     MONEYPYsample.filter(function(c) { return c === d; }).classed("g-active", true);
@@ -455,10 +455,12 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
     // tip.select(".g-tip-title")
     //     .text(d.alias || d.name);
 
+    var formatMoney = d3.format("$,.2n");
+
     tipMetric.select(".g-tip-metric-value").text(function(name) {
       switch (name) {
         case "weight": return isNaN(d.weight ) ? "N.A." : formatPercent(d.weight );
-        case "Tax": return formatMoney(d.TaxHigh);
+        case "Tax": return formatMoney(d.netAvg);
         case "income": return d.income_group_level;
         case "PUMA10": return d.PUMA10;      
       }
@@ -580,9 +582,9 @@ function yAxisWrap(g) {
       });
 }
 
-function TaxHigh(d) {
-  return d.TaxHigh;
-}
+// function netAvg(d) {
+//   return d.netAvg;
+// }
 
 function count(d) {
   return d.count;
@@ -595,11 +597,11 @@ function normalize(weighted_variable, totalCount) {
 function type(d) {
   d.income_group_level = d.income_group_level;
   d.x = +d.cx_avg;
-  d.y = +d.cy_avg;
-  d.TaxHigh = +d.netAvg;
+  d.y = +d.cy_avg_sub;
+  d.netAvg = +d.netAvg;
   d.PUMA10 = d.PUMA10;
   // squash y range when plotting for sub
-  d.y /= 1.8;
+  d.y *=1.1;
   d.cx_avg = +d.cx_avg;
   d.cy_avg = +d.cy_avg;
   d.cr = +d.cr;
