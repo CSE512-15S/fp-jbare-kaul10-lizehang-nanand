@@ -167,9 +167,9 @@
       });
      
       //THEN figure out what to do when an area of the map is clicked
-      function clicked(pumaClicked) {
+      function clicked(d) {
  
-        //console.log(pumaClicked);
+        //console.log(d);
  
         d3.selectAll(".bar").remove();
         d3.selectAll("#bar-x-axis").remove();
@@ -180,7 +180,7 @@
         var formatCount = d3.format(",.0f");
  
         //Filter the data based on which PUMA was clicked
-        var rowsFiltered = rows.filter(function(d){ return d.puma == parseInt(pumaClicked.properties.puma); });
+        var rowsFiltered = rows.filter(function(d){ return d.puma; });
  
         var values = [];
         var i = 0;
@@ -236,7 +236,7 @@
 
                         d3.select('#menu').on('change',function(d){
                                                 //alert("Hello");
-                                                //console.log(pumaClicked);
+                                                //console.log(d);
  
         d3.selectAll(".bar").remove();
         d3.selectAll("#bar-x-axis").remove();
@@ -245,7 +245,7 @@
 var formatCount = d3.format(",.0f");
  
         //Filter the data based on which PUMA was clicked
-        var rowsFiltered = rows.filter(function(d){ return d.puma == parseInt(pumaClicked.properties.puma); });
+        var rowsFiltered = rows.filter(function(d){ return d.puma; });
  
         var values = [];
         var i = 0;
@@ -305,7 +305,7 @@ var formatCount = d3.format(",.0f");
  
  d3.select('#menu').on('change',function(d){
                                                 //alert("Hello");
-                                                //console.log(pumaClicked);
+                                                //console.log(d);
  
         d3.selectAll(".bar").remove();
         d3.selectAll("#bar-x-axis").remove();
@@ -314,7 +314,7 @@ var formatCount = d3.format(",.0f");
 var formatCount = d3.format(",.0f");
  
         //Filter the data based on which PUMA was clicked
-        var rowsFiltered = rows.filter(function(d){ return d.puma == parseInt(pumaClicked.properties.puma); });
+        var rowsFiltered = rows.filter(function(d){ return d.puma; });
  
         var values = [];
         var i = 0;
