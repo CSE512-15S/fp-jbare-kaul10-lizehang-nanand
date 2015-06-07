@@ -22,7 +22,7 @@ var barplot_generator = function(parsedDataset) {
     // }, function(error, rows) {
     //   parsedDataset = rows;
     // });
-
+    update(updateObject);
   };
 
   var update = function(updateObject) {

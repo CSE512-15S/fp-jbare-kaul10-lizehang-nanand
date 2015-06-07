@@ -38,7 +38,7 @@ d3.csv(pumsDataset, function(d) {
   var updateObject = {};
 
   function updateAll(obj) {
-    //map.redraw(obj);
+    map.redraw(obj);
     barplot.update(obj);
 
   }
