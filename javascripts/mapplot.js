@@ -1,18 +1,18 @@
 // Slider area
-var map_generator = function(){
+var map_generator = function(parsedDataset){
   //START by setting up overall layout of page
   var margin = {top: 10, right: 30, bottom: 30, left: 30},
       width = 800 - margin.left - margin.right,
-      height = 700 - margin.top - margin.bottom;
+      height = 550 - margin.top - margin.bottom;
       
   var centered;
 
-  var parsedDataset;
+  
 
   //THEN load the PUMS dataset and do everything else inside this
   //Loading the PUMS once like this is faster then loading it a bunch of different times
   //The "rows" variable contains all the imported PUMS data
-  var pumsDataset = "data/PUMS_less.csv";
+  
 
   // function to draw the map area (does it need any data from pums_less?)
   // input variable being the whole dataset
@@ -34,8 +34,8 @@ var map_generator = function(){
     var mapDataset = "data/pumas_wash_topo.json";
  
     var colorScale = d3.scale.linear()
-        .domain([0, 2])
-        .range(["white", "red"]);
+        .domain([-1000, 1000])
+        .range(["red", "blue"]);
    
     var projection = d3.geo.albers()
         .rotate([119, 0])
@@ -106,69 +106,6 @@ var map_generator = function(){
       //THEN figure out what to do when an area of the map is clicked
       function clicked(pumaClicked) {
         barplot.update(pumaClicked);
-        // //console.log(pumaClicked);
-
-        // d3.selectAll(".bar").remove();
-        // d3.selectAll("#bar-x-axis").remove();
-    
-        // //document.getElementById("menu").style.visibility="visible"; 
-
-        // // A formatter for counts.
-        // var formatCount = d3.format(",.0f");
-
-        // //Filter the data based on which PUMA was clicked
-        // var rowsFiltered = rows.filter(function(d){ return d.puma == parseInt(pumaClicked.properties.puma); });
-
-        // var values = [];
-        // var i = 0;
-        // for (i = 0; i < rowsFiltered.length; i++) {
-        //   values.push(rowsFiltered[i].netBest);
-        // }
-
-        // var domain = d3.extent(values);
-        // domain[0] = 1000 * Math.floor(domain[0]/1000);
-        // domain[1] = 1000 * Math.ceil(domain[1]/1000);
-
-        // var x = d3.scale.linear()
-        //   .domain(domain)
-        //   .range([0, detailWidth]);
-
-        // // Generate a histogram using uniformly-spaced bins.
-        // var data = d3.layout.histogram()
-        //     .bins(x.ticks(80))
-        //     (values);
-
-
-        // var y = d3.scale.linear()
-        //     .domain([0, d3.max(data, function(d) { 
-        //       return d.y; 
-        //     })])
-        //     .range([detailHeight, 0]);
-
-        // var xAxis = d3.svg.axis()
-        //     .scale(x)
-        //     .orient("bottom");
-
-        // var bar = detail.selectAll(".bar")
-        //     .data(data)
-        //     .enter().append("g")
-        //     .attr("class", "bar")
-        //     .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
-
-        // //console.log(d3.extent(values) + " " + data[0].dx + " " + x(data[0].dx));
-
-        // bar.append("rect")
-        //     .attr("x", 1)
-        //     .attr("width", 4)//x(data[0].dx) - 1)
-        //     .attr("height", function(d) { 
-        //       return detailHeight - y(d.y); 
-        //     });
-
-        // detail.append("g")
-        //     .attr("class", "x axis")
-        //     .attr("id", "bar-x-axis")
-        //     .attr("transform", "translate(0," + detailHeight + ")")
-        //     .call(xAxis);
 
       }
   };
@@ -179,27 +116,21 @@ var map_generator = function(){
   var update_view = function(area){
     current_area = area;   
     // update the bubble plot (whenever update view, call this)
-    bubble.update(area);
+    //bubble.update(area);
   };
 
   // function to initiate 
   var init = function(){
-      d3.csv(pumsDataset, function(d) {
-        return {
-          puma: +d.PUMA10,
-          netBest: +d.netBest
-        };
-      }, function(error, rows) {
-        parsedDataset = rows;
-        draw(rows);
-      });
+      draw(parsedDataset);
   };
 
   // function to redraw brush
   var redraw = function(){
-    d3.select("div#map svg").remove();
+    d3.select("#map_svg").remove();
+    d3.select("div#map").append("svg")
+        .attr("id", "map_svg");
     //initCanvasSize();
-    draw(dataset);
+    draw(parsedDataset);
     // console.log(current_range);
     update_view(current_area);
     barplot.init;
@@ -208,6 +139,6 @@ var map_generator = function(){
   return {
     init: init,
     redraw: redraw,
-    dataset: function() { return dataset; }
+    dataset: function() { return parsedDataset; }
   };
 }

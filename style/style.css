@@ -11,6 +11,10 @@ svg {
 	font-family: "Arial", Arial;
 }
 
+.selectFilters {
+  float: left;
+}
+
 #selectionboxes {
   /*position: absolute;*/
   width: auto;

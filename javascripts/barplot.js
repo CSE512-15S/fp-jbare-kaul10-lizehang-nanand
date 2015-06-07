@@ -1,10 +1,8 @@
-var barplot_generator = function() {
+var barplot_generator = function(parsedDataset) {
   
-  var parsedDataset;
-  var pumsDataset = "data/PUMS_less.csv";
   var margin = {top: 10, right: 30, bottom: 30, left: 30},
-      width = 400 - margin.left - margin.right,
-      height = 400 - margin.top - margin.bottom;
+      width = 500 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
 
   var detail = d3.select("#barplot_svg")
         .attr("width", width + margin.left + margin.right)
@@ -16,14 +14,14 @@ var barplot_generator = function() {
         .attr("height", height);
 
   var init = function() {
-    d3.csv(pumsDataset, function(d) {
-      return {
-        puma: +d.PUMA10,
-        netBest: +d.netBest
-      };
-    }, function(error, rows) {
-      parsedDataset = rows;
-    });
+    // d3.csv(pumsDataset, function(d) {
+    //   return {
+    //     puma: +d.PUMA10,
+    //     netBest: +d.netBest
+    //   };
+    // }, function(error, rows) {
+    //   parsedDataset = rows;
+    // });
 
   };
 

@@ -8,19 +8,29 @@
 <h1>Carbon Tax Statewide Impact Visualization</h1>
 <h2>Some description</h2>
 <div id="selectionboxes">
-  <p id="dimensionsHeader">Select the case to be displayed:</p>
-  <select id="dimensions" onchange="SelectDimension()">
-    <option value="best">Best Case</option>
-    <option value="worst">Worst Case</option>
-    <option value="average">Average Case</option>
+  <span id="dimensionsHeader" class="selectFilters">Map coloring variable:&nbsp;&nbsp;</span>
+  <select id="mapColoring" onchange="SelectDimension()" class="selectFilters">
+    <option value="best">Net best</option>
+    <option value="average">Net average</option>
+    <option value="worst">Net worst</option>
   </select>
 
-  <br/><br/>
+  <span id="dimensionsHeader" class="selectFilters">&nbsp;&nbsp;Histogram variable:&nbsp;&nbsp;</span>
+  <select id="histogramVariable" onchange="SelectDimension()" class="selectFilters">
+    <option value="best">Net best</option>
+    <option value="average">Net average</option>
+    <option value="worst">Net worst</option>
+  </select>
+
+  <span id="dimensionsHeader" class="selectFilters">&nbsp;&nbsp;Income filter:&nbsp;&nbsp;</span>
+  <div id = "temp" class = "selectFilters">
+
+  </div>
+  <br>
 
 </div>
-<p></p>
 
-
+<p> </p>
 
 <div class="container">
 	<div id="map">
@@ -34,7 +44,7 @@
 
 <div class="container">
 	<div id="barplot">
-		<h3><center>Net tax in area selected</center></h3>
+		<!-- <h3><center>Net tax in area selected</center></h3> -->
 		<svg id="barplot_svg">
 		</svg>
 	</div>
