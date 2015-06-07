@@ -10,7 +10,7 @@
 <div id="selectionboxes">
   <table style="width:100%">
     <tr>
-      <td><span id="dimensionsHeader" class="selectFilters">Variable selector:&nbsp;&nbsp;</span></td>
+      <td><span id="dimensionsHeader" class="selectFilters">Household financial impact selector:&nbsp;&nbsp;</span></td>
       <td><span  class="selectFilters">&nbsp;&nbsp;Income filter:&nbsp;&nbsp;</span></td>    
       <td><span  class="selectFilters">&nbsp;&nbsp;Number of dependents filter:&nbsp;&nbsp;</span></td>
       <td><span  class="selectFilters">&nbsp;&nbsp;Bedrooms filter:&nbsp;&nbsp;</span></td>
@@ -18,10 +18,25 @@
     </tr>
     <tr>
       <td>
-        <select id="mapColoring" onchange="SelectDimension()" class="selectFilters">
-          <option value="best">Net best</option>
+        <select id="variableSelector" onchange="SelectDimension()" class="selectFilters">
           <option value="average">Net average</option>
+          <option value="best">Net best</option>          
           <option value="worst">Net worst</option>
+
+          <option value="averageHome">Home energy average</option>
+          <option value="bestHome">Home energy best</option>          
+          <option value="worstHome">Home energy worst</option>
+
+          <option value="averageElec">Electricity average</option>
+          <option value="bestElec">Electricity best</option>          
+          <option value="worstElec">Electricity worst</option>
+
+          <option value="natGas">Natural gas</option>
+          <option value="fuelOil">Fuel oil</option>
+          <option value="air">Air travel</option>
+          <option value="gas">Gasoline</option>
+          <option value="wfr">Working Families Rebate</option>
+          <option value="salesTax">Sales tax savings</option>
         </select>
       </td>
       <td>

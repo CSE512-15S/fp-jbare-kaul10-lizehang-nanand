@@ -120,19 +120,19 @@ var map_generator = function(parsedDataset){
   };
 
   // function to initiate 
-  var init = function(){
-      draw(parsedDataset);
+  var init = function(updateObject){
+      draw(updateObject);
   };
 
   // function to redraw brush
-  var redraw = function(){
+  var redraw = function(updateObject){
     d3.select("#map_svg").remove();
     d3.select("div#map").append("svg")
         .attr("id", "map_svg");
     //initCanvasSize();
-    draw(parsedDataset);
+    draw(updateObject);
     // console.log(current_range);
-    update_view(current_area);
+    //update_view(current_area);
     barplot.init;
   };
 

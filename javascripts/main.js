@@ -1,78 +1,148 @@
 var map;
 
-// $(document).ready(function(){
-  var pumsDataset = "data/PUMS_less.csv";
-  d3.csv(pumsDataset, function(d) {
-    return {
-      puma: +d.PUMA10,
-      netBest: +d.netBest
-    };
-  }, function(error, parsedDataset) {
-    bubble = bubble_generator();
-    map = map_generator(parsedDataset);
-    barplot = barplot_generator(parsedDataset);
+var pumsDataset = "data/PUMS_less.csv";
+d3.csv(pumsDataset, function(d) {
+  return {
+    income: +d.FINCP,
+    dependents: +d.NOC,
+    bedrooms: +d.BDSP,
+    vehicles: +d.VEH,
+    puma: +d.PUMA10,
+    netBest: +d.netBest
+  };
+}, function(error, parsedDataset) {
+  bubble = bubble_generator();
+  map = map_generator(parsedDataset);
+  barplot = barplot_generator(parsedDataset);
+  
+  var updateObject = {};
+
+  document.getElementById("variableSelector").onchange=function(){
     
-    SelectDimension();
-   
-    bubble.init(-1);
-    map.init();
-    barplot.init();
+    updateObject["variable"] = document.getElementById("variableSelector").value;
+    map.redraw(updateObject);
+  };
 
-    document.getElementById("mapColoring").onchange=function(){
-      map.redraw();
-    };
+  // document.getElementById("histogramVariable").onchange=function(){
+  //   barplot.update();
+  // };
 
-    // document.getElementById("histogramVariable").onchange=function(){
-    //   barplot.update();
-    // };
+  var barmargin = {top: 5, right: 30, bottom: 0, left: 30},
+      barwidth = 200,
+      barheight = 20;
 
-    function build_bar(selector, axis, brush)  {
-      var svg = d3.select(selector)
-        .append("svg")
-        .attr("width", barwidth + barmargin.left + barmargin.right)
-        .attr("height", barheight + barmargin.top + barmargin.bottom)
-        .append("g")
-          .attr("transform", "translate(" + barmargin.left + "," + barmargin.top + ")");
-      svg.append("g")
-        .attr("class", "x axis")
-        .call(axis);
-      svg.append("g")
-        .attr("class", "brush")
-        .call(brush)
-        .selectAll("rect")
-        .attr("height", barheight);
-      return svg;
-    }
+  function build_bar(selector, axis, brush)  {
+    var svg = d3.select(selector)
+      .append("svg")
+      .attr("width", barwidth + barmargin.left + barmargin.right)
+      .attr("height", barheight + barmargin.top + barmargin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + barmargin.left + "," + barmargin.top + ")");
+    svg.append("g")
+      .attr("class", "x axis")
+      .call(axis);
+    svg.append("g")
+      .attr("class", "brush")
+      .call(brush)
+      .selectAll("rect")
+      .attr("height", barheight);
+    return svg;
+  }
 
-    function temp_brushed()
-    {
-      console.log("brushed");
-    }
+  // function income_brushed()
+  // {
+  //   updateObject["income"] = income_brush.extent();
+  //   map.redraw(updateObject);
+  // }
 
-    var barmargin = {top: 5, right: 10, bottom: 0, left: 10},
-        barwidth = 200,
-        barheight = 20;
-    var temp_selection = [30, 95];
-    var temp_scale = d3.scale.linear()
-      .domain(temp_selection)
+  var brushList = ["income", "dependents", "bedrooms", "vehicles"];
+  var variable_extent = [];
+  var variable_scale = [];
+  var variable_brush = [];
+  var variable_brushed = [];
+  var variable_axis = [];
+
+  function income_brushed() {
+    updateObject["income"] = variable_brush[0].extent();
+    //console.log(updateObject);
+    map.redraw(updateObject);
+  }
+
+  function dependents_brushed() {
+    updateObject["dependents"] = variable_brush[1].extent();
+    //console.log(updateObject);
+    map.redraw(updateObject);
+  }
+
+  function bedrooms_brushed() {
+    updateObject["bedrooms"] = variable_brush[2].extent();
+    //console.log(updateObject);
+    map.redraw(updateObject);
+  }
+
+  function vehicles_brushed() {
+    updateObject["vehicles"] = variable_brush[3].extent();
+    //console.log(updateObject);
+    map.redraw(updateObject);
+  }
+
+  for (var i = 0; i < brushList.length; i++) {
+    variable_extent[i] = d3.extent(parsedDataset, function(d) { 
+      if (i == 0) {
+        return d.income; 
+      } else if (i == 1) {
+        return d.dependents;
+      }  else if (i == 2) {
+        return d.bedrooms;
+      } else {
+        return d.vehicles;
+      }
+    });
+    //console.log(income_selection);
+    variable_scale[i] = d3.scale.linear()
+      .domain(variable_extent[i])
       .range([0,barwidth]);
 
-    var temp_brush = d3.svg.brush()
-      .x(temp_scale)
-      .on("brush", temp_brushed);
-    var temp_axis = d3.svg.axis()
-      .scale(temp_scale)
-      .orient("bottom")
-      .tickValues([30, 43, 56, 69, 82, 95]);
-    build_bar("#income", temp_axis, temp_brush);
-    build_bar("#dependents", temp_axis, temp_brush);
-    build_bar("#bedrooms", temp_axis, temp_brush);
-    build_bar("#vehicles ", temp_axis, temp_brush);
-  });
-  
+    if (i == 0) {
+      variable_brush[i] = d3.svg.brush()
+      .x(variable_scale[i])
+      .on("brush", income_brushed);
+    } else if (i == 1) {
+      variable_brush[i] = d3.svg.brush()
+      .x(variable_scale[i])
+      .on("brush", dependents_brushed);
+    }  else if (i == 2) {
+      variable_brush[i] = d3.svg.brush()
+      .x(variable_scale[i])
+      .on("brush", bedrooms_brushed);
+    } else {
+      variable_brush[i] = d3.svg.brush()
+      .x(variable_scale[i])
+      .on("brush", vehicles_brushed);
+    }
+    
 
-  //console.log(barplot);
-// });
+    variable_axis[i] = d3.svg.axis()
+      .scale(variable_scale[i])
+      .orient("bottom")
+      .tickValues(variable_extent[i]);
+      // .ticks(3)
+      // .tickFormat(d3.format(",.0f"));
+
+
+    build_bar("#" + brushList[i], variable_axis[i], variable_brush[i]);
+    // build_bar("#dependents", dependents_axis, dependents_brush);
+    // build_bar("#bedrooms", bedrooms_axis, bedrooms_brush);
+    // build_bar("#vehicles", vehicles_axis, vehicles_brush);
+  }
+
+
+  SelectDimension();
+   
+  bubble.init(-1);
+  map.init(updateObject);
+  barplot.init();
+});
 
 
 
