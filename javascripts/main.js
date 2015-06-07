@@ -22,9 +22,9 @@ var map;
       map.redraw();
     };
 
-    document.getElementById("histogramVariable").onchange=function(){
-      barplot.update();
-    };
+    // document.getElementById("histogramVariable").onchange=function(){
+    //   barplot.update();
+    // };
 
     function build_bar(selector, axis, brush)  {
       var svg = d3.select(selector)
@@ -43,7 +43,7 @@ var map;
         .attr("height", barheight);
       return svg;
     }
-    
+
     function temp_brushed()
     {
       console.log("brushed");
@@ -64,7 +64,10 @@ var map;
       .scale(temp_scale)
       .orient("bottom")
       .tickValues([30, 43, 56, 69, 82, 95]);
-    build_bar("#temp", temp_axis, temp_brush);
+    build_bar("#income", temp_axis, temp_brush);
+    build_bar("#dependents", temp_axis, temp_brush);
+    build_bar("#bedrooms", temp_axis, temp_brush);
+    build_bar("#vehicles ", temp_axis, temp_brush);
   });
   
 

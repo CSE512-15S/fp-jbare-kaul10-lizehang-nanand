@@ -8,7 +8,45 @@
 <h1>Carbon Tax Statewide Impact Visualization</h1>
 <h2>Some description</h2>
 <div id="selectionboxes">
-  <span id="dimensionsHeader" class="selectFilters">Map coloring variable:&nbsp;&nbsp;</span>
+  <table style="width:100%">
+    <tr>
+      <td><span id="dimensionsHeader" class="selectFilters">Variable selector:&nbsp;&nbsp;</span></td>
+      <td><span  class="selectFilters">&nbsp;&nbsp;Income filter:&nbsp;&nbsp;</span></td>    
+      <td><span  class="selectFilters">&nbsp;&nbsp;Number of dependents filter:&nbsp;&nbsp;</span></td>
+      <td><span  class="selectFilters">&nbsp;&nbsp;Bedrooms filter:&nbsp;&nbsp;</span></td>
+      <td><span  class="selectFilters">&nbsp;&nbsp;Number of vehicles filter:&nbsp;&nbsp;</span></td>
+    </tr>
+    <tr>
+      <td>
+        <select id="mapColoring" onchange="SelectDimension()" class="selectFilters">
+          <option value="best">Net best</option>
+          <option value="average">Net average</option>
+          <option value="worst">Net worst</option>
+        </select>
+      </td>
+      <td>
+        <div id = "income" class = "selectFilters">
+
+        </div>
+      </td>    
+      <td>
+        <div id = "dependents" class = "selectFilters">
+
+        </div>
+      </td>  
+      <td>
+        <div id = "bedrooms" class = "selectFilters">
+
+        </div>
+      </td> 
+      <td>
+        <div id = "vehicles" class = "selectFilters">
+
+        </div>
+      </td>
+    </tr>
+  </table>
+  <!-- <span id="dimensionsHeader" class="selectFilters">Variable selector:&nbsp;&nbsp;</span>
   <select id="mapColoring" onchange="SelectDimension()" class="selectFilters">
     <option value="best">Net best</option>
     <option value="average">Net average</option>
@@ -22,10 +60,25 @@
     <option value="worst">Net worst</option>
   </select>
 
-  <span id="dimensionsHeader" class="selectFilters">&nbsp;&nbsp;Income filter:&nbsp;&nbsp;</span>
-  <div id = "temp" class = "selectFilters">
+  <span  class="selectFilters">&nbsp;&nbsp;Income filter:&nbsp;&nbsp;</span>
+  <div id = "income" class = "selectFilters">
 
   </div>
+
+  <span  class="selectFilters">&nbsp;&nbsp;Number of dependents filter:&nbsp;&nbsp;</span>
+  <div id = "dependents" class = "selectFilters">
+
+  </div>
+
+  <span  class="selectFilters">&nbsp;&nbsp;Bedrooms filter:&nbsp;&nbsp;</span>
+  <div id = "bedrooms" class = "selectFilters">
+
+  </div>
+
+  <span  class="selectFilters">&nbsp;&nbsp;Number of vehicles filter:&nbsp;&nbsp;</span>
+  <div id = "vehicles" class = "selectFilters">
+
+  </div> -->
   <br>
 
 </div>
@@ -50,11 +103,11 @@
 	</div>
 </div>
 
-<div class="container" padding="0px">
+<!-- <div class="container" padding="0px">
   <div id="bubble">
     <svg id="bubble_svg"></svg>
   </div>
-</div>
+</div> -->
 
 <div class="g-graphic">
   <!-- <div class="g-search">
