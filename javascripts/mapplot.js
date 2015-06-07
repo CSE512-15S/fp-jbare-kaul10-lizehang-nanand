@@ -16,7 +16,7 @@ var map_generator = function(parsedDataset){
 
   // function to draw the map area (does it need any data from pums_less?)
   // input variable being the whole dataset
-  var draw = function(){
+  var draw = function(updateObject){
     var map = d3.select("#map_svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
@@ -105,7 +105,8 @@ var map_generator = function(parsedDataset){
       
       //THEN figure out what to do when an area of the map is clicked
       function clicked(pumaClicked) {
-        barplot.update(pumaClicked);
+        updateObject.area = pumaClicked.properties.puma;
+        barplot.update(updateObject);
 
       }
   };

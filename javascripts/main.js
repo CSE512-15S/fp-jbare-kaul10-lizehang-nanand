@@ -8,7 +8,27 @@ d3.csv(pumsDataset, function(d) {
     bedrooms: +d.BDSP,
     vehicles: +d.VEH,
     puma: +d.PUMA10,
-    netBest: +d.netBest
+
+    average: +d.netAvg,
+    best: +d.netBest,
+    worst: +d.netWorst, 
+
+    averageHome: +d.homeEnergyAvg,
+    bestHome: +d.homeEnergyBest,      
+    worstHome: +d.homeEnergyWorst,
+
+    averageElec: +d.elecTaxesAvg,
+    bestElec: +d.elecTaxesBest,         
+    worstElec: +d.elecTaxesWorst,
+
+    natGas: +d.natGasTaxes,
+    fuelOil: +d.fuelOilTaxes,
+    air: +d.airTaxes,
+    gas: +d.gasTaxes,
+    wfr: +d.wfr,
+    salesTax: +d.salesTaxSavings
+
+    
   };
 }, function(error, parsedDataset) {
   bubble = bubble_generator();
@@ -17,10 +37,16 @@ d3.csv(pumsDataset, function(d) {
   
   var updateObject = {};
 
+  function updateAll(obj) {
+    //map.redraw(obj);
+    barplot.update(obj);
+
+  }
+
   document.getElementById("variableSelector").onchange=function(){
     
     updateObject["variable"] = document.getElementById("variableSelector").value;
-    map.redraw(updateObject);
+    updateAll(updateObject);
   };
 
   // document.getElementById("histogramVariable").onchange=function(){
@@ -65,25 +91,25 @@ d3.csv(pumsDataset, function(d) {
   function income_brushed() {
     updateObject["income"] = variable_brush[0].extent();
     //console.log(updateObject);
-    map.redraw(updateObject);
+    updateAll(updateObject);
   }
 
   function dependents_brushed() {
     updateObject["dependents"] = variable_brush[1].extent();
     //console.log(updateObject);
-    map.redraw(updateObject);
+    updateAll(updateObject);
   }
 
   function bedrooms_brushed() {
     updateObject["bedrooms"] = variable_brush[2].extent();
     //console.log(updateObject);
-    map.redraw(updateObject);
+    updateAll(updateObject);
   }
 
   function vehicles_brushed() {
     updateObject["vehicles"] = variable_brush[3].extent();
     //console.log(updateObject);
-    map.redraw(updateObject);
+    updateAll(updateObject);
   }
 
   for (var i = 0; i < brushList.length; i++) {
@@ -120,6 +146,8 @@ d3.csv(pumsDataset, function(d) {
       .x(variable_scale[i])
       .on("brush", vehicles_brushed);
     }
+
+    variable_brush[i] = variable_brush[i].extent(variable_extent[i]);
     
 
     variable_axis[i] = d3.svg.axis()
@@ -134,14 +162,20 @@ d3.csv(pumsDataset, function(d) {
     // build_bar("#dependents", dependents_axis, dependents_brush);
     // build_bar("#bedrooms", bedrooms_axis, bedrooms_brush);
     // build_bar("#vehicles", vehicles_axis, vehicles_brush);
+
+    updateObject[brushList[i]] = variable_brush[i].extent();
   }
 
+  updateObject["variable"] = document.getElementById("variableSelector").value;
+  updateObject["area"] = -1;
+
+  console.log(updateObject);
 
   SelectDimension();
-   
+
   bubble.init(-1);
   map.init(updateObject);
-  barplot.init();
+  barplot.init(updateObject);
 });
 
 
