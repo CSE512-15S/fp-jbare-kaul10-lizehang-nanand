@@ -159,49 +159,46 @@ var map_generator = function(parsedDataset){
       //THEN figure out what to do when an area of the map is clicked
       function clicked(obj,d) {
         barplot.update(obj);
-		//console.log(obj);
-		var x, y, k;
-         
-          if (d && centered !== d) {
-			 if(obj.area > 11000){
+      	//console.log(obj);
+      	var x, y, k;
+       
+        if (d && centered !== d) {
+    		  if(obj.area > 11000){
 
-			 var centroid = path.centroid(d);
-            x = centroid[0];
-            y = centroid[1];
-            k = 5;
-            centered = d;
-				 
-				 
-			 }
-			 else if(obj.area > 10500 && obj.area <=11000){
-				 
-				 
-			 var centroid = path.centroid(d);
-            x = centroid[0];
-            y = centroid[1];
-            k = 2.6;
-            centered = d;
-				 
-				 
-			 }
+      		  var centroid = path.centroid(d);
+                x = centroid[0];
+                y = centroid[1];
+                k = 5;
+                centered = d;
+    			 
+    			 
+  		    } else if(obj.area > 10500 && obj.area <=11000){
 			 
-			 else if(obj.area <=10500){
-				 
-				 
-			 var centroid = path.centroid(d);
-            x = centroid[0];
-            y = centroid[1];
-            k = 2;
-            centered = d;
-				 
-				 
-			 }
-          } else {
-            x = width / 2;
-            y = height / 2;
-            k = 1;
-            centered = null;
-          }
+			 
+      		  var centroid = path.centroid(d);
+                x = centroid[0];
+                y = centroid[1];
+                k = 2.6;
+                centered = d;
+			 
+			 
+		      } else if(obj.area <=10500){
+			 
+			 
+      		  var centroid = path.centroid(d);
+                x = centroid[0];
+                y = centroid[1];
+                k = 2;
+                centered = d;
+      			 
+      			 
+      		}
+        } else {
+          x = width / 2;
+          y = height / 2;
+          k = 1;
+          centered = null;
+        }
          
           tooltipGroup.selectAll("path")
               .classed("active", centered && function(d) { return d === centered; });
