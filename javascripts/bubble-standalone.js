@@ -1,6 +1,6 @@
 
 var margin = {top: 20, right: 95, bottom: 10, left: 125},
-    width = 970 - margin.left ,
+    width = 900 - margin.left ,
     height,
     tickExtension = 20; // extend grid lines beyond scale range
 
@@ -13,32 +13,33 @@ var formatPercent = d3.format(".2%"),
 var nameAll = "Households";
 
 var x = d3.scale.linear()
-    .domain([-200, 1000])
+    .domain([-1000, 1000])
     .rangeRound([0, width])
     .clamp(true)
     .nice();
 
 var y = d3.scale.ordinal();
+var ynew = d3.scale.ordinal();
 
 var y0 = d3.scale.ordinal()
     .domain([nameAll])
     .range([150]);
 
 var r = d3.scale.sqrt()
-    .domain([0, 20])
+    .domain([0, 10])
     .range([0, 1]);
 
 var z = d3.scale.threshold()
-    .domain([0, 200, 400, 600, 800, 1000])
+    .domain([-500, -200, 0, 200, 500])
     .range(["#b35806", "#f1a340", "#fee0b6", "#d8daeb", "#998ec3", "#542788"].reverse());
 // var z_bed = d3.scale.threshold()
 //     .domain([1, 2, 3, 4, 5, 6, 7])
-//     .range(["#b35806", "#f1a340", "#fee0b6", "#d8daeb", "#fd8d3c", "#998ec3", "#542788"].reverse());
+//     .range(["#b35806", "#f1a340", "#fee0b6", "#d8daeb", "#fd8d3c", "#998ec3", ].reverse());
 
 var xAxis = d3.svg.axis()
     .scale(x)
     .orient("top")
-    .ticks(6)
+    .ticks(9)
     .tickFormat(formatNumber);
 
 var yAxis = d3.svg.axis()
@@ -91,12 +92,18 @@ titleX.append("tspan")
     .attr("dy", "1em")
     .text("per year");
 
-// "http://graphics8.nytimes.com/newsgraphics/2013/05/13/corporate-netAvg/ee84b0191a75f5c652087293ab0efd4710e21f94/PUMA10.tsv"
+
 d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
   var MONEYPYs = d3.nest()
       .key(function(d) { return d.income_group_level; })
       .entries(tabdata);
 
+  var BYPUMA = d3.nest()
+      .key(function(d) { return d.PUMA10; })
+      .entries(tabdata);
+  // var domain = [0, 500]//d3.extent(MONEYPYs.netAvg);
+
+  // x.domain(domain);
   // Compute the overall rate for all data.
   // var overallRate = rate(d3.sum(PUMA10, count), d3.sum(PUMA10, count));
   var totalCount = d3.sum(tabdata, count);
@@ -108,7 +115,7 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
 
   // Sort MONEYPYs by ascending levels.
   MONEYPYs.sort(function(a, b) {
-    return a.values[0].income_group_level  - b.values[0].income_group_level ;
+    return a.values[0].income_level_num   - b.values[0].income_level_num  ;
   });
 
   // Compute the weight  for each sample.
@@ -117,10 +124,13 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
   });
 
   height = 120 * MONEYPYs.length;
-
+  heightnew = 60 * BYPUMA.length;
   y
       .domain(MONEYPYs.map(function(d) { return d.key; }))
       .rangePoints([10, height], 1);
+  ynew
+      .domain(BYPUMA.map(function(d) { return d.key; }))
+      .rangePoints([10, heightnew], 1);    
 
   svg.append("g")
       .attr("class", "g-y g-axis g-y-axis-MONEYPY")
@@ -134,6 +144,17 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
       .style("text-anchor", "start");
 
   svg.append("g")
+      .attr("class", "g-y g-axis g-y-axis-BYPUMA")
+      .attr("transform", "translate(-" + tickExtension + ",0)")
+      .call(yAxis.scale(ynew))
+      .call(yAxisWrap)
+      .style("stroke-opacity", 0)
+      .style("fill-opacity", 0)
+    .selectAll(".tick text,.tick tspan")
+      .attr("x", -95)
+      .style("text-anchor", "start");    
+
+  svg.append("g")
       .attr("class", "g-y g-axis g-y-axis-overall")
       .attr("transform", "translate(-" + tickExtension + ",0)")
       .call(yAxis.scale(y0))
@@ -144,8 +165,8 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
     .enter().append("clipPath")
       .attr("id", function(d, i) { return "g-clip-sample-" + i; })
     .append("circle")
-      .attr("cx", function(d) { return d.cx_avg; })
-      .attr("cy", function(d) { return d.cy_avg - y0(nameAll); })
+      .attr("cx", function(d) { return d.cx_current; })
+      .attr("cy", function(d) { return d.cy_current - y0(nameAll); })
       .attr("r", function(d) { return r(d.count); });
 
   var gVoronoi = svg.append("g")
@@ -159,8 +180,8 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
       .on("mouseout", mouseout);
 
   gVoronoi.call(updateVoronoi,
-      function(d) { return d.cx_avg; },
-      function(d) { return d.cy_avg + y0(nameAll); },
+      function(d) { return d.cx_current; },
+      function(d) { return d.cy_current + y0(nameAll); },
       420);
 
   var MONEYPY = svg.append("g")
@@ -185,8 +206,8 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
     .selectAll("circle")
       .data(function(d) { return d.values; })
     .enter().append("circle")
-      .attr("cx", function(d) { return x(d.cx_avg); })
-      .attr("cy", function(d) { return d.cy_avg - y(d.income_group_level) + y0(nameAll); })
+      .attr("cx", function(d) { return d.cx_current; })
+      .attr("cy", function(d) { return d.cy_current - y(d.income_group_level) + y0(nameAll); })
       .attr("r", function(d) { return r(d.count); })
       .style("fill", function(d) { return isNaN(d.weight ) ? null : z(d.netAvg); })
       // .style("fill", function(d) { return isNaN(d.weight ) ? null : z_bed(d.PUMA10); })
@@ -295,6 +316,7 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
     switch (currentView = view) {
       case "overall": return void transitionOverall();
       case "selected": return void transitionselected();
+      case "selected2": return void transitionselected_PUMA();
     }
   }
 
@@ -309,8 +331,8 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
         .attr("height", 420 + margin.top + margin.bottom)
         .each("end", function() {
           gVoronoi.call(updateVoronoi,
-            function(d) { return x(d.cx_avg); },
-            function(d) { return d.cy_avg + y0(nameAll); },
+            function(d) { return d.cx_current; },
+            function(d) { return d.cy_current + y0(nameAll); },
             420);
         });
 
@@ -323,6 +345,9 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
         .each("end", function() { this.style.display = "none"; });
 
     transition.selectAll(".g-y-axis-MONEYPY")
+        .style("stroke-opacity", 0)
+        .style("fill-opacity", 0);
+    transition.selectAll(".g-y-axis-BYPUMA")
         .style("stroke-opacity", 0)
         .style("fill-opacity", 0);
 
@@ -354,9 +379,9 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
         .attr("y", -106);
 
     transition.selectAll(".g-MONEYPY-sample circle")
-        .delay(function(d) { return d.cx_avg; })
-        .attr("cx", function(d) { return x(d.cx_avg); })
-        .attr("cy", function(d) { return d.cy_avg - y(d.income_group_level) + y0(nameAll); });
+        .delay(function(d) { return d.cx_current; })
+        .attr("cx", function(d) { return d.cx_current; })
+        .attr("cy", function(d) { return d.cy_current - y(d.income_group_level) + y0(nameAll); });
   }
 
   function transitionselected() {
@@ -371,7 +396,7 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
         .delay(720)
         .each("end", function() {
           gVoronoi.call(updateVoronoi,
-            function(d) { return x(d.x); },
+            function(d) { return d.x; },
             function(d) { return y(d.income_group_level) + d.y; },
             height);
         });
@@ -391,6 +416,9 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
         .style("fill-opacity", 1);
 
     transition.selectAll(".g-y-axis-overall")
+        .style("stroke-opacity", 0)
+        .style("fill-opacity", 0);
+    transition.selectAll(".g-y-axis-BYPUMA")
         .style("stroke-opacity", 0)
         .style("fill-opacity", 0);
 
@@ -417,10 +445,73 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
 
     transition.selectAll(".g-MONEYPY-sample circle")
         .delay(function(d) { return d.x; })
-        .attr("cx", function(d) { return x(d.x); })
+        .attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
   }
 
+  function transitionselected_PUMA() {
+    gVoronoi.style("display", "none");
+    var transition = d3.transition()
+        .duration(750);
+
+    transition.select("svg")
+        .attr("height", heightnew + margin.top + margin.bottom)
+      .transition()
+        .delay(720)
+        .each("end", function() {
+          gVoronoi.call(updateVoronoi,
+            function(d) { return d.x ; },
+            function(d) { return d.y+ ynew(d.PUMA10); },
+            heightnew);
+        });
+
+    transition.select(".g-annotations-overall")
+        .style("opacity", 0)
+        .each("end", function() { this.style.display = "none"; });
+
+    transition.select(".g-selected-notes")
+        .delay(250)
+        .each("start", function() { this.style.display = "block"; })
+        .style("opacity", 1);
+
+    transition.selectAll(".g-y-axis-BYPUMA,.g-MONEYPY-note")
+        .delay(250)
+        .style("stroke-opacity", 1)
+        .style("fill-opacity", 1);
+
+    transition.selectAll(".g-y-axis-overall")
+        .style("stroke-opacity", 0)
+        .style("fill-opacity", 0);
+    transition.selectAll(".g-y-axis-MONEYPY")
+        .style("stroke-opacity", 0)
+        .style("fill-opacity", 0);
+
+    var transitionOverall = transition.select(".g-overall-all")
+        .delay(x(totalCount))
+        .style("stroke-opacity", 0)
+        .style("fill-opacity", 0);
+
+    transitionOverall.select("line")
+        .attr("y2", heightnew - y0(nameAll));
+
+    var transitionMONEYPYOverall = transition.selectAll(".g-MONEYPY .g-overall")
+        .delay(function(d) { return x(d.weight ); })
+        .attr("transform", function(d) { return "translate(" + x(d.weight ) + ",0)"; })
+        .style("stroke-opacity", 1)
+        .style("fill-opacity", 1);
+
+    transitionMONEYPYOverall.select("line")
+        .attr("y1", -1000)
+        .attr("y2", +5000);
+
+    transitionMONEYPYOverall.select("text")
+        .attr("y", -31);
+
+    transition.selectAll(".g-MONEYPY-sample circle")
+        .delay(function(d) { return d.x; })
+        .attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y/3 - y(d.income_group_level) + ynew(d.PUMA10)  ; });
+  }
   function updateVoronoi(gVoronoi, x, y, height) {
     sampleClip
         .attr("cx", x)
@@ -444,8 +535,9 @@ d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
     MONEYPYsample.filter(function(c) { return c === d; }).classed("g-active", true);
 
     var dx, dy;
-    if (currentView === "overall") dx = x(d.cx_avg), dy = d.cy_avg + y0(nameAll);
-    else dx = x(d.x), dy = d.y + y(d.income_group_level);
+    if (currentView === "overall") dx = d.cx_current, dy = d.cy_current + y0(nameAll);
+    else if(currentView == "selected") dx = x(d.x), dy = d.y + y(d.income_group_level);
+    else dx = x(d.x), dy = d.y + ynew(d.PUMA10);
     dy -= 69, dx += 50; // margin fudge factors
 
     tip.style("display", null)
@@ -480,7 +572,7 @@ function renderChartKey(g) {
 
   // A position encoding for the key only.
   var x = d3.scale.linear()
-      .domain([-200, 1000])
+      .domain([-1000, 1000])
       .range([0, 240]);
 
   var xAxis = d3.svg.axis()
@@ -535,7 +627,7 @@ function renderChartKey(g) {
       .attr("transform", "translate(580,-7)");
 
   var gSizeInstance = gSize.selectAll("g")
-      .data([0.005, 0.01, 0.015, 0.02])
+      .data([0.001, 0.005, 0.01, 0.015])
     .enter().append("g")
       .attr("class", "g-MONEYPY");
 
@@ -595,15 +687,26 @@ function normalize(weighted_variable, totalCount) {
 }
 
 function type(d) {
-  d.income_group_level = d.income_group_level;
-  d.x = +d.cx_avg;
-  d.y = +d.cy_avg_sub;
+  d.income_group_level = d.income_level_name;
+  d.income_level_num  = +d.income_level_num ;
+  d.x = +d.cx_netAvg;
+  d.y = +d.cy_netAvg;
+  d.cx_current = +d.cx_netAvg;
+  d.cy_current = +d.cy_netAvg;
   d.netAvg = +d.netAvg;
+
+  // d.x = +d.cx_netBest;
+  // d.y = +d.cy_netBest;
+  // d.cx_current = +d.cx_netBest;
+  // d.cy_current = +d.cy_netBest;
+  // d.netAvg = +d.netBest;
+
   d.PUMA10 = d.PUMA10;
   // squash y range when plotting for sub
-  d.y *=1.1;
-  d.cx_avg = +d.cx_avg;
-  d.cy_avg = +d.cy_avg;
+  d.y /= 2.5;
+  d.x += 300;
+  d.cx_current += 300;
+  d.cy_current *= 1.1;
   d.cr = +d.cr;
   return d;
 }

@@ -12,6 +12,8 @@ var barplot_generator = function(parsedDataset) {
         .attr("id", "detailGroup")
         .attr("width", width)
         .attr("height", height);
+		
+		var tooltipGroup = detail.append("g");
 
   var init = function(updateObject) {
     // d3.csv(pumsDataset, function(d) {
@@ -70,7 +72,8 @@ var barplot_generator = function(parsedDataset) {
     var data = d3.layout.histogram()
         .bins(x.ticks(80))
         (values);
-
+    
+	
 
     var y = d3.scale.linear()
         .domain([0, d3.max(data, function(d) { 
@@ -99,13 +102,26 @@ var barplot_generator = function(parsedDataset) {
         .attr("width", 4)//x(data[0].dx) - 1)
         .attr("height", function(d) { 
           return height - y(d.y); 
-        });
+        }).on('mouseover', //tip.show
+            function(d) {
+              tip.show(d);
+              d3.select(this).style("fill-opacity", 1).style("cursor", "auto");
+              
+            }
+          )
+          .on('mouseout', function(d) {
+            //if (d.properties.puma != activePuma){
+              d3.select(this).style("fill-opacity", defaultOpacity).style("cursor", "auto");
+            //}
+            tip.hide(d);
+          });
 
     detail.append("g")
         .attr("class", "x axis")
         .attr("id", "bar-x-axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
+<<<<<<< HEAD
 
     detail.append("text")
         .attr("class", "x label")
@@ -113,6 +129,19 @@ var barplot_generator = function(parsedDataset) {
         .attr("x", 250)
         .attr("y", height + 30)
         .text("financial impact ($)");
+=======
+		
+			var tip = d3.tip()
+          .attr('class', 'd3-tip')
+          .offset([-10, 0])
+          .html(function(d) {
+            return "<strong style='color:white'>Number of People:</strong> <span style='color:white'>" + d.y +          
+            "</span><br><strong style='color:white'>Household Financial Impact:</strong> <span style='color:white'>" + d.x;
+          
+          });
+		  
+		  	tooltipGroup.call(tip);
+>>>>>>> 558496c48081d6ef6641f0302280b5d1fa6cc386
   };
 
   return {

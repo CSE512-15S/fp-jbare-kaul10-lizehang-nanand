@@ -142,7 +142,7 @@ var map_generator = function(parsedDataset){
               d3.select(this).style("stroke","yellow").style("stroke-width","3px");
               activePuma = d.properties.puma;
               updateObject.area = d.properties.puma;
-              clicked(updateObject);
+              clicked(updateObject,d);
             }
             
           });
@@ -152,8 +152,59 @@ var map_generator = function(parsedDataset){
       });
       
       //THEN figure out what to do when an area of the map is clicked
-      function clicked(obj) {
+      function clicked(obj,d) {
         barplot.update(obj);
+		//console.log(obj);
+		var x, y, k;
+         
+          if (d && centered !== d) {
+			 if(obj.area > 11000){
+
+			 var centroid = path.centroid(d);
+            x = centroid[0];
+            y = centroid[1];
+            k = 5;
+            centered = d;
+				 
+				 
+			 }
+			 else if(obj.area > 10500 && obj.area <=11000){
+				 
+				 
+			 var centroid = path.centroid(d);
+            x = centroid[0];
+            y = centroid[1];
+            k = 2.6;
+            centered = d;
+				 
+				 
+			 }
+			 
+			 else if(obj.area <=10500){
+				 
+				 
+			 var centroid = path.centroid(d);
+            x = centroid[0];
+            y = centroid[1];
+            k = 2;
+            centered = d;
+				 
+				 
+			 }
+          } else {
+            x = width / 2;
+            y = height / 2;
+            k = 1;
+            centered = null;
+          }
+         
+          tooltipGroup.selectAll("path")
+              .classed("active", centered && function(d) { return d === centered; });
+         
+          tooltipGroup.transition()
+              .duration(750)
+              .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+              .style("stroke-width", 1.5 / k + "px");
 
       }
   };
