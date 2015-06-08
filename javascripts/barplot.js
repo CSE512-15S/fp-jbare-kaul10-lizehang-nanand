@@ -1,6 +1,6 @@
 var barplot_generator = function(parsedDataset) {
   
-  var margin = {top: 10, right: 30, bottom: 30, left: 30},
+  var margin = {top: 10, right: 30, bottom: 50, left: 30},
       width = 500 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
 
@@ -12,6 +12,8 @@ var barplot_generator = function(parsedDataset) {
         .attr("id", "detailGroup")
         .attr("width", width)
         .attr("height", height);
+		
+		var tooltipGroup = detail.append("g");
 
   var init = function(updateObject) {
     // d3.csv(pumsDataset, function(d) {
@@ -30,6 +32,7 @@ var barplot_generator = function(parsedDataset) {
 
     d3.selectAll(".bar").remove();
     d3.selectAll("#bar-x-axis").remove();
+    d3.selectAll("#histogram_label").remove();
     
     //document.getElementById("menu").style.visibility="visible"; 
 
@@ -70,7 +73,8 @@ var barplot_generator = function(parsedDataset) {
     var data = d3.layout.histogram()
         .bins(x.ticks(80))
         (values);
-
+    
+	
 
     var y = d3.scale.linear()
         .domain([0, d3.max(data, function(d) { 
@@ -93,17 +97,51 @@ var barplot_generator = function(parsedDataset) {
     //console.log(d3.extent(values) + " " + data[0].dx + " " + x(data[0].dx));
 
     bar.append("rect")
+        // .transition()
+        // .duration(500)
         .attr("x", 1)
         .attr("width", 4)//x(data[0].dx) - 1)
         .attr("height", function(d) { 
           return height - y(d.y); 
-        });
+        }).on('mouseover', //tip.show
+            function(d) {
+              tip.show(d);
+              d3.select(this).style("fill-opacity", 1).style("cursor", "auto");
+              
+            }
+          )
+          .on('mouseout', function(d) {
+            //if (d.properties.puma != activePuma){
+              d3.select(this).style("fill-opacity", defaultOpacity).style("cursor", "auto");
+            //}
+            tip.hide(d);
+          });
 
     detail.append("g")
         .attr("class", "x axis")
         .attr("id", "bar-x-axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
+
+    detail.append("text")
+        .attr("class", "x label")
+        .attr("id", "histogram_label")
+        .attr("text-anchor", "middle")
+        .attr("x", 250)
+        .attr("y", height + 35)
+        .text("Financial impact ($)");
+		
+			var tip = d3.tip()
+          .attr('class', 'd3-tip')
+          .offset([-10, 0])
+          .html(function(d) {
+            return "<span style='color:white'>Number of sampled households:</span> <strong style='color:white;text-decoration: underline;font-size: 14px'>" + d.y +          
+            "</strong><br><span style='color:white'>Financial impact range for this bin:</span> <strong style='color:white;text-decoration: underline;font-size: 14px'> $" 
+            + d.x + " to $" + (d.x + d.dx) + "</strong>";
+          
+          });
+		  
+		  	tooltipGroup.call(tip);
   };
 
   return {
