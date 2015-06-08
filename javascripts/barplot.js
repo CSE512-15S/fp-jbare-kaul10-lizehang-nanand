@@ -13,7 +13,7 @@ var barplot_generator = function(parsedDataset) {
         .attr("width", width)
         .attr("height", height);
 
-  var init = function() {
+  var init = function(updateObject) {
     // d3.csv(pumsDataset, function(d) {
     //   return {
     //     puma: +d.PUMA10,
@@ -22,7 +22,7 @@ var barplot_generator = function(parsedDataset) {
     // }, function(error, rows) {
     //   parsedDataset = rows;
     // });
-
+    update(updateObject);
   };
 
   var update = function(updateObject) {
@@ -37,12 +37,25 @@ var barplot_generator = function(parsedDataset) {
     var formatCount = d3.format(",.0f");
 
     //Filter the data based on which PUMA was clicked
-    var rowsFiltered = parsedDataset.filter(function(d){ return d.puma == parseInt(updateObject.properties.puma); });
+    var rowsFiltered = parsedDataset.filter(function(d){ 
+      var include = true;
+
+      if (updateObject.area != -1) {
+        include = include && (d.puma == parseInt(updateObject.area)); 
+      }
+
+      include = include && (d.income > updateObject.income[0]) && (d.income < updateObject.income[1]);
+      include = include && (d.bedrooms > updateObject.bedrooms[0]) && (d.bedrooms < updateObject.bedrooms[1]);
+      include = include && (d.dependents > updateObject.dependents[0]) && (d.dependents < updateObject.dependents[1]);
+      include = include && (d.vehicles > updateObject.vehicles[0]) && (d.vehicles < updateObject.vehicles[1]);
+
+      return include;
+    });
 
     var values = [];
     var i = 0;
     for (i = 0; i < rowsFiltered.length; i++) {
-      values.push(rowsFiltered[i].netBest);
+      values.push(rowsFiltered[i][updateObject.variable]);
     }
 
     var domain = d3.extent(values);

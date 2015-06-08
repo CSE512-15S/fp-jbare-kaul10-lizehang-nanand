@@ -16,7 +16,7 @@ var map_generator = function(parsedDataset){
 
   // function to draw the map area (does it need any data from pums_less?)
   // input variable being the whole dataset
-  var draw = function(){
+  var draw = function(updateObject){
     var map = d3.select("#map_svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
@@ -32,10 +32,45 @@ var map_generator = function(parsedDataset){
 
     //THEN set up all the map stuff
     var mapDataset = "data/pumas_wash_topo.json";
- 
+    
+    var rowsFiltered = parsedDataset.filter(function(d){ 
+      var include = true;
+
+      include = include && (d.income > updateObject.income[0]) && (d.income < updateObject.income[1]);
+      include = include && (d.bedrooms > updateObject.bedrooms[0]) && (d.bedrooms < updateObject.bedrooms[1]);
+      include = include && (d.dependents > updateObject.dependents[0]) && (d.dependents < updateObject.dependents[1]);
+      include = include && (d.vehicles > updateObject.vehicles[0]) && (d.vehicles < updateObject.vehicles[1]);
+
+      return include;
+    });
+
+    var values = [];
+    var valuesByPuma = {};
+    var i = 0;
+    for (i = 0; i < rowsFiltered.length; i++) {
+      values.push(rowsFiltered[i][updateObject.variable]);
+
+      if (rowsFiltered[i].puma in valuesByPuma) {
+        valuesByPuma[rowsFiltered[i].puma].push(rowsFiltered[i][updateObject.variable]);
+      } else {
+        valuesByPuma[rowsFiltered[i].puma] = [rowsFiltered[i][updateObject.variable]];
+      }
+    }
+
+
+    var averagesByPuma = {};
+    var arrayOfAverages = [];
+    for (key in valuesByPuma) {
+      averagesByPuma[key] = d3.mean(valuesByPuma[key]);
+      arrayOfAverages.push(averagesByPuma[key]);
+    }
+
+    console.log(averagesByPuma);
+
+
     var colorScale = d3.scale.linear()
-        .domain([-1000, 1000])
-        .range(["red", "blue"]);
+        .domain(d3.extent(arrayOfAverages))
+        .range(["red", "white"]);
    
     var projection = d3.geo.albers()
         .rotate([119, 0])
@@ -74,7 +109,10 @@ var map_generator = function(parsedDataset){
           .attr("class", "pumaPath")
           .style("stroke","#ccc")
           .style("stroke-width", "1px")
-          .style("fill","gray")
+          // .style("fill","gray")
+          .style("fill", function(d) {
+            return colorScale(averagesByPuma[d.properties.puma]);
+          })
           .style("fill-opacity", defaultOpacity)
           .attr("id", function(d) {
             return "puma" + d.properties.puma;
@@ -87,16 +125,25 @@ var map_generator = function(parsedDataset){
             }
           )
           .on('mouseout', function(d) {
-            if (d.properties.puma != activePuma){
+            //if (d.properties.puma != activePuma){
               d3.select(this).style("fill-opacity", defaultOpacity).style("cursor", "auto");
-            }
+            //}
             tip.hide(d);
           })
           .on('click',function(d) {
-            d3.select("#puma" + activePuma).style("fill","gray").style("fill-opacity", defaultOpacity);
-            d3.select(this).style("fill","orange");
-            activePuma = d.properties.puma;
-            clicked(d);
+            if (activePuma == d.properties.puma) {
+              d3.select(this).style("stroke","#ccc").style("stroke-width","1px");//.style("fill-opacity", defaultOpacity);
+              activePuma = -1;
+              updateObject.area = -1;
+              clicked(updateObject);
+            } else {
+              d3.select("#puma" + activePuma).style("stroke","#ccc").style("stroke-width","1px");//.style("fill-opacity", defaultOpacity);
+              d3.select(this).style("stroke","yellow").style("stroke-width","3px");
+              activePuma = d.properties.puma;
+              updateObject.area = d.properties.puma;
+              clicked(updateObject,d);
+            }
+            
           });
 
         
@@ -104,8 +151,59 @@ var map_generator = function(parsedDataset){
       });
       
       //THEN figure out what to do when an area of the map is clicked
-      function clicked(pumaClicked) {
-        barplot.update(pumaClicked);
+      function clicked(obj,d) {
+        barplot.update(obj);
+		//console.log(obj);
+		var x, y, k;
+         
+          if (d && centered !== d) {
+			 if(obj.area > 11000){
+
+			 var centroid = path.centroid(d);
+            x = centroid[0];
+            y = centroid[1];
+            k = 5;
+            centered = d;
+				 
+				 
+			 }
+			 else if(obj.area > 10500 && obj.area <=11000){
+				 
+				 
+			 var centroid = path.centroid(d);
+            x = centroid[0];
+            y = centroid[1];
+            k = 2.6;
+            centered = d;
+				 
+				 
+			 }
+			 
+			 else if(obj.area <=10500){
+				 
+				 
+			 var centroid = path.centroid(d);
+            x = centroid[0];
+            y = centroid[1];
+            k = 2;
+            centered = d;
+				 
+				 
+			 }
+          } else {
+            x = width / 2;
+            y = height / 2;
+            k = 1;
+            centered = null;
+          }
+         
+          tooltipGroup.selectAll("path")
+              .classed("active", centered && function(d) { return d === centered; });
+         
+          tooltipGroup.transition()
+              .duration(750)
+              .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+              .style("stroke-width", 1.5 / k + "px");
 
       }
   };
