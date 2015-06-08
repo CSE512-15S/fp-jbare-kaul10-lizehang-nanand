@@ -112,6 +112,8 @@ d3.csv(pumsDataset, function(d) {
     updateAll(updateObject);
   }
 
+  var format = d3.format(",.0f");
+
   for (var i = 0; i < brushList.length; i++) {
     variable_extent[i] = d3.extent(parsedDataset, function(d) { 
       if (i == 0) {
@@ -154,6 +156,7 @@ d3.csv(pumsDataset, function(d) {
       .scale(variable_scale[i])
       .orient("bottom")
       .tickValues(variable_extent[i]);
+      
       // .ticks(3)
       // .tickFormat(d3.format(",.0f"));
 

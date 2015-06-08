@@ -1,6 +1,6 @@
 var barplot_generator = function(parsedDataset) {
   
-  var margin = {top: 10, right: 30, bottom: 30, left: 30},
+  var margin = {top: 10, right: 30, bottom: 50, left: 30},
       width = 500 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
 
@@ -93,6 +93,8 @@ var barplot_generator = function(parsedDataset) {
     //console.log(d3.extent(values) + " " + data[0].dx + " " + x(data[0].dx));
 
     bar.append("rect")
+        // .transition()
+        // .duration(500)
         .attr("x", 1)
         .attr("width", 4)//x(data[0].dx) - 1)
         .attr("height", function(d) { 
@@ -104,6 +106,13 @@ var barplot_generator = function(parsedDataset) {
         .attr("id", "bar-x-axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
+
+    detail.append("text")
+        .attr("class", "x label")
+        .attr("text-anchor", "end")
+        .attr("x", 250)
+        .attr("y", height + 30)
+        .text("financial impact ($)");
   };
 
   return {

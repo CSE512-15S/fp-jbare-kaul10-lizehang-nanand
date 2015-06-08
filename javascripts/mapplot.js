@@ -67,10 +67,11 @@ var map_generator = function(parsedDataset){
 
     console.log(averagesByPuma);
 
+    var averagesExtent = d3.extent(arrayOfAverages);
 
     var colorScale = d3.scale.linear()
-        .domain(d3.extent(arrayOfAverages))
-        .range(["red", "white"]);
+        .domain(averagesExtent)
+        .range(["red", "blue"]);
    
     var projection = d3.geo.albers()
         .rotate([119, 0])
@@ -94,7 +95,7 @@ var map_generator = function(parsedDataset){
           .offset([-10, 0])
           .html(function(d) {
             return "<strong style='color:white'>Name:</strong> <span style='color:white'>" + d.properties.name +          
-            "</span><br><strong style='color:white'>PUMA10:</strong> <span style='color:white'>" + d.properties.puma;
+            "</span><br><strong style='color:white'>PUMA:</strong> <span style='color:white'>" + d.properties.puma;
           
           });
 
