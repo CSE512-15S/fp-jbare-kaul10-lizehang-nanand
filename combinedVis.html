@@ -132,53 +132,47 @@
   </div>
 </div> -->
 
+
+<link rel="stylesheet" type="text/css" href="style/nytimes-color.css">
+<div class="container">
+  <div id="bubbleplot">
+
+<div class="g-content">
 <div class="g-graphic">
-  <!-- <div class="g-search">
-  <input type="text" placeholder="Find a sample or industry&hellip;">
-  <button style="display:none;" class="g-search-clear">X</button>
-  </div>
-   -->
-  <div class="g-buttons">
-    <button class="g-button g-active" data-view="overall">The Overall Picture</button>
-    <button class="g-button" data-view="MONEYPY">The View by Income</button>
-  </div>
+
+ <div class="g-buttons">
+<button class="g-button g-active" data-view="overall">The Overall Picture</button>
+<button class="g-button" data-view="selected">The View by Income</button>
+<button class="g-button" data-view="selected2">The View by PUMA Area</button>
 </div>
-
-
-<div class="g-notes"></div>
+  <svg id="bubble_svg">
+  </svg>
+  <svg id="bubble_key_svg">
+  </svg>
+</div>
+<div class="g-selected-notes"></div>
 <div class="g-tip" style="width:235px;height:130px;display:none;">
 <div class="g-tip-shadow"></div>
-<!-- <svg class="g-tip-box" width="180" height="437">
-<path transform="translate(75,141)" d="M0.5,-6.5l5,-5H74.5v-79H-74.5v79H-5Z"></path> -->
 </svg>
 <div class="g-tip-content">
 <div class="g-tip-title">Sample Mean</div>
 <div class="g-tip-metric" data-name="weight">
-<span class="g-tip-metric-name">Sampling weight</span>
+<span class="g-tip-metric-name">Percentage</span>
 <span class="g-tip-metric-value">0.18%</span>
 </div>
 <div class="g-tip-metric" data-name="Tax">
-<span class="g-tip-metric-name">Average Tax</span>
+<span class="g-tip-metric-name">Average Tax Save</span>
 <span class="g-tip-metric-value">138</span>
 </div>
-<div class="g-tip-metric" data-name="MONEYPY">
+<div class="g-tip-metric" data-name="income">
 <span class="g-tip-metric-name">Household income</span>
 <span class="g-tip-metric-value">10</span>
 </div>
-<div class="g-tip-metric" data-name="BEDROOMS">
-<span class="g-tip-metric-name">Number of bedrooms</span>
+<div class="g-tip-metric" data-name="PUMA10">
+<span class="g-tip-metric-name">PUMA10 area</span>
 <span class="g-tip-metric-value"></span>
 </div>
-<div class="g-tip-metric" data-name="KOWNRENT">
-<span class="g-tip-metric-name">Own the house?</span>
-<span class="g-tip-metric-value">1</span>
-</div>
-<div class="g-tip-metric" data-name="UR">
-<span class="g-tip-metric-name">Urban area?</span>
-<span class="g-tip-metric-value">1</span>
-</div>
-</div>
-</div>
+  </div>
 </div>
 
 <!-- load dependencies -->

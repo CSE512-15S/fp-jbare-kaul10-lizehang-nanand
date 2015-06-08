@@ -1,641 +1,704 @@
 var bubble_generator = function(){
  // svg attributes
-    var margin = {top: 20, right: 95, bottom: 10, left: 125},
-        width = 970 - margin.left ,
-        height,
-        tickExtension = 20; // extend grid lines beyond scale range
+
+  var margin = {top: 20, right: 95, bottom: 10, left: 125},
+      width = 900 - margin.left ,
+      height,
+      tickExtension = 20; // extend grid lines beyond scale range
 
     // initialize current_area to whole area (coded as -1?)
     var current_area = -1;
 
 
-    var update_view = function(area){
-        // color.domain(category_domain);
-        
+    var update = function(area){
         // if not called with a time range
         if(typeof area !== 'undefined'){
-          current_area = area;
+          current_area = area.variable;
         }
+         function type(d) {
+                d.income_group_level = d.income_level_name;
+                d.income_level_num  = +d.income_level_num ;
+                d.x = +d.cx_netAvg;
+                d.y = +d.cy_netAvg;
+                d.cx_current = +d.cx_netAvg;
+                d.cy_current = +d.cy_netAvg;
+                d.netAvg = +d.netAvg;
+
+                // d.x = +d.cx_netBest;
+                // d.y = +d.cy_netBest;
+                // d.cx_current = +d.cx_netBest;
+                // d.cy_current = +d.cy_netBest;
+                // d.netAvg = +d.netBest;
+
+                d.PUMA10 = d.PUMA10;
+                // squash y range when plotting for sub
+                d.y /= 3;
+                d.x += 300;
+                d.cx_current += 300;
+                d.cy_current *= 1.1;
+                d.cr = +d.cr;
+                return d;
+              }
+        if(current_area === 'salesTax'){
+           function type(d) {
+                d.income_group_level = d.income_level_name;
+                d.income_level_num  = +d.income_level_num ;
+
+                d.x = +d.cx_salesTaxSavings;
+                d.y = +d.cy_salesTaxSavings;
+                d.cx_current = +d.cx_salesTaxSavings;
+                d.cy_current = +d.cy_salesTaxSavings;
+                d.netAvg = +d.salesTaxSavings;
+
+                d.PUMA10 = d.PUMA10;
+                // squash y range when plotting for sub
+                d.y /= 3;
+                d.x += 300;
+                d.cx_current += 300;
+                d.cy_current *= 1.1;
+                d.cr = +d.cr;
+                return d;
+              }
+        }
+        if(current_area === 'best'){
+           function type(d) {
+                d.income_group_level = d.income_level_name;
+                d.income_level_num  = +d.income_level_num ;
+
+                d.x = +d.cx_netBest;
+                d.y = +d.cy_netBest;
+                d.cx_current = +d.cx_netBest;
+                d.cy_current = +d.cy_netBest;
+                d.netAvg = +d.netBest;
+
+                d.PUMA10 = d.PUMA10;
+                // squash y range when plotting for sub
+                d.y /= 3;
+                d.x += 300;
+                d.cx_current += 300;
+                d.cy_current *= 1.1;
+                d.cr = +d.cr;
+                return d;
+              }
+        }
+        console.log(current_area);
+        console.log(type);
         // remove SVG for new one
          d3.select("div#bubble_svg").remove();       
-        
-        // plot bubble chart
+         d3.select("div#bubble_key_svg").remove();       
 
-        var formatPercent = d3.format(".2%"),
+         // plot
+         var formatPercent = d3.format(".2%"),
             formatTenthPercent = d3.format(".1%"),
             formatNumber = d3.format(",.2s"), 
             formatMoney = d3.format("$,.2f"), 
             formatCount = d3.format(",.0s");
 
-        var nameAll = "Electricity Usage";
+              var nameAll = "Households";
 
-        var x = d3.scale.linear()
-            .domain([0, 300])
-            .rangeRound([0, width - 210])
-            .clamp(true)
-            .nice();
+              var x = d3.scale.linear()
+                  .domain([-1000, 1000])
+                  .rangeRound([0, width])
+                  .clamp(true)
+                  .nice();
 
-        var y = d3.scale.ordinal();
+              var y = d3.scale.ordinal();
+              var ynew = d3.scale.ordinal();
 
-        var y0 = d3.scale.ordinal()
-            .domain([nameAll])
-            .range([150]);
+              var y0 = d3.scale.ordinal()
+                  .domain([nameAll])
+                  .range([150]);
 
-        var r = d3.scale.sqrt()
-            .domain([0, 1e3])
-            .range([0, 1]);
+              var r = d3.scale.sqrt()
+                  .domain([0, 10])
+                  .range([0, 1]);
 
-        var z = d3.scale.threshold()
-            .domain([75, 100, 150, 200, 300, 1000000])
-            .range(["#b35806", "#f1a340", "#fee0b6", "#d8daeb", "#998ec3", "#542788"].reverse());
-        // var z_bed = d3.scale.threshold()
-        //     .domain([1, 2, 3, 4, 5, 6, 7])
-        //     .range(["#b35806", "#f1a340", "#fee0b6", "#d8daeb", "#fd8d3c", "#998ec3", "#542788"].reverse());
+              var z = d3.scale.threshold()
+                  .domain([-500, -200, 0, 200, 500])
+                  .range(["#b35806", "#f1a340", "#fee0b6", "#d8daeb", "#998ec3", "#542788"].reverse());
+              // var z_bed = d3.scale.threshold()
+              //     .domain([1, 2, 3, 4, 5, 6, 7])
+              //     .range(["#b35806", "#f1a340", "#fee0b6", "#d8daeb", "#fd8d3c", "#998ec3", ].reverse());
 
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("top")
-            .ticks(6)
-            .tickFormat(formatNumber);
+              var xAxis = d3.svg.axis()
+                  .scale(x)
+                  .orient("top")
+                  .ticks(9)
+                  .tickFormat(formatNumber);
 
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left")
-            .tickSize(-width + 60 - tickExtension * 2, 0)
-            .tickPadding(6);
+              var yAxis = d3.svg.axis()
+                  .scale(y)
+                  .orient("left")
+                  .tickSize(-width + 60 - tickExtension * 2, 0)
+                  .tickPadding(6);
 
 
-        var svg = d3.select(".g-graphic").append("svg")
-            .attr("height", 300 + margin.top + margin.bottom)
-            .attr("width", width + margin.left + margin.right)
-          .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+              // var svg = d3.select(".g-graphic").append("svg")
+              var svg = d3.select("#bubble_svg")
+                  .attr("height", 300 + margin.top + margin.bottom)
+                  .attr("width", width + margin.left + margin.right)
+                .append("g")
+                  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        d3.select(".g-graphic").append("svg")
-            .style("margin-top", "20px")
-            .attr("height", 80)
-            .attr("width", width + margin.left + margin.right)
-          .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-            .call(renderChartKey);
+              // d3.select(".g-graphic").append("svg")
+              d3.select("#bubble_key_svg")
+                  .style("margin-top", "20px")
+                  .attr("height", 80)
+                  .attr("width", width + margin.left + margin.right)
+                .append("g")
+                  .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                  .call(renderChartKey);
 
-        var gx = svg.append("g")
-            .attr("class", "g-x g-axis")
-            .call(xAxis);
+              var gx = svg.append("g")
+                  .attr("class", "g-x g-axis")
+                  .call(xAxis);
 
-        var tickLast = gx.selectAll(".g-x .tick:last-of-type");
+              // var tickLast = gx.selectAll(".g-x .tick:last-of-type");
 
-        // tickLast.select("text")
-        //     .text(function() { return "\u2265 " + this.textContent; });
+              // tickLast.select("text")
+              //     .text(function() { return "\u2265 " + this.textContent; });
 
-        tickLast.select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-            .attr("transform", "translate(" + width + ",0)")
-          .select("text")
-            .text("\u2265" + " $300");
+              // tickLast.select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+              //     .attr("transform", "translate(" + width + ",0)")
+              //   .select("text")
+              //     .text("\u2265" + " $300");
 
-        var titleX = gx.append("text")
-            .attr("class", "g-title")
-            .attr("y", -9)
-            .style("text-anchor", "end");
+              var titleX = gx.append("text")
+                  .attr("class", "g-title")
+                  .attr("y", -9)
+                  .style("text-anchor", "end");
 
-        titleX.append("tspan")
-            .attr("x", -20)
-            .style("font-weight", "bold")
-            .text("Tax");
+              titleX.append("tspan")
+                  .attr("x", -20)
+                  .style("font-weight", "bold")
+                  .text("Saving");
 
-        titleX.append("tspan")
-            .attr("x", -20)
-            .attr("dy", "1em")
-            .text("per year");
+              titleX.append("tspan")
+                  .attr("x", -20)
+                  .attr("dy", "1em")
+                  .text("per year");
 
-        // "http://graphics8.nytimes.com/newsgraphics/2013/05/13/corporate-TaxHigh/ee84b0191a75f5c652087293ab0efd4710e21f94/BEDROOMS.tsv"
-        d3.csv("data/TaxDollar.csv", type, function(error, tabdata) {
-          var MONEYPYs = d3.nest()
-              .key(function(d) { return d.MONEYPY; })
-              .entries(tabdata);
 
-          // Compute the overall rate for all data.
-          // var overallRate = rate(d3.sum(BEDROOMS, NWEIGHT), d3.sum(BEDROOMS, NWEIGHT));
-          var totalWeight = d3.sum(tabdata, NWEIGHT);
-          
-          // Compute the overall rate by MONEYPY.
-          MONEYPYs.forEach(function(d) {
-            d.weight  = normalize(d3.sum(d.values, NWEIGHT), totalWeight);
-          });
+              d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
+                var MONEYPYs = d3.nest()
+                    .key(function(d) { return d.income_group_level; })
+                    .entries(tabdata);
 
-          // Sort MONEYPYs by ascending levels.
-          MONEYPYs.sort(function(a, b) {
-            return a.values[0].income_group_level  - b.values[0].income_group_level ;
-          });
+                var BYPUMA = d3.nest()
+                    .key(function(d) { return d.PUMA10; })
+                    .entries(tabdata);
 
-          // Compute the weight  for each sample.
-          tabdata.forEach(function(d) {
-            d.weight  = normalize(d.NWEIGHT, totalWeight);
-          });
+                var totalCount = d3.sum(tabdata, count);
+                
+                // Compute the overall rate by MONEYPY.
+                MONEYPYs.forEach(function(d) {
+                  d.weight  = normalize(d3.sum(d.values, count), totalCount);
+                });
 
-          height = 120 * MONEYPYs.length;
+                // Sort MONEYPYs by ascending levels.
+                MONEYPYs.sort(function(a, b) {
+                  return a.values[0].income_level_num   - b.values[0].income_level_num  ;
+                });
 
-          y
-              .domain(MONEYPYs.map(function(d) { return d.key; }))
-              .rangePoints([10, height], 1);
+                // Compute the weight  for each sample.
+                tabdata.forEach(function(d) {
+                  d.weight  = normalize(d.count, totalCount);
+                });
 
-          svg.append("g")
-              .attr("class", "g-y g-axis g-y-axis-MONEYPY")
-              .attr("transform", "translate(-" + tickExtension + ",0)")
-              .call(yAxis.scale(y))
-              .call(yAxisWrap)
-              .style("stroke-opacity", 0)
-              .style("fill-opacity", 0)
-            .selectAll(".tick text,.tick tspan")
-              .attr("x", -95)
-              .style("text-anchor", "start");
+                height = 120 * MONEYPYs.length;
+                heightnew = 60 * BYPUMA.length;
+                y
+                    .domain(MONEYPYs.map(function(d) { return d.key; }))
+                    .rangePoints([10, height], 1);
+                ynew
+                    .domain(BYPUMA.map(function(d) { return d.key; }))
+                    .rangePoints([10, heightnew], 1);    
 
-          svg.append("g")
-              .attr("class", "g-y g-axis g-y-axis-overall")
-              .attr("transform", "translate(-" + tickExtension + ",0)")
-              .call(yAxis.scale(y0))
-              .call(yAxisWrap);
+                svg.append("g")
+                    .attr("class", "g-y g-axis g-y-axis-MONEYPY")
+                    .attr("transform", "translate(-" + tickExtension + ",0)")
+                    .call(yAxis.scale(y))
+                    .call(yAxisWrap)
+                    .style("stroke-opacity", 0)
+                    .style("fill-opacity", 0)
+                  .selectAll(".tick text,.tick tspan")
+                    .attr("x", -95)
+                    .style("text-anchor", "start");
 
-          var sampleClip = svg.append("defs").selectAll("clipPath")
-              .data(tabdata)
-            .enter().append("clipPath")
-              .attr("id", function(d, i) { return "g-clip-sample-" + i; })
-            .append("circle")
-              .attr("cx", function(d) { return d.cx_high; })
-              .attr("cy", function(d) { return d.cy_high - y0(nameAll); })
-              .attr("r", function(d) { return r(d.NWEIGHT); });
+                svg.append("g")
+                    .attr("class", "g-y g-axis g-y-axis-BYPUMA")
+                    .attr("transform", "translate(-" + tickExtension + ",0)")
+                    .call(yAxis.scale(ynew))
+                    .call(yAxisWrap)
+                    .style("stroke-opacity", 0)
+                    .style("fill-opacity", 0)
+                  .selectAll(".tick text,.tick tspan")
+                    .attr("x", -95)
+                    .style("text-anchor", "start");    
 
-          var gVoronoi = svg.append("g")
-              .attr("class", "g-voronoi")
+                svg.append("g")
+                    .attr("class", "g-y g-axis g-y-axis-overall")
+                    .attr("transform", "translate(-" + tickExtension + ",0)")
+                    .call(yAxis.scale(y0))
+                    .call(yAxisWrap);
 
-          gVoronoi.selectAll("path")
-              .data(tabdata)
-            .enter().append("path")
-              .attr("clip-path", function(d, i) { return "url(#g-clip-sample-" + i + ")"; })
-              .on("mouseover", mouseover)
-              .on("mouseout", mouseout);
+                var sampleClip = svg.append("defs").selectAll("clipPath")
+                    .data(tabdata)
+                  .enter().append("clipPath")
+                    .attr("id", function(d, i) { return "g-clip-sample-" + i; })
+                  .append("circle")
+                    .attr("cx", function(d) { return d.cx_current; })
+                    .attr("cy", function(d) { return d.cy_current - y0(nameAll); })
+                    .attr("r", function(d) { return r(d.count); });
 
-          gVoronoi.call(updateVoronoi,
-              function(d) { return d.cx_high; },
-              function(d) { return d.cy_high + y0(nameAll); },
-              420);
+                var gVoronoi = svg.append("g")
+                    .attr("class", "g-voronoi")
 
-          var MONEYPY = svg.append("g")
-              .attr("class", "g-MONEYPY")
-            .selectAll("g")
-              .data(MONEYPYs)
-            .enter().append("g")
-              .attr("transform", function(d) { return "translate(0," + y(d.key) + ")"; });
+                gVoronoi.selectAll("path")
+                    .data(tabdata)
+                  .enter().append("path")
+                    .attr("clip-path", function(d, i) { return "url(#g-clip-sample-" + i + ")"; })
+                    .on("mouseover", mouseover)
+                    .on("mouseout", mouseout);
 
-          // var MONEYPYNote = d3.select(".g-notes")
-          //     .style("opacity", 0)
-          //     .style("display", "none")
-          //   .selectAll("div")
-          //     .data(MONEYPYs)
-          //   .enter().append("div")
-          //     .attr("class", "g-MONEYPY-note")
-          //     .style("top", function(d) { return y(d.key) + "px"; })
-          //     .html(function(d) { return MONEYPYNoteByName[d.key]; });
-
-          var MONEYPYsample = MONEYPY.append("g")
-              .attr("class", "g-MONEYPY-sample")
-            .selectAll("circle")
-              .data(function(d) { return d.values; })
-            .enter().append("circle")
-              .attr("cx", function(d) { return d.cx_high; })
-              .attr("cy", function(d) { return d.cy_high - y(d.MONEYPY) + y0(nameAll); })
-              .attr("r", function(d) { return r(d.NWEIGHT); })
-              .style("fill", function(d) { return isNaN(d.weight ) ? null : z(d.TaxHigh); })
-              // .style("fill", function(d) { return isNaN(d.weight ) ? null : z_bed(d.BEDROOMS); })
-              .on("mouseover", mouseover)
-              .on("mouseout", mouseout);
-
-          var MONEYPYOverall = MONEYPY.append("g")
-              .attr("class", "g-overall")
-              .attr("transform", function(d) { return "translate(" + x(d.weight ) + "," + (y0(nameAll) - y(d.key)) + ")"; })
-              .style("stroke-opacity", 0)
-              .style("fill-opacity", 0);
-
-          MONEYPYOverall.append("line")
-              .attr("y1", -100)
-              .attr("y2", +127);
-
-          // var MONEYPYOverallText = MONEYPYOverall.append("text")
-          //     .attr("y", -106);
-
-          // MONEYPYOverallText.append("tspan")
-          //     .attr("x", 0)
-          //     .text(function(d) { return formatPercent(d.weight ); });
-
-          // MONEYPYOverallText.filter(function(d, i) { return !i; }).append("tspan")
-          //     .attr("x", 0)
-          //     .attr("dy", "-11")
-          //     .style("font-size", "8px")
-          //     .text("OVERALL");
-
-          // var overall = svg.append("g")
-          //     .attr("class", "g-overall g-overall-all")
-          //     .attr("transform", "translate(" + x(overallRate) + "," + y0(nameAll) + ")");
-
-          // overall.append("line")
-          //     .attr("y1", -100)
-          //     .attr("y2", +127);
-
-          // var overallText = overall.append("text")
-          //     .attr("y", -106)
-          //     .style("font-weight", "bold");
-
-          // overallText.append("tspan")
-          //     .attr("x", 0)
-          //     .style("font-size", "13px")
-          //     .text(formatTenthPercent(overallRate));
-
-          // overallText.append("tspan")
-          //     .attr("x", 0)
-          //     .attr("dy", "-14")
-          //     .style("font-size", "8px")
-          //     .text("OVERALL");
-
-          var currentView = "overall";
-
-          d3.selectAll(".g-content button[data-view]")
-              .datum(function(d) { return this.getAttribute("data-view"); })
-              .on("click", transitionView);
-
-          // var searchInput = d3.select(".g-search input")
-          //     .on("keyup", keyuped);
-
-          // var searchClear = d3.select(".g-search .g-search-clear")
-          //     .on("click", function() {
-          //       searchInput.property("value", "").node().blur();
-          //       search();
-          //     });
-
-          var tip = d3.select(".g-tip");
-
-          var tipMetric = tip.selectAll(".g-tip-metric")
-              .datum(function() { return this.getAttribute("data-name"); });
-
-          // d3.selectAll(".g-annotations b,.g-notes b")
-          //     .datum(function() { return new RegExp("\\b" + d3.requote(this.textContent), "i"); })
-          //     .on("mouseover", mouseoverAnnotation)
-          //     .on("mouseout", mouseout);
-
-          // function keyuped() {
-          //   if (d3.event.keyCode === 27) {
-          //     this.value = "";
-          //     this.blur();
-          //   }
-          //   search(this.value.trim());
-          // }
-
-          // function search(value) {
-          //   if (value) {
-          //     var re = new RegExp("\\b" + d3.requote(value), "i");
-          //     svg.classed("g-searching", true);
-          //     MONEYPYsample.classed("g-match", function(d) { return re.test(d.name) || re.test(d.MONEYPY) || (d.symbol && re.test(d.symbol)) || (d.alias && re.test(d.alias)); });
-          //     var matches = d3.selectAll(".g-match");
-          //     if (matches[0].length === 1) mouseover(matches.datum());
-          //     else mouseout();
-          //     searchClear.style("display", null);
-          //   } else {
-          //     mouseout();
-          //     svg.classed("g-searching", false);
-          //     MONEYPYsample.classed("g-match", false);
-          //     searchClear.style("display", "none");
-          //   }
-          // }
-
-          function transitionView(view) {
-            if (currentView === view) view = view === "overall" ? "MONEYPY" : "overall";
-            d3.selectAll(".g-buttons button[data-view]").classed("g-active", function(v) { return v === view; })
-            switch (currentView = view) {
-              case "overall": return void transitionOverall();
-              case "MONEYPY": return void transitionMONEYPY();
-            }
-          }
-
-          function transitionOverall() {
-            gVoronoi.style("display", "none");
-
-            var transition = d3.transition()
-                .duration(750);
-
-            transition.select("svg")
-                .delay(720)
-                .attr("height", 420 + margin.top + margin.bottom)
-                .each("end", function() {
-                  gVoronoi.call(updateVoronoi,
-                    function(d) { return d.cx; },
-                    function(d) { return d.cy_high + y0(nameAll); },
+                gVoronoi.call(updateVoronoi,
+                    function(d) { return d.cx_current; },
+                    function(d) { return d.cy_current + y0(nameAll); },
                     420);
-                });
 
-            transition.select(".g-annotations-overall")
-                .each("start", function() { this.style.display = "block"; })
-                .style("opacity", 1);
+                var MONEYPY = svg.append("g")
+                    .attr("class", "g-MONEYPY")
+                  .selectAll("g")
+                    .data(MONEYPYs)
+                  .enter().append("g")
+                    .attr("transform", function(d) { return "translate(0," + y(d.key) + ")"; });
 
-            transition.select(".g-notes")
-                .style("opacity", 0)
-                .each("end", function() { this.style.display = "none"; });
 
-            transition.selectAll(".g-y-axis-MONEYPY")
-                .style("stroke-opacity", 0)
-                .style("fill-opacity", 0);
+                var MONEYPYsample = MONEYPY.append("g")
+                    .attr("class", "g-MONEYPY-sample")
+                  .selectAll("circle")
+                    .data(function(d) { return d.values; })
+                  .enter().append("circle")
+                    .attr("cx", function(d) { return d.cx_current; })
+                    .attr("cy", function(d) { return d.cy_current - y(d.income_group_level) + y0(nameAll); })
+                    .attr("r", function(d) { return r(d.count); })
+                    .style("fill", function(d) { return isNaN(d.weight ) ? null : z(d.netAvg); })
+                    // .style("fill", function(d) { return isNaN(d.weight ) ? null : z_bed(d.PUMA10); })
+                    .on("mouseover", mouseover)
+                    .on("mouseout", mouseout);
 
-            transition.selectAll(".g-y-axis-overall")
-                .style("stroke-opacity", 1)
-                .style("fill-opacity", 1);
+                var MONEYPYOverall = MONEYPY.append("g")
+                    .attr("class", "g-overall")
+                    .attr("transform", function(d) { return "translate(" + x(d.weight ) + "," + (y0(nameAll) - y(d.key)) + ")"; })
+                    .style("stroke-opacity", 0)
+                    .style("fill-opacity", 0);
 
-            // var transitionOverall = transition.select(".g-overall-all")
-            //     .delay(x(overallRate))
-            //     .style("stroke-opacity", 1)
-            //     .style("fill-opacity", 1);
+                MONEYPYOverall.append("line")
+                    .attr("y1", -100)
+                    .attr("y2", +127);
 
-            // transitionOverall.select("line")
-            //     .attr("y2", +127);
 
-            // transitionOverall.select("text")
-            //     .attr("y", -106);
+                var currentView = "overall";
 
-            // var transitionMONEYPYOverall = transition.selectAll(".g-MONEYPY .g-overall")
-            //     .delay(function(d) { return x(d.weight ); })
-            //     .attr("transform", function(d) { return "translate(" + x(d.weight ) + "," + (y0(nameAll) - y(d.key)) + ")"; })
-            //     .style("stroke-opacity", 0)
-            //     .style("fill-opacity", 0);
+                d3.selectAll(".g-content button[data-view]")
+                    .datum(function(d) { return this.getAttribute("data-view"); })
+                    .on("click", transitionView);
 
-            // transitionMONEYPYOverall.select("line")
-            //     .attr("y1", -100)
-            //     .attr("y2", +127);
 
-            // transitionMONEYPYOverall.select("text")
-            //     .attr("y", -106);
+                var tip = d3.select(".g-tip");
 
-            transition.selectAll(".g-MONEYPY-sample circle")
-                .delay(function(d) { return d.cx_high; })
-                .attr("cx", function(d) { return d.cx_high; })
-                .attr("cy", function(d) { return d.cy_high - y(d.MONEYPY) + y0(nameAll); });
-          }
+                var tipMetric = tip.selectAll(".g-tip-metric")
+                    .datum(function() { return this.getAttribute("data-name"); });
 
-          function transitionMONEYPY() {
-            gVoronoi.style("display", "none");
 
-            var transition = d3.transition()
-                .duration(750);
+                function transitionView(view) {
+                  if (currentView === view) view = view === "overall" ? "selected" : "overall";
+                  d3.selectAll(".g-buttons button[data-view]").classed("g-active", function(v) { return v === view; })
+                  switch (currentView = view) {
+                    case "overall": return void transitionOverall();
+                    case "selected": return void transitionselected();
+                    case "selected2": return void transitionselected_PUMA();
+                  }
+                }
 
-            transition.select("svg")
-                .attr("height", height + margin.top + margin.bottom)
-              .transition()
-                .delay(720)
-                .each("end", function() {
-                  gVoronoi.call(updateVoronoi,
-                    function(d) { return d.x; },
-                    function(d) { return y(d.MONEYPY) + d.y; },
-                    height);
-                });
+                function transitionOverall() {
+                  gVoronoi.style("display", "none");
 
-            transition.select(".g-annotations-overall")
-                .style("opacity", 0)
-                .each("end", function() { this.style.display = "none"; });
+                  var transition = d3.transition()
+                      .duration(750);
 
-            transition.select(".g-notes")
-                .delay(250)
-                .each("start", function() { this.style.display = "block"; })
-                .style("opacity", 1);
+                  transition.select("#bubble_svg")
+                      .delay(720)
+                      .attr("height", 300 + margin.top + margin.bottom)
+                      .each("end", function() {
+                        gVoronoi.call(updateVoronoi,
+                          function(d) { return d.cx_current; },
+                          function(d) { return d.cy_current + y0(nameAll); },
+                          420);
+                      });
 
-            transition.selectAll(".g-y-axis-MONEYPY,.g-MONEYPY-note")
-                .delay(250)
-                .style("stroke-opacity", 1)
-                .style("fill-opacity", 1);
+                  // transition.select(".g-annotations-overall")
+                  //     .each("start", function() { this.style.display = "block"; })
+                  //     .style("opacity", 1);
 
-            transition.selectAll(".g-y-axis-overall")
-                .style("stroke-opacity", 0)
-                .style("fill-opacity", 0);
+                  transition.select(".g-selected-notes")
+                      .style("opacity", 0)
+                      .each("end", function() { this.style.display = "none"; });
 
-            var transitionOverall = transition.select(".g-overall-all")
-                .delay(x(totalWeight))
-                .style("stroke-opacity", 0)
-                .style("fill-opacity", 0);
+                  transition.selectAll(".g-y-axis-MONEYPY")
+                      .style("stroke-opacity", 0)
+                      .style("fill-opacity", 0);
+                  transition.selectAll(".g-y-axis-BYPUMA")
+                      .style("stroke-opacity", 0)
+                      .style("fill-opacity", 0);
 
-            transitionOverall.select("line")
-                .attr("y2", height - y0(nameAll));
+                  transition.selectAll(".g-y-axis-overall")
+                      .style("stroke-opacity", 1)
+                      .style("fill-opacity", 1);
 
-            var transitionMONEYPYOverall = transition.selectAll(".g-MONEYPY .g-overall")
-                .delay(function(d) { return x(d.weight ); })
-                .attr("transform", function(d) { return "translate(" + x(d.weight ) + ",0)"; })
-                .style("stroke-opacity", 1)
-                .style("fill-opacity", 1);
+                  var transitionOverall = transition.select(".g-overall-all")
+                      .style("stroke-opacity", 1)
+                      .style("fill-opacity", 1);
 
-            transitionMONEYPYOverall.select("line")
-                .attr("y1", -25)
-                .attr("y2", +25);
+                  transitionOverall.select("line")
+                      .attr("y2", +127);
 
-            transitionMONEYPYOverall.select("text")
-                .attr("y", -31);
+                  transitionOverall.select("text")
+                      .attr("y", -106);
 
-            transition.selectAll(".g-MONEYPY-sample circle")
-                .delay(function(d) { return d.x; })
-                .attr("cx", function(d) { return d.x; })
-                .attr("cy", function(d) { return d.y; });
-          }
+                  var transitionMONEYPYOverall = transition.selectAll(".g-MONEYPY .g-overall")
+                      .delay(function(d) { return x(d.weight ); })
+                      .attr("transform", function(d) { return "translate(" + x(d.weight ) + "," + (y0(nameAll) - y(d.key)) + ")"; })
+                      .style("stroke-opacity", 0)
+                      .style("fill-opacity", 0);
 
-          function updateVoronoi(gVoronoi, x, y, height) {
-            sampleClip
-                .attr("cx", x)
-                .attr("cy", y);
+                  transitionMONEYPYOverall.select("line")
+                      .attr("y1", -100)
+                      .attr("y2", +127);
 
-            gVoronoi
-                .style("display", null)
-                .selectAll("path")
-                .data(d3.geom.voronoi().x(x).y(y)(tabdata))
-                .attr("d", function(d) { return "M" + d.join("L") + "Z"; })
-                .datum(function(d) { return d.point; });
-          }
+                  transitionMONEYPYOverall.select("text")
+                      .attr("y", -106);
 
-          function mouseoverAnnotation(re) {
-            var matches = MONEYPYsample.filter(function(d) { return re.test(d.name) || re.test(d.alias); }).classed("g-active", true);
-            if (d3.sum(matches, function(d) { return d.length; }) === 1) mouseover(matches.datum());
-            else tip.style("display", "none");
-          }
+                  transition.selectAll(".g-MONEYPY-sample circle")
+                      .delay(function(d) { return d.cx_current; })
+                      .attr("cx", function(d) { return d.cx_current; })
+                      .attr("cy", function(d) { return d.cy_current - y(d.income_group_level) + y0(nameAll); });
+                }
 
-          function mouseover(d) {
-            MONEYPYsample.filter(function(c) { return c === d; }).classed("g-active", true);
+                function transitionselected() {
+                  gVoronoi.style("display", "none");
 
-            var dx, dy;
-            if (currentView === "overall") dx = d.cx_high, dy = d.cy_high + y0(nameAll);
-            else dx = d.x, dy = d.y + y(d.MONEYPY);
-            dy -= 69, dx += 50; // margin fudge factors
+                  var transition = d3.transition()
+                      .duration(750);
 
-            tip.style("display", null)
-                .style("top", (dy - r(d.NWEIGHT)) + "px")
-                .style("left", dx + "px");
+                  transition.select("#bubble_svg")
+                      .attr("height", height + margin.top + margin.bottom)
+                    .transition()
+                      .delay(720)
+                      .each("end", function() {
+                        gVoronoi.call(updateVoronoi,
+                          function(d) { return d.x; },
+                          function(d) { return y(d.income_group_level) + d.y; },
+                          height);
+                      });
 
-            // tip.select(".g-tip-title")
-            //     .text(d.alias || d.name);
+                  // transition.select(".g-annotations-overall")
+                  //     .style("opacity", 0)
+                  //     .each("end", function() { this.style.display = "none"; });
 
-            tipMetric.select(".g-tip-metric-value").text(function(name) {
-              switch (name) {
-                case "weight": return isNaN(d.weight ) ? "N.A." : formatPercent(d.weight );
-                case "Tax": return formatMoney(d.TaxHigh);
-                case "MONEYPY": return d.MONEYPY;
-                case "BEDROOMS": return formatCount(d.BEDROOMS);
-                case "KOWNRENT": return d.KOWNRENT;
-                case "UR": return d.UR;        
-              }
-            });
-          }
+                  transition.select(".g-selected-notes")
+                      .delay(250)
+                      .each("start", function() { this.style.display = "block"; })
+                      .style("opacity", 1);
 
-          function mouseout() {
-            tip.style("display", "none");
-            MONEYPYsample.filter(".g-active").classed("g-active", false);
-          }
-        });
+                  transition.selectAll(".g-y-axis-MONEYPY,.g-MONEYPY-note")
+                      .delay(250)
+                      .style("stroke-opacity", 1)
+                      .style("fill-opacity", 1);
 
-        function renderChartKey(g) {
-          var formatPercent = d3.format(".2%"),
-              formatMoney = d3.format("$,.2f"), 
-              formatNumber = d3.format(",.2s");
+                  transition.selectAll(".g-y-axis-overall")
+                      .style("stroke-opacity", 0)
+                      .style("fill-opacity", 0);
+                  transition.selectAll(".g-y-axis-BYPUMA")
+                      .style("stroke-opacity", 0)
+                      .style("fill-opacity", 0);
 
-          // A position encoding for the key only.
-          var x = d3.scale.linear()
-              .domain([0, 320])
-              .range([0, 240]);
+                  var transitionOverall = transition.select(".g-overall-all")
+                      .delay(x(totalCount))
+                      .style("stroke-opacity", 0)
+                      .style("fill-opacity", 0);
 
-          var xAxis = d3.svg.axis()
-              .scale(x)
-              .orient("bottom")
-              .tickSize(13)
-              .tickValues(z.domain())
-              // .tickValues(z_bed.domain())
-              .tickFormat(function(d) { return formatNumber(d); });
+                  transitionOverall.select("line")
+                      .attr("y2", height - y0(nameAll));
 
-          g.append("text")
-              .attr("x", -25)
-              .style("text-anchor", "end")
-              .style("font", "bold 9px sans-serif")
-              .text("CHART KEY");
+                  var transitionMONEYPYOverall = transition.selectAll(".g-MONEYPY .g-overall")
+                      .delay(function(d) { return x(d.weight ); })
+                      .attr("transform", function(d) { return "translate(" + x(d.weight ) + ",0)"; })
+                      .style("stroke-opacity", 1)
+                      .style("fill-opacity", 1);
 
-          var gColor = g.append("g")
-              .attr("class", "g-key-color")
-              .attr("transform", "translate(140,-7)");
+                  transitionMONEYPYOverall.select("line")
+                      .attr("y1", -25)
+                      .attr("y2", +25);
 
-          gColor.selectAll("rect")
-              .data(z.range().map(function(d, i) {
-              // .data(z_bed.range().map(function(d, i) {
-                return {
-                  x0: i ? x(z.domain()[i - 1]) : x.range()[0],
-                  x1: i < 4 ? x(z.domain()[i]) : x.range()[1],
-                  z: d
-                };
-              }))
-            .enter().append("rect")
-              .attr("height", 8)
-              .attr("x", function(d) { return d.x0; })
-              .attr("width", function(d) { return d.x1 - d.x0; })
-              .style("fill", function(d) { return d.z; });
+                  transitionMONEYPYOverall.select("text")
+                      .attr("y", -31);
 
-          gColor.call(xAxis);
+                  transition.selectAll(".g-MONEYPY-sample circle")
+                      .delay(function(d) { return d.x; })
+                      .attr("cx", function(d) { return d.x; })
+                      .attr("cy", function(d) { return d.y; });
+                }
 
-          var gColorText = g.append("text")
-              .attr("x", 140 - 6)
-              .style("text-anchor", "end");
+                function transitionselected_PUMA() {
+                  gVoronoi.style("display", "none");
+                  var transition = d3.transition()
+                      .duration(750);
 
-          gColorText.append("tspan")
-              .style("font-weight", "bold")
-              .text("Color");
+              transition.select("#bubble_svg")
+                      .attr("height", heightnew + margin.top + margin.bottom)
+                    .transition()
+                      .delay(720)
+                      .each("end", function() {
+                        gVoronoi.call(updateVoronoi,
+                          function(d) { return d.x ; },
+                          function(d) { return d.y+ ynew(d.PUMA10); },
+                          heightnew);
+                      });
 
-          gColorText.append("tspan")
-              .style("fill", "#777")
-              .text(" shows electricity usage");
+                  transition.select(".g-annotations-overall")
+                      .style("opacity", 0)
+                      .each("end", function() { this.style.display = "none"; });
 
-          var gSize = g.append("g")
-              .attr("class", "g-key-size")
-              .attr("transform", "translate(580,-7)");
+                  transition.select(".g-selected-notes")
+                      .delay(250)
+                      .each("start", function() { this.style.display = "block"; })
+                      .style("opacity", 1);
 
-          var gSizeInstance = gSize.selectAll("g")
-              .data([0.005, 0.01, 0.02, 0.03])
-            .enter().append("g")
-              .attr("class", "g-MONEYPY");
+                  transition.selectAll(".g-y-axis-BYPUMA,.g-MONEYPY-note")
+                      .delay(250)
+                      .style("stroke-opacity", 1)
+                      .style("fill-opacity", 1);
 
-          gSizeInstance.append("circle")
-              .attr("r", function(d) {return r(d * 4539100) });
+                  transition.selectAll(".g-y-axis-overall")
+                      .style("stroke-opacity", 0)
+                      .style("fill-opacity", 0);
+                  transition.selectAll(".g-y-axis-MONEYPY")
+                      .style("stroke-opacity", 0)
+                      .style("fill-opacity", 0);
 
-          gSizeInstance.append("text")
-              .attr("x", function(d) { return r(d* 4539100) + 4; })
-              .attr("dy", ".35em")
-              .text(function(d) { return formatPercent(d); });
+                  var transitionOverall = transition.select(".g-overall-all")
+                      .delay(x(totalCount))
+                      .style("stroke-opacity", 0)
+                      .style("fill-opacity", 0);
 
-          var gSizeX = 0;
+                  transitionOverall.select("line")
+                      .attr("y2", heightnew - y0(nameAll));
 
-          gSizeInstance.attr("transform", function() {
-            var t = "translate(" + gSizeX + ",3)";
-            gSizeX += this.getBBox().width + 15;
-            return t;
-          });
+                  var transitionMONEYPYOverall = transition.selectAll(".g-MONEYPY .g-overall")
+                      .delay(function(d) { return x(d.weight ); })
+                      .attr("transform", function(d) { return "translate(" + x(d.weight ) + ",0)"; })
+                      .style("stroke-opacity", 1)
+                      .style("fill-opacity", 1);
 
-          var gSizeText = g.append("text")
-              .attr("x", 580 - 10)
-              .style("text-anchor", "end");
+                  transitionMONEYPYOverall.select("line")
+                      .attr("y1", -1000)
+                      .attr("y2", +5000);
 
-          gSizeText.append("tspan")
-              .style("font-weight", "bold")
-              .text("Size");
+                  transitionMONEYPYOverall.select("text")
+                      .attr("y", -31);
 
-          gSizeText.append("tspan")
-              .style("fill", "#777")
-              .text(" shows sampling weight");
-        }
+                  transition.selectAll(".g-MONEYPY-sample circle")
+                      .delay(function(d) { return d.x; })
+                      .attr("cx", function(d) { return d.x; })
+                      .attr("cy", function(d) { return d.y/3 - y(d.income_group_level) + ynew(d.PUMA10)  ; });
+                }
+                function updateVoronoi(gVoronoi, x, y, height) {
+                  sampleClip
+                      .attr("cx", x)
+                      .attr("cy", y);
 
-        function yAxisWrap(g) {
-          g.selectAll(".tick text")
-            .filter(function(d) { return /[ ]/.test(d) && this.getComputedTextLength() > margin.left - tickExtension - 10; })
-              .attr("dy", null)
-              .each(function(d) {
-                d3.select(this).text(null).selectAll("tspan")
-                    .data(d.split(" "))
-                  .enter().append("tspan")
-                    .attr("x", this.getAttribute("x"))
-                    .attr("dy", function(d, i) { return (i * 1.35 - .35) + "em"; })
-                    .text(function(d) { return d; });
+                  gVoronoi
+                      .style("display", null)
+                      .selectAll("path")
+                      .data(d3.geom.voronoi().x(x).y(y)(tabdata))
+                      .attr("d", function(d) { return "M" + d.join("L") + "Z"; })
+                      .datum(function(d) { return d.point; });
+                }
+
+                // function mouseoverAnnotation(re) {
+                //   var matches = MONEYPYsample.filter(function(d) { return re.test(d.name) || re.test(d.alias); }).classed("g-active", true);
+                //   if (d3.sum(matches, function(d) { return d.length; }) === 1) mouseover(matches.datum());
+                //   else tip.style("display", "none");
+                // }
+
+                function mouseover(d) {
+                  MONEYPYsample.filter(function(c) { return c === d; }).classed("g-active", true);
+
+                  var dx, dy;
+                  if (currentView === "overall") dx = d.cx_current, dy = d.cy_current + y0(nameAll);
+                  else if(currentView == "selected") dx = x(d.x), dy = d.y + y(d.income_group_level);
+                  else dx = x(d.x), dy = d.y + ynew(d.PUMA10);
+                  dy += 520, dx += 50; // margin fudge factors
+
+                  tip.style("display", null)
+                      .style("top", (dy - r(d.count)) + "px")
+                      .style("left", dx + "px");
+
+                  // tip.select(".g-tip-title")
+                  //     .text(d.alias || d.name);
+
+                  var formatMoney = d3.format("$,.2n");
+
+                  tipMetric.select(".g-tip-metric-value").text(function(name) {
+                    switch (name) {
+                      case "weight": return isNaN(d.weight ) ? "N.A." : formatPercent(d.weight );
+                      case "Tax": return formatMoney(d.netAvg);
+                      case "income": return d.income_group_level;
+                      case "PUMA10": return d.PUMA10;      
+                    }
+                  });
+                }
+
+                function mouseout() {
+                  tip.style("display", "none");
+                  MONEYPYsample.filter(".g-active").classed("g-active", false);
+                }
               });
-        }
 
-        function TaxHigh(d) {
-          return d.TaxHigh;
-        }
+              function renderChartKey(g) {
+                var formatPercent = d3.format(".2%"),
+                    formatMoney = d3.format("$,.2f"), 
+                    formatNumber = d3.format(",.2s");
 
-        function NWEIGHT(d) {
-          return d.NWEIGHT;
-        }
+                // A position encoding for the key only.
+                var x = d3.scale.linear()
+                    .domain([-1000, 1000])
+                    .range([0, 240]);
 
-        function normalize(weighted_variable, totalweight) {
-          return totalweight <= 0 ? NaN : weighted_variable / totalweight;
-        }
+                var xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom")
+                    .tickSize(13)
+                    .tickValues(z.domain())
+                    // .tickValues(z_bed.domain())
+                    .tickFormat(function(d) { return formatNumber(d); });
 
-        function type(d) {
-          d.income_group_level = +d.income_group_level;
-          d.x = +d.cx_high;
-          d.y = +d.cy_high;
-          d.TaxHigh = +d.TaxHigh;
-          d.BEDROOMS = +d.BEDROOMS;
-          // squash y range when plotting for sub
-          d.y /= 3;
-          d.cx_high = +d.cx_high;
-          d.cy_high = +d.cy_high;
-          d.cr = +d.cr;
-          return d;
-        }
+                g.append("text")
+                    .attr("x", -25)
+                    .style("text-anchor", "end")
+                    .style("font", "bold 9px sans-serif")
+                    .text("CHART KEY");
 
+                var gColor = g.append("g")
+                    .attr("class", "g-key-color")
+                    .attr("transform", "translate(140,-7)");
+
+                gColor.selectAll("rect")
+                    .data(z.range().map(function(d, i) {
+                    // .data(z_bed.range().map(function(d, i) {
+                      return {
+                        x0: i ? x(z.domain()[i - 1]) : x.range()[0],
+                        x1: i < 4 ? x(z.domain()[i]) : x.range()[1],
+                        z: d
+                      };
+                    }))
+                  .enter().append("rect")
+                    .attr("height", 8)
+                    .attr("x", function(d) { return d.x0; })
+                    .attr("width", function(d) { return d.x1 - d.x0; })
+                    .style("fill", function(d) { return d.z; });
+
+                gColor.call(xAxis);
+
+                var gColorText = g.append("text")
+                    .attr("x", 140 - 6)
+                    .style("text-anchor", "end");
+
+                gColorText.append("tspan")
+                    .style("font-weight", "bold")
+                    .text("Color");
+
+                gColorText.append("tspan")
+                    .style("fill", "#777")
+                    .text(" shows net tax change");
+
+                var gSize = g.append("g")
+                    .attr("class", "g-key-size")
+                    .attr("transform", "translate(580,-7)");
+
+                var gSizeInstance = gSize.selectAll("g")
+                    .data([0.001, 0.005, 0.01, 0.015])
+                  .enter().append("g")
+                    .attr("class", "g-MONEYPY");
+
+                gSizeInstance.append("circle")
+                    .attr("r", function(d) {return r(d * 89643) });
+
+                gSizeInstance.append("text")
+                    .attr("x", function(d) { return r(d * 89643) + 4; })
+                    .attr("dy", ".35em")
+                    .text(function(d) { return formatPercent(d); });
+
+                var gSizeX = 0;
+
+                gSizeInstance.attr("transform", function() {
+                  var t = "translate(" + gSizeX + ",3)";
+                  gSizeX += this.getBBox().width + 15;
+                  return t;
+                });
+
+                var gSizeText = g.append("text")
+                    .attr("x", 580 - 10)
+                    .style("text-anchor", "end");
+
+                gSizeText.append("tspan")
+                    .style("font-weight", "bold")
+                    .text("Size");
+
+                gSizeText.append("tspan")
+                    .style("fill", "#777")
+                    .text(" shows percentage in data");
+              }
+
+              function yAxisWrap(g) {
+                g.selectAll(".tick text")
+                  .filter(function(d) { return /[ ]/.test(d) && this.getComputedTextLength() > margin.left - tickExtension - 10; })
+                    .attr("dy", null)
+                    .each(function(d) {
+                      d3.select(this).text(null).selectAll("tspan")
+                          .data(d.split(" "))
+                        .enter().append("tspan")
+                          .attr("x", this.getAttribute("x"))
+                          .attr("dy", function(d, i) { return (i * 1.35 - .35) + "em"; })
+                          .text(function(d) { return d; });
+                    });
+              }
+
+              // function netAvg(d) {
+              //   return d.netAvg;
+              // }
+
+              function count(d) {
+                return d.count;
+              }
+
+              function normalize(weighted_variable, totalCount) {
+                return totalCount <= 0 ? NaN : weighted_variable / totalCount;
+              }
+
+             
+      
                 
     };  
 
     var init = function(area){
       console.log("bubble initiated");
-      update_view(area);      
+      update(area);      
     }; 
 
     return {
       init: init,
-      update: update_view
+      update: update
     }; 
 };
