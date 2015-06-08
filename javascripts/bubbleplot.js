@@ -44,10 +44,16 @@ if(current_area === "best"){
         console.log(current_area);
         console.log(type);
         // remove SVG for new one
-         d3.selectAll("div#bubble_svg").remove();    
-         d3.selectAll("#bubble_group").remove();   
+        d3.selectAll("div#bubble_svg").remove();    
+        d3.selectAll("#bubble_group").remove();   
         d3.selectAll("div#bubble_key_svg").remove();    
-         d3.selectAll("#bubble_key_group").remove();   
+        d3.selectAll("#bubble_key_group").remove();   
+        // it does not work...
+        // var buttons = document.getElementById('g-buttons');
+        // buttons.children[0].checked = true;
+        // buttons.children[1].checked = false;
+        // buttons.children[2].checked = false;
+
 
          // plot
          var formatPercent = d3.format(".2%"),
