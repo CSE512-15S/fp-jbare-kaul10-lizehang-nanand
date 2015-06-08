@@ -112,7 +112,7 @@
 }
 
 .g-buttons {
-  margin: 40px 0 20px 125px;
+  margin: 40px 0px 20px 125px;
 }
 
 .g-buttons .g-button {
@@ -138,7 +138,7 @@
   font: inherit;
   font-size: 12px;
   line-height: 18px;
-  margin: 0 -1px 0 0;
+  margin: 0 5px 0 0;
   padding: 4px 8px;
   white-space: nowrap;
 }
@@ -159,7 +159,7 @@
 
 .g-buttons .g-button:last-child {
   border-radius: 0 5px 5px 0;
-  margin-left: -5px;
+  /*margin-left: -5px;*/
 }
 
 .g-buttons .g-button:focus {
