@@ -522,7 +522,7 @@ if(current_area === "best"){
                   if (currentView === "overall") dx = d.cx_current, dy = d.cy_current + y0(nameAll);
                   else if(currentView == "selected") dx = x(d.x), dy = d.y + y(d.income_group_level);
                   else dx = x(d.x), dy = d.y + ynew(d.PUMA10);
-                  dy += 520, dx += 50; // margin fudge factors
+                  dy += 820, dx += 50; // margin fudge factors
 
                   tip.style("display", null)
                       .style("top", (dy - r(d.count)) + "px")
