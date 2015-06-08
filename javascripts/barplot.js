@@ -121,15 +121,13 @@ var barplot_generator = function(parsedDataset) {
         .attr("id", "bar-x-axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
-<<<<<<< HEAD
 
     detail.append("text")
         .attr("class", "x label")
         .attr("text-anchor", "end")
         .attr("x", 250)
-        .attr("y", height + 30)
+        .attr("y", height + 35)
         .text("financial impact ($)");
-=======
 		
 			var tip = d3.tip()
           .attr('class', 'd3-tip')
@@ -141,7 +139,6 @@ var barplot_generator = function(parsedDataset) {
           });
 		  
 		  	tooltipGroup.call(tip);
->>>>>>> 558496c48081d6ef6641f0302280b5d1fa6cc386
   };
 
   return {
