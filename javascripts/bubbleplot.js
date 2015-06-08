@@ -9,83 +9,45 @@ var bubble_generator = function(){
     // initialize current_area to whole area (coded as -1?)
     var current_area = -1;
 
-
     var update = function(area){
+      if(area.variable !== current_area){
+        update_view(area);
+      }
+    }
+    var update_view = function(area){
         // if not called with a time range
         if(typeof area !== 'undefined'){
           current_area = area.variable;
         }
-         function type(d) {
-                d.income_group_level = d.income_level_name;
-                d.income_level_num  = +d.income_level_num ;
-                d.x = +d.cx_netAvg;
-                d.y = +d.cy_netAvg;
-                d.cx_current = +d.cx_netAvg;
-                d.cy_current = +d.cy_netAvg;
-                d.netAvg = +d.netAvg;
+   
+switch (current_area ) {
+  case "average":  type = function(d){ return(type_netAvg(d));}; break;
+  case "best":  type = function(d){ return(type_netBest(d));}; break;
+  case "worst":  type = function(d){ return(type_netWorst(d));}; break;
+  case "averageHome":  type = function(d){ return(type_homeEnergyAvg(d));}; break;
+  case "bestHome":  type = function(d){ return(type_homeEnergyBest(d));}; break;
+  case "worstHome":  type = function(d){ return(type_homeEnergyWorst(d));}; break;
+  case "averageElec":  type = function(d){ return(type_elecTaxesAvg(d));}; break;
+  case "bestElec":  type = function(d){ return(type_elecTaxesBest(d));}; break;
+  case "worstElec":  type = function(d){ return(type_elecTaxesWorst(d));}; break;
+  case "natGas":  type = function(d){ return(type_natGasTaxes(d));}; break;
+  case "fuelOil":  type = function(d){ return(type_fuelOilTaxes(d));}; break;
+  case "air":  type = function(d){ return(type_airTaxes(d));}; break;
+  case "gas":  type = function(d){ return(type_gasTaxes(d));}; break;
+  case "wfr":  type = function(d){ return(type_wfr(d));}; break;
+  case "salesTax": type = function(d){ return(type_salesTaxSavings(d));}; break;
+}         
 
-                // d.x = +d.cx_netBest;
-                // d.y = +d.cy_netBest;
-                // d.cx_current = +d.cx_netBest;
-                // d.cy_current = +d.cy_netBest;
-                // d.netAvg = +d.netBest;
-
-                d.PUMA10 = d.PUMA10;
-                // squash y range when plotting for sub
-                d.y /= 3;
-                d.x += 300;
-                d.cx_current += 300;
-                d.cy_current *= 1.1;
-                d.cr = +d.cr;
-                return d;
-              }
-        if(current_area === 'salesTax'){
-           function type(d) {
-                d.income_group_level = d.income_level_name;
-                d.income_level_num  = +d.income_level_num ;
-
-                d.x = +d.cx_salesTaxSavings;
-                d.y = +d.cy_salesTaxSavings;
-                d.cx_current = +d.cx_salesTaxSavings;
-                d.cy_current = +d.cy_salesTaxSavings;
-                d.netAvg = +d.salesTaxSavings;
-
-                d.PUMA10 = d.PUMA10;
-                // squash y range when plotting for sub
-                d.y /= 3;
-                d.x += 300;
-                d.cx_current += 300;
-                d.cy_current *= 1.1;
-                d.cr = +d.cr;
-                return d;
-              }
-        }
-        if(current_area === 'best'){
-           function type(d) {
-                d.income_group_level = d.income_level_name;
-                d.income_level_num  = +d.income_level_num ;
-
-                d.x = +d.cx_netBest;
-                d.y = +d.cy_netBest;
-                d.cx_current = +d.cx_netBest;
-                d.cy_current = +d.cy_netBest;
-                d.netAvg = +d.netBest;
-
-                d.PUMA10 = d.PUMA10;
-                // squash y range when plotting for sub
-                d.y /= 3;
-                d.x += 300;
-                d.cx_current += 300;
-                d.cy_current *= 1.1;
-                d.cr = +d.cr;
-                return d;
-              }
-        }
+if(current_area === "best"){
+  type = function(d){ return(type_netBest(d));}
+}  
         console.log(current_area);
         console.log(type);
         // remove SVG for new one
-         d3.select("div#bubble_svg").remove();       
-         d3.select("div#bubble_key_svg").remove();       
+         d3.selectAll("div#bubble_svg").remove();    
+         d3.selectAll("#bubble_group").remove();   
+        d3.selectAll("div#bubble_key_svg").remove();    
+         d3.selectAll("#bubble_key_group").remove();   
 
          // plot
          var formatPercent = d3.format(".2%"),
@@ -138,6 +100,7 @@ var bubble_generator = function(){
                   .attr("height", 300 + margin.top + margin.bottom)
                   .attr("width", width + margin.left + margin.right)
                 .append("g")
+                  .attr("id", "bubble_group")
                   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
               // d3.select(".g-graphic").append("svg")
@@ -146,6 +109,7 @@ var bubble_generator = function(){
                   .attr("height", 80)
                   .attr("width", width + margin.left + margin.right)
                 .append("g")
+                  .attr("id", "bubble_key_group")
                   .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                   .call(renderChartKey);
 
@@ -180,9 +144,24 @@ var bubble_generator = function(){
 
 
               d3.csv("data/PUMS_AggTable.csv", type, function(error, tabdata) {
+                
+
+                // find offset
+                var allvalue = [];            
+                for (i = 0; i < tabdata.length; i++) { 
+                  allvalue.push(tabdata[i].netAvg);
+                }
+                var offset =  x(d3.min(allvalue));        
+                console.log(offset);
+                tabdata.forEach(function(d){
+                      d.cx_current += offset;
+                      d.x += offset;
+                })
+
                 var MONEYPYs = d3.nest()
                     .key(function(d) { return d.income_group_level; })
                     .entries(tabdata);
+
 
                 var BYPUMA = d3.nest()
                     .key(function(d) { return d.PUMA10; })
@@ -215,6 +194,7 @@ var bubble_generator = function(){
                     .rangePoints([10, heightnew], 1);    
 
                 svg.append("g")
+                    .attr("id", "bubble-MONEYPY-yaxis")
                     .attr("class", "g-y g-axis g-y-axis-MONEYPY")
                     .attr("transform", "translate(-" + tickExtension + ",0)")
                     .call(yAxis.scale(y))
@@ -226,6 +206,7 @@ var bubble_generator = function(){
                     .style("text-anchor", "start");
 
                 svg.append("g")
+                    .attr("id", "#bubble-BYPUMA-yaxis")
                     .attr("class", "g-y g-axis g-y-axis-BYPUMA")
                     .attr("transform", "translate(-" + tickExtension + ",0)")
                     .call(yAxis.scale(ynew))
@@ -237,6 +218,7 @@ var bubble_generator = function(){
                     .style("text-anchor", "start");    
 
                 svg.append("g")
+                    .attr("id", "#bubble-overall-yaxis")
                     .attr("class", "g-y g-axis g-y-axis-overall")
                     .attr("transform", "translate(-" + tickExtension + ",0)")
                     .call(yAxis.scale(y0))
@@ -268,6 +250,7 @@ var bubble_generator = function(){
 
                 var MONEYPY = svg.append("g")
                     .attr("class", "g-MONEYPY")
+                    .attr("id", "#bubble_points_svg")
                   .selectAll("g")
                     .data(MONEYPYs)
                   .enter().append("g")
@@ -539,7 +522,7 @@ var bubble_generator = function(){
                   if (currentView === "overall") dx = d.cx_current, dy = d.cy_current + y0(nameAll);
                   else if(currentView == "selected") dx = x(d.x), dy = d.y + y(d.income_group_level);
                   else dx = x(d.x), dy = d.y + ynew(d.PUMA10);
-                  dy += 520, dx += 50; // margin fudge factors
+                  dy += 820, dx += 50; // margin fudge factors
 
                   tip.style("display", null)
                       .style("top", (dy - r(d.count)) + "px")
@@ -691,6 +674,229 @@ var bubble_generator = function(){
       
                 
     };  
+    
+
+     type_salesTaxSavings = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_salesTaxSavings;
+        d.y = +d.cy_salesTaxSavings;
+        d.cx_current = +d.cx_salesTaxSavings;
+        d.cy_current = +d.cy_salesTaxSavings;
+        d.netAvg = +d.salesTaxSavings;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+     }
+      type_wfr = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_wfr;
+        d.y = +d.cy_wfr;
+        d.cx_current = +d.cx_wfr;
+        d.cy_current = +d.cy_wfr;
+        d.netAvg = +d.wfr;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+     }
+
+    type_gasTaxes = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_gasTaxes;
+        d.y = +d.cy_gasTaxes;
+        d.cx_current = +d.cx_gasTaxes;
+        d.cy_current = +d.cy_gasTaxes;
+        d.netAvg = +d.gasTaxes;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+     }
+
+   type_airTaxes = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_airTaxes;
+        d.y = +d.cy_airTaxes;
+        d.cx_current = +d.cx_airTaxes;
+        d.cy_current = +d.cy_airTaxes;
+        d.netAvg = +d.airTaxes;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+     }
+
+    type_fuelOilTaxes = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_fuelOilTaxes;
+        d.y = +d.cy_fuelOilTaxes;
+        d.cx_current = +d.cx_fuelOilTaxes;
+        d.cy_current = +d.cy_fuelOilTaxes;
+        d.netAvg = +d.fuelOilTaxes;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+     }
+    type_natGasTaxes = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_natGasTaxes;
+        d.y = +d.cy_natGasTaxes;
+        d.cx_current = +d.cx_natGasTaxes;
+        d.cy_current = +d.cy_natGasTaxes;
+        d.netAvg = +d.natGasTaxes;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+     }
+    type_elecTaxesWorst = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_elecTaxesWorst;
+        d.y = +d.cy_elecTaxesWorst;
+        d.cx_current = +d.cx_elecTaxesWorst;
+        d.cy_current = +d.cy_elecTaxesWorst;
+        d.netAvg = +d.elecTaxesWorst;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+     }
+
+      type_elecTaxesBest = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_elecTaxesBest;
+        d.y = +d.cy_elecTaxesBest;
+        d.cx_current = +d.cx_elecTaxesBest;
+        d.cy_current = +d.cy_elecTaxesBest;
+        d.netAvg = +d.elecTaxesBest;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+      } 
+
+      type_elecTaxesAvg = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_elecTaxesAvg;
+        d.y = +d.cy_elecTaxesAvg;
+        d.cx_current = +d.cx_elecTaxesAvg;
+        d.cy_current = +d.cy_elecTaxesAvg;
+        d.netAvg = +d.elecTaxesAvg;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+      }  
+
+      type_homeEnergyAvg = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_homeEnergyAvg;
+        d.y = +d.cy_homeEnergyAvg;
+        d.cx_current = +d.cx_homeEnergyAvg;
+        d.cy_current = +d.cy_homeEnergyAvg;
+        d.netAvg = +d.homeEnergyAvg;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+      }  
+
+      type_homeEnergyBest = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_homeEnergyBest;
+        d.y = +d.cy_homeEnergyBest;
+        d.cx_current = +d.cx_homeEnergyBest;
+        d.cy_current = +d.cy_homeEnergyBest;
+        d.netAvg = +d.homeEnergyBest;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+      }  
+
+      type_homeEnergyWorst = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_homeEnergyWorst;
+        d.y = +d.cy_homeEnergyWorst;
+        d.cx_current = +d.cx_homeEnergyWorst;
+        d.cy_current = +d.cy_homeEnergyWorst;
+        d.netAvg = +d.homeEnergyWorst;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+      }  
+
+      type_netAvg = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_netAvg;
+        d.y = +d.cy_netAvg;
+        d.cx_current = +d.cx_netAvg;
+        d.cy_current = +d.cy_netAvg;
+        d.netAvg = +d.netAvg;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+      }  
+
+      type_netBest = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_netBest;
+        d.y = +d.cy_netBest;
+        d.cx_current = +d.cx_netBest;
+        d.cy_current = +d.cy_netBest;
+        d.netAvg = +d.netBest;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+      }  
+
+      type_netWorst = function(d){
+        d.income_group_level = d.income_level_name;
+        d.income_level_num  = +d.income_level_num ;
+        d.x = +d.cx_netWorst;
+        d.y = +d.cy_netWorst;
+        d.cx_current = +d.cx_netWorst;
+        d.cy_current = +d.cy_netWorst;
+        d.netAvg = +d.netWorst;
+        d.PUMA10 = d.PUMA10;
+        d.y /= 3;    // squash y range when plotting for sub
+        d.cy_current *= 1.1;
+        d.cr = +d.cr;
+        return d;
+      }  
 
     var init = function(area){
       console.log("bubble initiated");
