@@ -9,8 +9,12 @@ var bubble_generator = function(){
     // initialize current_area to whole area (coded as -1?)
     var current_area = -1;
 
-
     var update = function(area){
+      if(area.variable !== current_area){
+        update_view(area);
+      }
+    }
+    var update_view = function(area){
         // if not called with a time range
         if(typeof area !== 'undefined'){
           current_area = area.variable;
@@ -84,8 +88,10 @@ var bubble_generator = function(){
         console.log(current_area);
         console.log(type);
         // remove SVG for new one
-         d3.select("div#bubble_svg").remove();       
-         d3.select("div#bubble_key_svg").remove();       
+         d3.selectAll("div#bubble_svg").remove();    
+         d3.selectAll("#bubble_group").remove();   
+        d3.selectAll("div#bubble_key_svg").remove();    
+         d3.selectAll("#bubble_key_group").remove();   
 
          // plot
          var formatPercent = d3.format(".2%"),
@@ -138,6 +144,7 @@ var bubble_generator = function(){
                   .attr("height", 300 + margin.top + margin.bottom)
                   .attr("width", width + margin.left + margin.right)
                 .append("g")
+                  .attr("id", "bubble_group")
                   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
               // d3.select(".g-graphic").append("svg")
@@ -146,6 +153,7 @@ var bubble_generator = function(){
                   .attr("height", 80)
                   .attr("width", width + margin.left + margin.right)
                 .append("g")
+                  .attr("id", "bubble_key_group")
                   .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                   .call(renderChartKey);
 
@@ -215,6 +223,7 @@ var bubble_generator = function(){
                     .rangePoints([10, heightnew], 1);    
 
                 svg.append("g")
+                    .attr("id", "bubble-MONEYPY-yaxis")
                     .attr("class", "g-y g-axis g-y-axis-MONEYPY")
                     .attr("transform", "translate(-" + tickExtension + ",0)")
                     .call(yAxis.scale(y))
@@ -226,6 +235,7 @@ var bubble_generator = function(){
                     .style("text-anchor", "start");
 
                 svg.append("g")
+                    .attr("id", "#bubble-BYPUMA-yaxis")
                     .attr("class", "g-y g-axis g-y-axis-BYPUMA")
                     .attr("transform", "translate(-" + tickExtension + ",0)")
                     .call(yAxis.scale(ynew))
@@ -237,6 +247,7 @@ var bubble_generator = function(){
                     .style("text-anchor", "start");    
 
                 svg.append("g")
+                    .attr("id", "#bubble-overall-yaxis")
                     .attr("class", "g-y g-axis g-y-axis-overall")
                     .attr("transform", "translate(-" + tickExtension + ",0)")
                     .call(yAxis.scale(y0))
@@ -268,6 +279,7 @@ var bubble_generator = function(){
 
                 var MONEYPY = svg.append("g")
                     .attr("class", "g-MONEYPY")
+                    .attr("id", "#bubble_points_svg")
                   .selectAll("g")
                     .data(MONEYPYs)
                   .enter().append("g")
