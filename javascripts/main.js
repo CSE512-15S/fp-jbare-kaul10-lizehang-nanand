@@ -40,7 +40,7 @@ d3.csv(pumsDataset, function(d) {
   function updateAll(obj) {
     map.redraw(obj);
     barplot.update(obj);
-
+    bubble.update(obj);
   }
 
   document.getElementById("variableSelector").onchange=function(){
@@ -173,7 +173,7 @@ d3.csv(pumsDataset, function(d) {
 
   SelectDimension();
 
-  bubble.init(-1);
+  bubble.init(updateObject);
   map.init(updateObject);
   barplot.init(updateObject);
 });

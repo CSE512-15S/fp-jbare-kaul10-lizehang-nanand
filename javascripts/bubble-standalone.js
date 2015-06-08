@@ -703,7 +703,7 @@ function type(d) {
 
   d.PUMA10 = d.PUMA10;
   // squash y range when plotting for sub
-  d.y /= 2.5;
+  d.y /= 3;
   d.x += 300;
   d.cx_current += 300;
   d.cy_current *= 1.1;
