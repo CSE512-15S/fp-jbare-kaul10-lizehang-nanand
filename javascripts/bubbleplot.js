@@ -17,7 +17,7 @@ var bubble_generator = function(){
           current_area = area;
         }
         // remove SVG for new one
-         d3.select("div#bubble svg").remove();       
+         d3.select("div#bubble_svg").remove();       
         
         // plot bubble chart
 
@@ -630,8 +630,8 @@ var bubble_generator = function(){
     };  
 
     var init = function(area){
-      console.log("bubble initiated")
-          update_view(area);      
+      console.log("bubble initiated");
+      update_view(area);      
     }; 
 
     return {

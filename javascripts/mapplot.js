@@ -1,12 +1,9 @@
 // Slider area
-var map_generator = function(){
+var map_generator = function(parsedDataset){
   //START by setting up overall layout of page
   var margin = {top: 10, right: 30, bottom: 30, left: 30},
-      width = 1300 - margin.left - margin.right,
-      height = 700 - margin.top - margin.bottom;
-
-  var detailWidth = 400,
-      detailHeight = 400;
+      width = 800 - margin.left - margin.right,
+      height = 550 - margin.top - margin.bottom;
       
   var centered;
 
@@ -15,32 +12,66 @@ var map_generator = function(){
   //THEN load the PUMS dataset and do everything else inside this
   //Loading the PUMS once like this is faster then loading it a bunch of different times
   //The "rows" variable contains all the imported PUMS data
-  var pumsDataset = "data/PUMS_less.csv";
+  
 
   // function to draw the map area (does it need any data from pums_less?)
   // input variable being the whole dataset
-  var draw = function(rows){
-    var map = d3.select("#map")
-      .append("svg")
+  var draw = function(updateObject){
+    var map = d3.select("#map_svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
-      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")")
+      .attr("id", "mapGroup");
 
     var tooltipGroup = map.append("g");
 
-    var detail = map.append("g")
-        .attr("class", "detail")
-        .attr("transform", "translate(" + 800 + "," + 0 +")" )
-        .attr("width", 400)
-        .attr("height", height);
+    //console.log(map);
+
+    
 
     //THEN set up all the map stuff
     var mapDataset = "data/pumas_wash_topo.json";
- 
+    
+    var rowsFiltered = parsedDataset.filter(function(d){ 
+      var include = true;
+
+      include = include && (d.income > updateObject.income[0]) && (d.income < updateObject.income[1]);
+      include = include && (d.bedrooms > updateObject.bedrooms[0]) && (d.bedrooms < updateObject.bedrooms[1]);
+      include = include && (d.dependents > updateObject.dependents[0]) && (d.dependents < updateObject.dependents[1]);
+      include = include && (d.vehicles > updateObject.vehicles[0]) && (d.vehicles < updateObject.vehicles[1]);
+
+      return include;
+    });
+
+    var values = [];
+    var valuesByPuma = {};
+    var i = 0;
+    for (i = 0; i < rowsFiltered.length; i++) {
+      values.push(rowsFiltered[i][updateObject.variable]);
+
+      if (rowsFiltered[i].puma in valuesByPuma) {
+        valuesByPuma[rowsFiltered[i].puma].push(rowsFiltered[i][updateObject.variable]);
+      } else {
+        valuesByPuma[rowsFiltered[i].puma] = [rowsFiltered[i][updateObject.variable]];
+      }
+    }
+
+
+    var averagesByPuma = {};
+    var arrayOfAverages = [];
+    for (key in valuesByPuma) {
+      averagesByPuma[key] = d3.mean(valuesByPuma[key]);
+      arrayOfAverages.push(averagesByPuma[key]);
+    }
+
+    console.log(averagesByPuma);
+
+    var averagesExtent = d3.extent(arrayOfAverages);
+
     var colorScale = d3.scale.linear()
-        .domain([0, 2])
-        .range(["white", "red"]);
+        .domain(averagesExtent)
+        .range(["red", "blue"]);
    
     var projection = d3.geo.albers()
         .rotate([119, 0])
@@ -63,8 +94,13 @@ var map_generator = function(){
           .attr('class', 'd3-tip')
           .offset([-10, 0])
           .html(function(d) {
-            return "<strong style='color:white'>Name:</strong> <span style='color:white'>" + d.properties.name +          
-            "</span><br><strong style='color:white'>PUMA10:</strong> <span style='color:white'>" + d.properties.puma;
+            return "<span style='color:white'>Location:</span>" + 
+            "<br><strong style='color:white;text-decoration: underline;font-size: 14px'>" + d.properties.name + "</strong>" + 
+            "<br><br><span style='color:white'>PUMA:</span>" + 
+            "<br><strong style='color:white;text-decoration: underline;font-size: 14px'>" + d.properties.puma + "</strong>" + 
+            "<br><br><span style='color:white'>Average financial impact </span>" + 
+            "<br><span style='color:white'>for selected variable: </span><br>" + 
+            "<strong style='color:white;text-decoration: underline;font-size: 14px'>$" + (averagesByPuma[d.properties.puma]).round() + "</strong>";
           
           });
 
@@ -76,9 +112,13 @@ var map_generator = function(){
           .data(wash.features)
           .enter().append("path")         
           .attr("d", path)
+          .attr("class", "pumaPath")
           .style("stroke","#ccc")
           .style("stroke-width", "1px")
-          .style("fill","gray")
+          // .style("fill","gray")
+          .style("fill", function(d) {
+            return colorScale(averagesByPuma[d.properties.puma]);
+          })
           .style("fill-opacity", defaultOpacity)
           .attr("id", function(d) {
             return "puma" + d.properties.puma;
@@ -91,16 +131,25 @@ var map_generator = function(){
             }
           )
           .on('mouseout', function(d) {
-            if (d.properties.puma != activePuma){
+            //if (d.properties.puma != activePuma){
               d3.select(this).style("fill-opacity", defaultOpacity).style("cursor", "auto");
-            }
+            //}
             tip.hide(d);
           })
           .on('click',function(d) {
-            d3.select("#puma" + activePuma).style("fill","gray").style("fill-opacity", defaultOpacity);
-            d3.select(this).style("fill","orange");
-            activePuma = d.properties.puma;
-            clicked(d);
+            if (activePuma == d.properties.puma) {
+              d3.select(this).style("stroke","#ccc").style("stroke-width","1px");//.style("fill-opacity", defaultOpacity);
+              activePuma = -1;
+              updateObject.area = -1;
+              clicked(updateObject);
+            } else {
+              d3.select("#puma" + activePuma).style("stroke","#ccc").style("stroke-width","1px");//.style("fill-opacity", defaultOpacity);
+              d3.select(this).style("stroke","yellow").style("stroke-width","3px");
+              activePuma = d.properties.puma;
+              updateObject.area = d.properties.puma;
+              clicked(updateObject,d);
+            }
+            
           });
 
         
@@ -108,71 +157,59 @@ var map_generator = function(){
       });
       
       //THEN figure out what to do when an area of the map is clicked
-      function clicked(pumaClicked) {
+      function clicked(obj,d) {
+        barplot.update(obj);
+		//console.log(obj);
+		var x, y, k;
+         
+          if (d && centered !== d) {
+			 if(obj.area > 11000){
 
-        //console.log(pumaClicked);
-
-        d3.selectAll(".bar").remove();
-        d3.selectAll("#bar-x-axis").remove();
-    
-        //document.getElementById("menu").style.visibility="visible"; 
-
-        // A formatter for counts.
-        var formatCount = d3.format(",.0f");
-
-        //Filter the data based on which PUMA was clicked
-        var rowsFiltered = rows.filter(function(d){ return d.puma == parseInt(pumaClicked.properties.puma); });
-
-        var values = [];
-        var i = 0;
-        for (i = 0; i < rowsFiltered.length; i++) {
-          values.push(rowsFiltered[i].netBest);
-        }
-
-        var domain = d3.extent(values);
-        domain[0] = 100 * Math.floor(domain[0]/100);
-        domain[1] = 100 * Math.ceil(domain[1]/100);
-
-        var x = d3.scale.linear()
-          .domain(domain)
-          .range([0, detailWidth]);
-
-        // Generate a histogram using uniformly-spaced bins.
-        var data = d3.layout.histogram()
-            .bins(x.ticks(40))
-            (values);
-
-
-        var y = d3.scale.linear()
-            .domain([0, d3.max(data, function(d) { 
-              return d.y; 
-            })])
-            .range([detailHeight, 0]);
-
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
-
-        var bar = detail.selectAll(".bar")
-            .data(data)
-            .enter().append("g")
-            .attr("class", "bar")
-            .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
-
-        //console.log(d3.extent(values) + " " + data[0].dx + " " + x(data[0].dx));
-
-        bar.append("rect")
-            .attr("x", 1)
-            .attr("width", 10)//x(data[0].dx) - 1)
-            .attr("height", function(d) { 
-              return detailHeight - y(d.y); 
-            });
-
-        detail.append("g")
-            .attr("class", "x axis")
-            .attr("id", "bar-x-axis")
-            .attr("transform", "translate(0," + detailHeight + ")")
-            .call(xAxis);
+			 var centroid = path.centroid(d);
+            x = centroid[0];
+            y = centroid[1];
+            k = 5;
+            centered = d;
+				 
+				 
+			 }
+			 else if(obj.area > 10500 && obj.area <=11000){
+				 
+				 
+			 var centroid = path.centroid(d);
+            x = centroid[0];
+            y = centroid[1];
+            k = 2.6;
+            centered = d;
+				 
+				 
+			 }
+			 
+			 else if(obj.area <=10500){
+				 
+				 
+			 var centroid = path.centroid(d);
+            x = centroid[0];
+            y = centroid[1];
+            k = 2;
+            centered = d;
+				 
+				 
+			 }
+          } else {
+            x = width / 2;
+            y = height / 2;
+            k = 1;
+            centered = null;
+          }
+         
+          tooltipGroup.selectAll("path")
+              .classed("active", centered && function(d) { return d === centered; });
+         
+          tooltipGroup.transition()
+              .duration(750)
+              .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+              .style("stroke-width", 1.5 / k + "px");
 
       }
   };
@@ -183,34 +220,29 @@ var map_generator = function(){
   var update_view = function(area){
     current_area = area;   
     // update the bubble plot (whenever update view, call this)
-    bubble.update(area);
+    //bubble.update(area);
   };
 
   // function to initiate 
-  var init = function(){
-      d3.csv(pumsDataset, function(d) {
-        return {
-          puma: +d.PUMA10,
-          netBest: +d.netBest
-        };
-      }, function(error, rows) {
-        draw(rows);
-      });
+  var init = function(updateObject){
+      draw(updateObject);
   };
 
   // function to redraw brush
-  var redraw = function(){
-    d3.select("div#map svg").remove();
+  var redraw = function(updateObject){
+    d3.select("#map_svg").remove();
+    d3.select("div#map").append("svg")
+        .attr("id", "map_svg");
     //initCanvasSize();
-    draw(dataset);
+    draw(updateObject);
     // console.log(current_range);
-    update_view(current_area);
+    //update_view(current_area);
     barplot.init;
   };
 
   return {
     init: init,
     redraw: redraw,
-    dataset: function() { return dataset; }
+    dataset: function() { return parsedDataset; }
   };
 }

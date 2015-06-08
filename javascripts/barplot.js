@@ -1,118 +1,151 @@
-var barplot_generator = function() {
-    var init_function = function() {
-        var margin = {top: 20, right: 50, bottom: 150, left: 40},
-                    width = 500 - margin.left - margin.right,
-                    height = 600 - margin.top - margin.bottom;
+var barplot_generator = function(parsedDataset) {
+  
+  var margin = {top: 10, right: 30, bottom: 50, left: 30},
+      width = 500 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
 
-        $("#barplot_svg").empty();
-        // which area to choose, when initializing use all areas
-        var area = -1;
-        var filtered_data = [];
-       
-        // filter data to match area like the following
-        // for (var i=0; i<currJSON.length; i++) {
-        //     // var currTime = new Date(currJSON[i].check_in_date).getTime();
-        //     var currTime = parseformat(currJSON[i].check_in_date).getTime();
-        //     if (currTime<=end_time && currTime>=start_time) {
-        //         filtered_data.push(currJSON[i]);
-        //     }
-        // }
+  var detail = d3.select("#barplot_svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .attr("id", "detailGroup")
+        .attr("width", width)
+        .attr("height", height);
+		
+		var tooltipGroup = detail.append("g");
 
-        // nesting the data
-        var nested_data = d3.nest()
-            .key(function(d) { return d.netchange; })
-            .sortKeys(d3.ascending)
-            .entries(filtered_data);
+  var init = function(updateObject) {
+    // d3.csv(pumsDataset, function(d) {
+    //   return {
+    //     puma: +d.PUMA10,
+    //     netBest: +d.netBest
+    //   };
+    // }, function(error, rows) {
+    //   parsedDataset = rows;
+    // });
+    update(updateObject);
+  };
 
-        // get the aggregated counts
-        var aggregated_data = [];
-        // for (var i=0; i<nested_data.length;i++) {
-        //     var currCate = nested_data[i].key;
-        //     var currCount = nested_data[i].values.length;
-        //     aggregated_data.push({category: currCate, count: currCount});
-        // }
+  var update = function(updateObject) {
+    //console.log(pumaClicked);
 
-        // // console.log(aggregated_data);
-        // var color = d3.scale.category20c();
-        // var category_domain_reverse = category_domain.slice(0).reverse();
-        // color.domain(category_domain);
-
-        var x = d3.scale.ordinal()
-                  .rangeRoundBands([0, width], 0.1);
-                  
-        var y = d3.scale.linear()
-                  .range([height, 0]);
-
-        var xAxis = d3.svg.axis()
-                      .scale(x)
-                      .orient("bottom");
-
-        var yAxis = d3.svg.axis()
-                      .scale(y)
-                      .orient("left")
-                      .ticks(10, "");
-
-        barplot_svg = d3.select("#barplot_svg")
-                    .attr("width", width + margin.left + margin.right)
-                    .attr("height", height + margin.top + margin.bottom)
-                    .append("g")
-                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        // bar plot codes from my A3, might be useful 
-
-        // // x.domain(aggregated_data.map(function(d) { return d.category; }));
-        // var reverse_domain = [];
-        //     reverse_domain = category_domain.slice(0);
-        //     reverse_domain.reverse();
-        
-        // x.domain(reverse_domain);        
-        // var ymax = d3.max(aggregated_data, function(d) {return d.count});
-        // y.domain([0, 1.1*ymax]);
-
+    d3.selectAll(".bar").remove();
+    d3.selectAll("#bar-x-axis").remove();
+    d3.selectAll("#histogram_label").remove();
     
-        // // barplot_svg.call(tip);
+    //document.getElementById("menu").style.visibility="visible"; 
 
-        // barplot_svg.append("g")
-        //     .attr("class", "x axis")
-        //     .attr("transform", "translate(0," + height + ")")
-        //     .call(xAxis)
-        //         .selectAll("text")  
-        //         .style("text-anchor", "end")
-        //         .attr("dx", "-.8em")
-        //         .attr("dy", ".15em")
-        //         .attr("transform", function(d) {
-        //             return "rotate(-65)";});
+    // A formatter for counts.
+    var formatCount = d3.format(",.0f");
 
-        // barplot_svg.append("g")
-        //     .attr("class", "y axis")
-        //     .call(yAxis)
-        //     .append("text")
-        //     .attr("transform", "rotate(-90)")
-        //     .attr("y", 6)
-        //     .attr("dy", ".71em")
-        //     .style("text-anchor", "end")
-        //     .text("count");
+    //Filter the data based on which PUMA was clicked
+    var rowsFiltered = parsedDataset.filter(function(d){ 
+      var include = true;
 
-        // var bar = barplot_svg.selectAll(".bar")
-        //     .data(aggregated_data)
-        //     .enter().append("rect")
-        //     .attr("class", "bar")
-        //     .attr("x", function(d) { return x(d.category); })
-        //     .attr("width", x.rangeBand())
-        //     .attr("y", function(d) { return y(d.count); })
-        //     .style("fill", function(d) { return color(d.category); })
-        //     .attr("height", function(d) { return height - y(d.count); });
-        //     // .on('mouseover', tip.show)
-        //     // .on('mouseout', tip.hide);
+      if (updateObject.area != -1) {
+        include = include && (d.puma == parseInt(updateObject.area)); 
+      }
 
+      include = include && (d.income > updateObject.income[0]) && (d.income < updateObject.income[1]);
+      include = include && (d.bedrooms > updateObject.bedrooms[0]) && (d.bedrooms < updateObject.bedrooms[1]);
+      include = include && (d.dependents > updateObject.dependents[0]) && (d.dependents < updateObject.dependents[1]);
+      include = include && (d.vehicles > updateObject.vehicles[0]) && (d.vehicles < updateObject.vehicles[1]);
 
-    };
+      return include;
+    });
 
-    var barplot_update_function = function() {
+    var values = [];
+    var i = 0;
+    for (i = 0; i < rowsFiltered.length; i++) {
+      values.push(rowsFiltered[i][updateObject.variable]);
+    }
 
-    };
-    return {
-        init: init_function,
-        update: barplot_update_function
-    };
+    var domain = d3.extent(values);
+    domain[0] = 1000 * Math.floor(domain[0]/1000);
+    domain[1] = 1000 * Math.ceil(domain[1]/1000);
+
+    var x = d3.scale.linear()
+      .domain(domain)
+      .range([0, width]);
+
+    // Generate a histogram using uniformly-spaced bins.
+    var data = d3.layout.histogram()
+        .bins(x.ticks(80))
+        (values);
+    
+	
+
+    var y = d3.scale.linear()
+        .domain([0, d3.max(data, function(d) { 
+          return d.y; 
+        })])
+        .range([height, 0]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+    var detail = d3.select("#detailGroup");
+
+    var bar = detail.selectAll(".bar")
+        .data(data)
+        .enter().append("g")
+        .attr("class", "bar")
+        .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+
+    //console.log(d3.extent(values) + " " + data[0].dx + " " + x(data[0].dx));
+
+    bar.append("rect")
+        // .transition()
+        // .duration(500)
+        .attr("x", 1)
+        .attr("width", 4)//x(data[0].dx) - 1)
+        .attr("height", function(d) { 
+          return height - y(d.y); 
+        }).on('mouseover', //tip.show
+            function(d) {
+              tip.show(d);
+              d3.select(this).style("fill-opacity", 1).style("cursor", "auto");
+              
+            }
+          )
+          .on('mouseout', function(d) {
+            //if (d.properties.puma != activePuma){
+              d3.select(this).style("fill-opacity", defaultOpacity).style("cursor", "auto");
+            //}
+            tip.hide(d);
+          });
+
+    detail.append("g")
+        .attr("class", "x axis")
+        .attr("id", "bar-x-axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    detail.append("text")
+        .attr("class", "x label")
+        .attr("id", "histogram_label")
+        .attr("text-anchor", "middle")
+        .attr("x", 250)
+        .attr("y", height + 35)
+        .text("Financial impact ($)");
+		
+			var tip = d3.tip()
+          .attr('class', 'd3-tip')
+          .offset([-10, 0])
+          .html(function(d) {
+            return "<span style='color:white'>Number of sampled households:</span> <strong style='color:white;text-decoration: underline;font-size: 14px'>" + d.y +          
+            "</strong><br><span style='color:white'>Financial impact range for this bin:</span> <strong style='color:white;text-decoration: underline;font-size: 14px'> $" 
+            + d.x + " to $" + (d.x + d.dx) + "</strong>";
+          
+          });
+		  
+		  	tooltipGroup.call(tip);
+  };
+
+  return {
+      init: init,
+      update: update
+  };
 };

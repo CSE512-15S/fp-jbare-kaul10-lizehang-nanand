@@ -5,54 +5,139 @@
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script type="text/javascript" src="javascripts/global_init.js"></script>
-<h1>Carbon Tax Statewide Impact Visualization</h1>
+<h1>Visualizing the Statewide Impact of a Revenue-Neutral Carbon Tax</h1>
 <h2>Some description</h2>
 <div id="selectionboxes">
-  <p id="dimensionsHeader">Select the case to be displayed:</p>
-  <select id="dimensions" onchange="SelectDimension()">
-    <option value="best">Best Case</option>
-    <option value="worst">Worst Case</option>
-    <option value="average">Average Case</option>
+  <table style="width:100%">
+    <tr>
+      <td><span id="dimensionsHeader" class="selectFilters">Household financial impact variable:&nbsp;&nbsp;</span></td>
+      <td><span  class="selectFilters">&nbsp;&nbsp;Income filter ($):&nbsp;&nbsp;</span></td>    
+      <td><span  class="selectFilters">&nbsp;&nbsp;Number of dependents filter:&nbsp;&nbsp;</span></td>
+      <td><span  class="selectFilters">&nbsp;&nbsp;Number of bedrooms filter:&nbsp;&nbsp;</span></td>
+      <td><span  class="selectFilters">&nbsp;&nbsp;Number of vehicles filter:&nbsp;&nbsp;</span></td>
+    </tr>
+    <tr>
+      <td>
+        <select id="variableSelector" onchange="SelectDimension()" class="selectFilters">
+          <option value="average">Net average</option>
+          <option value="best">Net best</option>          
+          <option value="worst">Net worst</option>
+
+          <option value="averageHome">Home energy average</option>
+          <option value="bestHome">Home energy best</option>          
+          <option value="worstHome">Home energy worst</option>
+
+          <option value="averageElec">Electricity average</option>
+          <option value="bestElec">Electricity best</option>          
+          <option value="worstElec">Electricity worst</option>
+
+          <option value="natGas">Natural gas</option>
+          <option value="fuelOil">Fuel oil</option>
+          <option value="air">Air travel</option>
+          <option value="gas">Gasoline</option>
+          <option value="wfr">Working Families Rebate</option>
+          <option value="salesTax">Sales tax savings</option>
+        </select>
+      </td>
+      <td>
+        <div id = "income" class = "selectFilters">
+
+        </div>
+      </td>    
+      <td>
+        <div id = "dependents" class = "selectFilters">
+
+        </div>
+      </td>  
+      <td>
+        <div id = "bedrooms" class = "selectFilters">
+
+        </div>
+      </td> 
+      <td>
+        <div id = "vehicles" class = "selectFilters">
+
+        </div>
+      </td>
+    </tr>
+  </table>
+  <!-- <span id="dimensionsHeader" class="selectFilters">Variable selector:&nbsp;&nbsp;</span>
+  <select id="mapColoring" onchange="SelectDimension()" class="selectFilters">
+    <option value="best">Net best</option>
+    <option value="average">Net average</option>
+    <option value="worst">Net worst</option>
   </select>
 
-  <br/><br/>
+  <span id="dimensionsHeader" class="selectFilters">&nbsp;&nbsp;Histogram variable:&nbsp;&nbsp;</span>
+  <select id="histogramVariable" onchange="SelectDimension()" class="selectFilters">
+    <option value="best">Net best</option>
+    <option value="average">Net average</option>
+    <option value="worst">Net worst</option>
+  </select>
+
+  <span  class="selectFilters">&nbsp;&nbsp;Income filter:&nbsp;&nbsp;</span>
+  <div id = "income" class = "selectFilters">
+
+  </div>
+
+  <span  class="selectFilters">&nbsp;&nbsp;Number of dependents filter:&nbsp;&nbsp;</span>
+  <div id = "dependents" class = "selectFilters">
+
+  </div>
+
+  <span  class="selectFilters">&nbsp;&nbsp;Bedrooms filter:&nbsp;&nbsp;</span>
+  <div id = "bedrooms" class = "selectFilters">
+
+  </div>
+
+  <span  class="selectFilters">&nbsp;&nbsp;Number of vehicles filter:&nbsp;&nbsp;</span>
+  <div id = "vehicles" class = "selectFilters">
+
+  </div> -->
+  <br>
 
 </div>
-<p></p>
 
-<div class="container" padding="0px">
-    <div id="bubble">
-    	<svg id="svg"/>
-	</div>
-</div>
+<p> </p>
 
 <div class="container">
-	<div id="map"></div>
+	<div id="map">
+    <svg id="map_svg"></svg>
+  </div>
 </div>
 
-<div id="tooltip" class="hidden">
+<!-- <div id="tooltip" class="hidden">
 	<p><span id="value"/></p>
-</div>
+</div> -->
 
 <div class="container">
 	<div id="barplot">
-		<h3><center>Net tax in area selected</center></h3>
+    <h2><centering>Financial Impact for Selected Variable</centering></h2>
+		<!-- <h3><center>Net tax in area selected</center></h3> -->
 		<svg id="barplot_svg">
 		</svg>
 	</div>
 </div>
 
+<!-- <div class="container" padding="0px">
+  <div id="bubble">
+    <svg id="bubble_svg"></svg>
+  </div>
+</div> -->
+
 <div class="g-graphic">
-<!-- <div class="g-search">
-<input type="text" placeholder="Find a sample or industry&hellip;">
-<button style="display:none;" class="g-search-clear">X</button>
+  <!-- <div class="g-search">
+  <input type="text" placeholder="Find a sample or industry&hellip;">
+  <button style="display:none;" class="g-search-clear">X</button>
+  </div>
+   -->
+  <div class="g-buttons">
+    <button class="g-button g-active" data-view="overall">The Overall Picture</button>
+    <button class="g-button" data-view="MONEYPY">The View by Income</button>
+  </div>
 </div>
- -->
- <div class="g-buttons">
-<button class="g-button g-active" data-view="overall">The Overall Picture</button>
-<button class="g-button" data-view="MONEYPY">The View by Income</button>
-</div>
-</div>
+
+
 <div class="g-notes"></div>
 <div class="g-tip" style="width:235px;height:130px;display:none;">
 <div class="g-tip-shadow"></div>
