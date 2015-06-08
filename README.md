@@ -1,13 +1,17 @@
-# Carbon Tax Calculator
+# Visualizing the Statewide Impact of a Revenue-Neutral Carbon Tax
 
 Link to the webpage:
 
 http://cse512-15s.github.io/fp-jbare-kaul10-lizehang-nanand/
 
-#Team:
+#Team: 
+Justin Bare <br>
+Nandita Anand <br>
+Aditya Kaul <br>
+Richard Li
 
 #Summary Image:
-
+![Overview](summary.png)
 #Abstract:
 
 #Link to paper:
