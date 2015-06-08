@@ -84,7 +84,8 @@ var bubble_generator = function(){
         console.log(current_area);
         console.log(type);
         // remove SVG for new one
-         // d3.select("div#bubble_svg").remove();       
+         d3.select("div#bubble_svg").remove();       
+         d3.select("div#bubble_key_svg").remove();       
 
          // plot
          var formatPercent = d3.format(".2%"),
@@ -132,13 +133,15 @@ var bubble_generator = function(){
                   .tickPadding(6);
 
 
-              var svg = d3.select(".g-graphic").append("svg")
+              // var svg = d3.select(".g-graphic").append("svg")
+              var svg = d3.select("#bubble_svg")
                   .attr("height", 300 + margin.top + margin.bottom)
                   .attr("width", width + margin.left + margin.right)
                 .append("g")
                   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-              d3.select(".g-graphic").append("svg")
+              // d3.select(".g-graphic").append("svg")
+              d3.select("#bubble_key_svg")
                   .style("margin-top", "20px")
                   .attr("height", 80)
                   .attr("width", width + margin.left + margin.right)
@@ -324,9 +327,9 @@ var bubble_generator = function(){
                   var transition = d3.transition()
                       .duration(750);
 
-                  transition.select("svg")
+                  transition.select("#bubble_svg")
                       .delay(720)
-                      .attr("height", 420 + margin.top + margin.bottom)
+                      .attr("height", 300 + margin.top + margin.bottom)
                       .each("end", function() {
                         gVoronoi.call(updateVoronoi,
                           function(d) { return d.cx_current; },
@@ -388,7 +391,7 @@ var bubble_generator = function(){
                   var transition = d3.transition()
                       .duration(750);
 
-                  transition.select("svg")
+                  transition.select("#bubble_svg")
                       .attr("height", height + margin.top + margin.bottom)
                     .transition()
                       .delay(720)
@@ -452,7 +455,7 @@ var bubble_generator = function(){
                   var transition = d3.transition()
                       .duration(750);
 
-                  transition.select("svg")
+              transition.select("#bubble_svg")
                       .attr("height", heightnew + margin.top + margin.bottom)
                     .transition()
                       .delay(720)
@@ -536,7 +539,7 @@ var bubble_generator = function(){
                   if (currentView === "overall") dx = d.cx_current, dy = d.cy_current + y0(nameAll);
                   else if(currentView == "selected") dx = x(d.x), dy = d.y + y(d.income_group_level);
                   else dx = x(d.x), dy = d.y + ynew(d.PUMA10);
-                  dy -= 69, dx += 50; // margin fudge factors
+                  dy += 520, dx += 50; // margin fudge factors
 
                   tip.style("display", null)
                       .style("top", (dy - r(d.count)) + "px")
