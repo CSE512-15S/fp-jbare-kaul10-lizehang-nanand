@@ -6,11 +6,18 @@
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script type="text/javascript" src="javascripts/global_init.js"></script>
 <h1>Visualizing the Statewide Impact of a Revenue-Neutral Carbon Tax</h1>
-<h2>Some description</h2>
-<div id="selectionboxes">
+<p>In the 2016 Washington state elections, there will be a ballot initiative proposed by <a href="http://carbonwa.org/">Carbon Washington</a> asking voters if they want to implement a revenue-neutral carbon tax policy in the state. How are you going to make this decision? The goal of this visualization is to help you make an informed choice by providing information about the estimated financial impacts of such a policy on households around the state.</p> 
+
+<p>With the drop-down selector, you can change which variable is encoded on the map, histogram, and bubble chart. For these variables, &quot;average&quot; means electricity is calculated assuming electricity is provided by an average utility in the region in terms of carbon impact. Similarly, &quot;best&quot; and &quot;worst&quot; assume the utility with the best carbon impact and the worst carbon impact, respectively.  </p>
+
+<p>With the brush filters, you can change which types of households are included in the data that is displayed on the map and histogram. Also, by clicking a region on the map, only households in that region are included in the histogram. </p>
+
+<p>The coloring of the map shows the relative financial impacts on the selected variable, with <font style="font-weight: bold;" color="red">red</font> coloring the regions for which the average household is impacted more negatively and <font style="font-weight: bold;" color="blue">blue</font> coloring the regions for which the average household is impacted more positively. For more detail beyond the average household, look to the histogram, which shows the distribution of impacts for the selected variable. For even more detail, the bubble chart breaks the data down further. </p> 
+
+<div style="text-align: center;" id="selectionboxes">
   <table style="width:100%">
     <tr>
-      <td><span id="dimensionsHeader" class="selectFilters">Household financial impact variable:&nbsp;&nbsp;</span></td>
+      <td><span id="dimensionsHeader" class="selectFilters">Household financial <br> impact variable:&nbsp;&nbsp;</span></td>
       <td><span  class="selectFilters">&nbsp;&nbsp;Income filter ($):&nbsp;&nbsp;</span></td>    
       <td><span  class="selectFilters">&nbsp;&nbsp;Number of dependents filter:&nbsp;&nbsp;</span></td>
       <td><span  class="selectFilters">&nbsp;&nbsp;Number of bedrooms filter:&nbsp;&nbsp;</span></td>
@@ -19,22 +26,22 @@
     <tr>
       <td>
         <select id="variableSelector" onchange="SelectDimension()" class="selectFilters">
-          <option value="average">Net average</option>
-          <option value="best">Net best</option>          
-          <option value="worst">Net worst</option>
+          <option value="average">Net taxes average</option>
+          <option value="best">Net taxes best</option>          
+          <option value="worst">Net taxes worst</option>
 
-          <option value="averageHome">Home energy average</option>
-          <option value="bestHome">Home energy best</option>          
-          <option value="worstHome">Home energy worst</option>
+          <option value="averageHome">Home energy taxes average</option>
+          <option value="bestHome">Home energy taxes best</option>          
+          <option value="worstHome">Home energy taxes worst</option>
 
-          <option value="averageElec">Electricity average</option>
-          <option value="bestElec">Electricity best</option>          
-          <option value="worstElec">Electricity worst</option>
+          <option value="averageElec">Electricity taxes average</option>
+          <option value="bestElec">Electricity taxes best</option>          
+          <option value="worstElec">Electricity taxes worst</option>
 
-          <option value="natGas">Natural gas</option>
-          <option value="fuelOil">Fuel oil</option>
-          <option value="air">Air travel</option>
-          <option value="gas">Gasoline</option>
+          <option value="natGas">Natural gas taxes</option>
+          <option value="fuelOil">Fuel oil taxes</option>
+          <option value="air">Air travel taxes</option>
+          <option value="gas">Gasoline taxes</option>
           <option value="wfr">Working Families Rebate</option>
           <option value="salesTax">Sales tax savings</option>
         </select>
