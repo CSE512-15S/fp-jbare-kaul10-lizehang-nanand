@@ -5,9 +5,9 @@ Link to the webpage:
 http://cse512-15s.github.io/fp-jbare-kaul10-lizehang-nanand/
 
 #Team: 
-Justin Bare
-Nandita Anand
-Aditya Kaul
+Justin Bare <br>
+Nandita Anand <br>
+Aditya Kaul <br>
 Richard Li
 
 #Summary Image:
