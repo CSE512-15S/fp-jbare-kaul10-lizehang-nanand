@@ -99,82 +99,7 @@ svg {
   left: 0;
 }
 
-/*select {
-  visibility: hidden;
-}*/
-
-/* test bar style */
-/*div.bar {
-		display: inline-block;
-		width: 20px;
-		height: 75px;	
-		margin-right: 2px;
-	}*/
-
-/* Style of the x-axis line */
-/*.axis path,
-.axis line {
-	fill: none;
-	stroke: none;
-}
-.axis text {
-	font-family: Arial;
-	font-size: 11 px;
-	shape-rendering: crispEdges;
-}*/
-
-/* Style of box drawn for brushing */
-/*.brush .extent {
-	stroke: #fff;
-	fill-opacity: .125;
-	shape-rendering: crispEdges;
-}*/
-
-/* Style of tooltip */
-/*#tooltip {
-	position: absolute;
-	text-align: center;
-	width: auto;
-	height: 30px;
-	padding: 10px;
-	font: 12px Arial;
-	background: white;
-	border: 1px;
-	border-color: #000;
-	border-radius: 8px;
-	-webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-	pointer-events: none;
-	left:340px;
-    top:210px;
-}
-#tooltip.hidden {
-	display:none;
-}*/
-
-/*.on("mouseover", function(d) {      
-            div.transition()        
-                .duration(200)      
-                .style("opacity", .9);      
-            div .html(formatTime(d.date) + "<br/>"  + d.close)  
-                .style("left", (d3.event.pageX) + "px")     
-                // this is important for making it follow the mouse
-                .style("top", (d3.event.pageY - 28) + "px");    
-            })   */
-
-/*  */
-
-
-/*.d3-tip {
-  line-height: 1;
-  font-weight: bold;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border-radius: 2px;
-}*/
-
-.NYT5Style .masthead-tools #bar1-twopanel  {
+/*.NYT5Style .masthead-tools #bar1-twopanel  {
     display: inline;
     vertical-align: top;
 }
@@ -339,6 +264,7 @@ a.nyt-button-actions.highlightButton:visited {
         top: 18px;
 }
 /* WEBKIT ONLY RULES */
+/*
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   .NYT5Style #hovercard,
   #hovercard {
@@ -349,8 +275,9 @@ a.nyt-button-actions.highlightButton:visited {
     }*/
 }
 /* EXCLUDING NYT4 INTERACTIVES */
+/*
 #interactiveABC #bar1-twopanel {
    display: none;
 }
 .bar1_header {
-background-image:none !important;
+background-image:none !important;*/
