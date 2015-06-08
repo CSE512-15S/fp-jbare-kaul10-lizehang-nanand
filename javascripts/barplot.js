@@ -32,6 +32,7 @@ var barplot_generator = function(parsedDataset) {
 
     d3.selectAll(".bar").remove();
     d3.selectAll("#bar-x-axis").remove();
+    d3.selectAll("#histogram_label").remove();
     
     //document.getElementById("menu").style.visibility="visible"; 
 
@@ -124,17 +125,19 @@ var barplot_generator = function(parsedDataset) {
 
     detail.append("text")
         .attr("class", "x label")
-        .attr("text-anchor", "end")
+        .attr("id", "histogram_label")
+        .attr("text-anchor", "middle")
         .attr("x", 250)
         .attr("y", height + 35)
-        .text("financial impact ($)");
+        .text("Financial impact ($)");
 		
 			var tip = d3.tip()
           .attr('class', 'd3-tip')
           .offset([-10, 0])
           .html(function(d) {
-            return "<strong style='color:white'>Number of People:</strong> <span style='color:white'>" + d.y +          
-            "</span><br><strong style='color:white'>Household Financial Impact:</strong> <span style='color:white'>" + d.x;
+            return "<span style='color:white'>Number of sampled households:</span> <strong style='color:white;text-decoration: underline;font-size: 14px'>" + d.y +          
+            "</strong><br><span style='color:white'>Financial impact range for this bin:</span> <strong style='color:white;text-decoration: underline;font-size: 14px'> $" 
+            + d.x + " to $" + (d.x + d.dx) + "</strong>";
           
           });
 		  

@@ -94,8 +94,13 @@ var map_generator = function(parsedDataset){
           .attr('class', 'd3-tip')
           .offset([-10, 0])
           .html(function(d) {
-            return "<strong style='color:white'>Name:</strong> <span style='color:white'>" + d.properties.name +          
-            "</span><br><strong style='color:white'>PUMA:</strong> <span style='color:white'>" + d.properties.puma;
+            return "<span style='color:white'>Location:</span>" + 
+            "<br><strong style='color:white;text-decoration: underline;font-size: 14px'>" + d.properties.name + "</strong>" + 
+            "<br><br><span style='color:white'>PUMA:</span>" + 
+            "<br><strong style='color:white;text-decoration: underline;font-size: 14px'>" + d.properties.puma + "</strong>" + 
+            "<br><br><span style='color:white'>Average financial impact </span>" + 
+            "<br><span style='color:white'>for selected variable: </span><br>" + 
+            "<strong style='color:white;text-decoration: underline;font-size: 14px'>$" + (averagesByPuma[d.properties.puma]).round() + "</strong>";
           
           });
 
