@@ -26,22 +26,23 @@ Go [here:](http://cse512-15s.github.io/fp-jbare-kaul10-lizehang-nanand/combinedV
 #Division of Labor:
 All members in the group participated in regular discussion, literature review, and writing. Each member's focus is provided below:
 
-Justin Bare <br>
+
+* Justin Bare <br>
  + Data retrieval, cleaning, and computation
  + Filtering and variable selection
  + Map geographic boundaries display and coloring
  + Histogram computation and design
  + Mouse event update scheme
 <br>
-Nandita Anand <br>
- + Data retrieval, cleaning, and computation
- + Filtering and variable selection
+* Nandita Anand <br>
+ + ...
+ + ...
 <br>
-Aditya Kaul <br>
- + Data retrieval, cleaning, and computation
- + Filtering and variable selection
+* Aditya Kaul <br>
+ + ...
+ + ...
 <br>
-Zehang Richard Li
+* Zehang Richard Li
  + Navigate and locate external dataset to combine with the main PUMS data.
  + Perform data cleaning and missing data imputation.
  + Pre-compute aggregated data table and bubble locations in the bubble chart.
