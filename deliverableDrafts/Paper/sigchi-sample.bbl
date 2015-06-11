@@ -2,27 +2,25 @@
 
 \bibitem{nytimes}
 Across u.s. companies, tax rates vary greatly.
-\newblock \url{
-  http://www.nytimes.com/interactive/2013/05/25/sunday-review/corporate-taxes.html
-  }.
+\newblock
+  \url{http://www.nytimes.com/interactive/2013/05/25/sunday-review/corporate-taxes.html}.
 
 \bibitem{coolclimate}
 Coolclimate maps.
-\newblock \url{ http://coolclimate.berkeley.edu/maps }.
+\newblock \url{http://coolclimate.berkeley.edu/maps}.
 
 \bibitem{nytimes-map}
 Increased border enforcement, with varying results.
-\newblock \url{
-  http://www.nytimes.com/interactive/2013/03/01/world/americas/border-graphic.html?_r=0
-  }.
+\newblock
+  \url{http://www.nytimes.com/interactive/2013/03/01/world/americas/border-graphic.html?\_r=0}.
 
 \bibitem{almanac}
 Power almanac of the american midwest.
-\newblock \url{ http://www.wri.org/tools/mwalmanac/almanac.php#about }.
+\newblock \url{http://www.wri.org/tools/mwalmanac/almanac.php\#about}.
 
 \bibitem{powerplant}
 Sandbag emissions map.
-\newblock \url{ http://www.sandbag.org.uk/maps/emissionsmap/ }.
+\newblock \url{http://www.sandbag.org.uk/maps/emissionsmap/}.
 
 \bibitem{salesTax}
 {Tax Alternatives for Washington State: A Report to the Legislature}, 2002.
