@@ -66,25 +66,43 @@ breaklinks=true,
 % End of preamble. Here it comes the document.
 \begin{document}
 
-\title{Carbon Tax Calculator to Help Foster Informed Voting}
+\title{Visualizing the Statewide Impact of a Revenue-Neutral Carbon Tax}
 
-\numberofauthors{3}
+\numberofauthors{4}
 \author{
   \alignauthor Justin Bare\\
     \affaddr{University of Washington}\\
     \affaddr{Seattle, WA, USA}\\
     \email{jbare@cs.washington.edu}\\
     \affaddr{}
+  \alignauthor Nandita Anand\\
+      \affaddr{University of Washington}\\
+      \affaddr{Seattle, WA, USA}\\
+      \email{nanand@uw.edu}\\
+      \affaddr{}
+  \alignauthor Aditya Kaul\\
+      \affaddr{University of Washington}\\
+      \affaddr{Seattle, WA, USA}\\
+      \email{kaul10@uw.edu}\\
+      \affaddr{}
+  \alignauthor Richard Li\\
+      \affaddr{University of Washington}\\
+      \affaddr{Seattle, WA, USA}\\
+      \email{lizehang@uw.edu}\\
+      \affaddr{}
 }
 
 \maketitle
 
 \begin{abstract}
-A string of Supreme Court decisions has allowed a massive influx of money into the political processes of the United States. The resulting rapid increase in the amount of biased information has made it difficult for Americans to find relevant facts that they can trust to help them decide on political issues. We have a vision of using online tools to introduce facts into the political sphere in ways that are transparent and fair, and that hold the producers of facts accountable for the information they provide. As a prototypical example, we are working on a calculator for a revenue neutral carbon tax proposal in the state of Washington. We will augment the tool with several novel features aimed at facilitating voters' understanding of the policy and its impacts. To this end we will employ a value sensitive design approach to create the features and evaluate how effective they are at supporting the values people desire from political information sources. 
+We have a vision of using online tools to introduce information into the political sphere in ways that are transparent and fair, and that hold the producers of facts accountable for the information they provide. As a prototypical example, we are developing an online calculator for a revenue-neutral carbon tax proposal in the state of Washington. The data visualization discussed here is one of the features of this tool aimed at facilitating voters' understanding of the policy and its impacts. We hope that features such as these will provide a basis of information from which democratic processes can proceed more effectively. Following the tradition of exploratory visualizations, our tool allows users to find their own insights from a large body of data using various filtering options and both broad and specific views of the data. 
+
+
+
 \end{abstract}
 
 \keywords{
-	Value Sensitive Design; politics
+	Exploratory visualization, Value Sensitive Design; politics
 }
 
 %\category{H.5.m.}{Information Interfaces and Presentation (e.g. HCI)}{Miscellaneous}
@@ -98,269 +116,126 @@ A string of Supreme Court decisions has allowed a massive influx of money into t
 
 \section{Introduction}
 
-Several recent United States Supreme Court decisions \cite{supremeCourt} have 
-significantly weakened campaign finance laws. Corporations and wealthy individuals 
-have taken advantage of these changes by massively increasing their campaign contributions. 
-Spending in 2012 rose to more than one billion dollars, about three times the amount spent in 2008 
-\cite{spending}. This makes it difficult for citizens to find information 
-that they can trust because they are never sure who is funding advertisements or other information sources.
+Our overall goal with the carbon tax calculator project is to provide high-quality information for the debate around the Carbon Washington revenue-neutral carbon tax initiative \cite{carbonWA}, as well as a model that can be replicated by others. We aim to create a tool that supports the values that people desire from their information sources - in particular the values of transparency, fairness, and accountability. While this specific project deals with only one proposed ballot initiative, we hope that the design process and features developed will be transferable to many other political issues.
 
-Our current project is one step toward countering the flood of money and misinformation. By itself this is clearly not enough, but along with other political activity, it might help tilt the balance. Our goal is to provide high-quality information for the debate around this particular initiative, as well as a model that can be replicated for providing high-quality information. We aim to create a tool that 
-supports the values that people desire from their information sources - in particular the values 
-of transparency, fairness, and accountability. This specific project 
-deals with a calculator tool for a revenue neutral carbon tax swap policy designed by the Carbon Washington organization 
-that may be voted on in the near future. However, we hope that the design process and features developed will be transferable 
-to many other political issues.
+Data visualization clearly plays an important part in the pursuit of this goal because modern policies are often very complex and thus difficult for most citizens to understand fully by reading the language of the policy. Data visualization can fill this critical need by distilling complex language and calculations into relationships among visual objects that can be readily understood through graphical perception.
 
-The Carbon Washington revenue-neutral carbon tax proposal is composed of four main parts: 
+To give some background on the specific policy considered here, the Carbon Washington revenue-neutral carbon tax proposal is composed of four main parts: 
 \begin{enumerate}
 \item reducing the state sales tax,
 \item funding a tax rebate for low income households,
 \item eliminating a business tax for manufacturers,
 \item and instituting a tax on fossil fuels.
 \end{enumerate}
-``Revenue-neutral'' means that the total amount that the Washington state government raises 
+“Revenue-neutral” means that the total amount that the Washington state government raises 
 from taxes every year will not change significantly as a result of this policy. The revenue 
 reductions (1 and 3 above) and the additional spending (2) will be balanced by the new 
-revenue source of the tax on fossil fuels (4).  
+revenue source of the tax on fossil fuels (4).
 
-The calculator is meant to inform stakeholders about the estimated effects of this policy 
-on their interests. For example, individuals will be able to see how the different tax changes will affect their 
-household finances. But we do not want this tool to be another element of partisan misinformation campaigns. Rather we hope to design a tool that a majority of stakeholders trust to give reliable, accurate information 
-that will allow them to vote on the policy knowing that they have an adequate understanding of its implications. 
-To effectively incorporate the values mentioned above into our tool, we will make use of Value Sensitive Design 
-techniques throughout the design process. 
+This policy affects many social, economic, and environmental variables in Washington state. By creating a visualization of the statewide impact of this policy, we hope to clarify for voters the relationships among these variables so that they can make a better informed decision when voting on the ballot initiative. Also, with this information, we hope to plant the seeds for effective debate about the policy in which the tradeoffs among political values can be discussed with fewer doubts about the basic facts of the policy interrupting the discussions.
 
-\section{Conceptual Investigation}
-To get a better sense of the landscape of ideas that could go into this project, 
-we began with a conceptual investigation of the stakeholders and values 
-implicated in the calculator. 
-
-\subsection{Stakeholder Analysis}
-
-We brainstormed a list of stakeholders in the project and analyzed the ways they 
-could be affected by the tool. Then we synthesized values from these effects 
-and determined the value tensions among the stakeholders. This work is shown in 
-Tables \ref{tab:direct} and \ref{tab:indirect}. 
-
-\begin{table*}
-  \centering
-  \resizebox{\textwidth}{!}{
-  \begin{tabular}{|p{0.2\textwidth}|p{0.2\textwidth}|p{0.2\textwidth}|p{0.2\textwidth}|p{0.2\textwidth}|}
-    \hline
-    \tabhead{Direct Stakeholders} &
-    \tabhead{Benefits} &
-    \tabhead{Harms} &
-    \tabhead{Values} &
-    \tabhead{Tensions} \\
-    \hline
-    Environmentally conscious citizens and businesses  & Portrayal of carbon tax is positive & Portrayal of carbon tax is negative & Sustainability \newline Economic strength  & Usability for other stakeholders \newline Economic strength based on fossil fuels \\
-    \hline
-    Not environmentally conscious citizens and businesses  & Portrayal of carbon tax is negative & Portrayal of carbon tax is positive & Economic strength  & Usability for other stakeholders \newline Sustainability \\
-    \hline
-    Policy wonks  & More detailed information to analyze &  & Detail  & Usability for other stakeholders  \\
-    \hline
-    Journalists & Could have a popular article & Could have an unpopular article & Intrigue \newline Narrative  & Usability for other stakeholders  \\
-    \hline
-    All of the above & Better understanding of the policy & Deceived by the information provided & Transparency \newline Fairness \newline Accountability \newline Usability & Personal beliefs about sustainability may conflict with these values \\
-    \hline
-    
-  \end{tabular}}
-  \caption{Direct stakeholder analysis.}
-  \label{tab:direct}
-\end{table*}
-
-As we can see, all direct stakeholders are generally interested in having a tool they can trust that is transparent, 
-accountable, and fair. However, these values are in tension with personal beliefs about sustainability. So for example, an environmentally conscious citizen may value the calculator more if she perceives it as making more of a positive judgement about the carbon tax. Citizens are divided on the issue of sustainability depending 
-on what they think about climate change. All citizens value economic strength, however 
-some view sustainability as a critical piece of economic strength. Policy wonks and journalists 
-have particular values that relate to their work. Because different users have different needs, 
-their usability values may be in conflict. Members of marginalized groups are often in lower income 
-brackets, so they would benefit from a calculator that portrays the carbon tax policy more positively, since 
-it includes a rebate for low income families. Also, they may have particular usability needs (e.g. blind or low vision people). 
-
-\begin{table*}
-  \centering
-  \resizebox{\textwidth}{!}{
-  \begin{tabular}{|p{0.2\textwidth}|p{0.2\textwidth}|p{0.2\textwidth}|p{0.2\textwidth}|p{0.2\textwidth}|}
-    \hline
-    \tabhead{Indirect Stakeholders} &
-    \tabhead{Benefits} &
-    \tabhead{Harms} &
-    \tabhead{Values} &
-    \tabhead{Tensions} \\
-    \hline
-    Environmentally conscious politicians and organizations  & Portrayal of carbon tax is positive & Portrayal of carbon tax is negative & Sustainability \newline Economic strength  & Economic strength based on fossil fuels \\
-    \hline
-    Not environmentally conscious politicians and organizations  & Portrayal of carbon tax is negative & Portrayal of carbon tax is positive & Economic strength  & Sustainability \\
-    \hline
-    Social justice politicians and organizations  & Portrayal of policy is positive \newline Website is accessible & Portrayal of policy is negative \newline Website is not accessible & Equity  & Usability for other stakeholders \newline Economic strength \\
-    \hline
-    All of the above & Constituents have a better understanding of the policy & Constituents are deceived by the information provided & Transparency \newline Fairness \newline Accountability & Official positions on sustainability may conflict with these values \\
-    \hline
-    
-  \end{tabular}}
-  \caption{Indirect stakeholder analysis.}
-  \label{tab:indirect}
-\end{table*}
-
-For the indirect stakeholders, the value assignments and tensions play out similarly. Many 
-of the aforementioned values are still important for these stakeholders, but this is often in terms of 
-how their constituents or members would be affected. 
-
-
-\subsection{Researcher Stance}
-To clarify our roles as researchers on this project, we also explored 
-our values, the designer values, in relation to the calculator. We personally 
-value sustainability and equity. We also value economic strength, but through 
-sustainability with the idea that continued human endeavors depend on preventing 
-severe climate change. However, we also value the explicitly supported values of this project 
-in terms of fostering a healthy political system in which citizens vote confidently 
-with a reasonable belief that they can trust the information they have received. Therefore, we 
-are putting aside our specific personal values for this project to design a tool that 
-all stakeholders will hopefully deem credible. 
-
-\subsection{Conceptions of Key Values}
-In the following sections we'll take a more in depth look at the philosophical conceptions 
-of the three key values in order to get a better idea of what our tool needs to support. 
-
-\subsubsection{Transparency}
-The following two definitions offer conceptions of transparency that will be relevant to the 
-work of this project. Moser offers the definition ``to open up the working procedures not immediately 
-visible to those not directly involved in order to demonstrate the good working of an institution'' \cite{moser}. 
-Another definition is ``the disclosure of information by an organization that enables external actors to 
-monitor and assess its internal workings and performance'' \cite{compMediated}. 
-
-Therefore, users should be able to access the internal workings of our tool in order to verify that they are in 
-fact calculating the values correctly. This appears to be easy since the Javascript code for the website can be 
-viewed directly in a browser. However, a key part of transparency for our purposes will be comprehensibility. Not 
-all users are going to be able to understand Javascript, so we need to somehow expose the code behind the calculations 
-to demonstrate proper computation in a way that is accessible to stakeholders who do not know programming.
-
-\subsubsection{Accountability}
-Two definitions of accountability are ``the sense of individual responsibility and concern for the 
-public interest'' \cite{mulgan} and ``public  accountability  involves  answering,  through  various 
-mechanisms  from  newspaper  reports  to  hearings,  public  concerns  about  administrative 
-activity'' \cite{sinclair}. 
-
-This will be a difficult value to design for - the first definition offers accountability as a kind of 
-spiritual guide to follow to make sure anything that you do is in the public interest. The second 
-definition is more practical and suggests that we design features that allow us to answer to criticisms 
-from users in a public setting. 
-
-\subsubsection{Fairness}
-It was difficult to find concise useful conceptions of fairness, so here we use
-impartiality instead, which is closely related, but we will outline the distinction as we see it. 
-
-John Stuart Mill defined impartiality as ``being exclusively influenced by the considerations 
-which it is supposed ought to influence the particular case in hand; and resisting the 
-solicitation of any motives which prompt to conduct different from what those considerations 
-would dictate'' \cite{mill}. Another possible conception is ``not that everyone receive equal 
-treatment, but rather that everyone be treated as an equal'' \cite{stanford}. This second definition 
-hints at what we believe to be an important part of fairness which is that all people's issues 
-should be addressed. So if we present the environmental and financial perspectives on the policy, 
-we also should present the jobs perspective. Even if the environmental and financial perspectives 
-are presented in a perfectly impartial fashion, to be fair to people who care about jobs we should 
-present the analysis of the policy's effects on jobs. Impartiality seems to require detachment from 
-influencing interests, while fairness includes this as well as positive support for impartial 
-information pertaining to the perspectives of all possible interests. 
-
-To these ends we will need to make sure that we provide more and more information through 
-new features in a balanced fashion - not prioritizing some information agendas 
-as more legitimate than others. And of course Mill's definition restates our promise to leave 
-out personal values that are not the explicitly supported values in the design. 
-
-\subsection{Value Scenarios}
-To inform the design of specific features, we explored several value scenarios 
-to see what information different stakeholders may be interested in having access to. 
-\subsubsection{Scenario One}
-``Sarah wanted to figure out how to vote on the carbon tax issue. She used the calculator and found out she would gain money from the policy, and it sounded like a good idea, so she decided to vote yes on the ballot. But then she saw an ad on TV talking about how this policy would ruin economic growth in Washington. Because of that, she decided to vote no. After the election, she found out that this ad was funded by ExxonMobil and regretted her decision.''
-
-This scenario was crucial in expanding our ideas about how this calculator tool fits into the larger 
-political sphere. At the outset, we considered the outcome of our project to be a sort of beacon of 
-virtue in the information market. However, there will be other interests actively working 
-against the information we provide. We need to engage with this to provide transparency in a larger 
-sense than just exposing our tool's inner workings. One idea to address this is to add a feature 
-that list the all the public advertisements about the policy along with where the funding for each 
-advertisement came from. 
-
-\subsubsection{Scenario Two}
-``Kate wanted to figure out how to vote on the carbon tax issue. She saw there was a calculator tool that would give her 
-some quality information, so she went to check out the website. However, when she got there she felt overwhelmed by the amount 
-of information available. She would hover over tooltips that told her way more than she ever wanted to know about the inner workings 
-of the tool. 
-And there were so many issues addressed, like the financial impacts of the policy, the environmental impacts, and 
-the effect on jobs, among many others. She figured there was no way she could compute the tradeoffs among all of these, 
-so she gave up and decided not to vote on this issue.''
-
-This scenario shows a tension between transparency and information overload. This will be a difficult aspect to address. 
-One way would be to keep the amount of information to a minimum, but this runs the risk of not being fair to 
-various interests that would like ways to analyze the effects of the policy on specific aspects of society that they value. 
-Another way to address the tension could be to provide some kind of scaffolding for users to figure out how they would trade off 
-the different benefits and costs of the policy. 
-
-\section{Technical Investigation}
-This quarter we made two additions to the calculator: a version for businesses to compute the estimated 
-impacts of the policy on their finances and a tooltip feature to support the value of transparency. 
-
-\subsection{Business Calculator}
-The calculator for businesses is similar to the one for households except it includes the section 
-for B\&O manufacturing tax reductions instead of the rebate for low income families. Also, the 
-required inputs have been adjusted to align with the kind of information that business owners 
-will have about their finances. For example, we do not estimate how much sales tax a business pays 
-because business owners will have this information available in their budget records. Developing 
-this part of the website was a crucial step in supporting fairness because business owners are 
-direct stakeholders that should be given the ability to determine how the Carbon 
-Washington policy would affect them. It would be unfair to have a tool that only works for 
-households. 
-
-\subsection{``Where did this number come from?''}
-The other technical investigation we performed was the design of a ``where did this number come from?'' tooltip feature, which is shown in Figure \ref{fig:tooltip}. The purpose of this feature is to support transparency, and especially the comprehensibility aspect of transparency. 
-For example, users of the household calculator may be unsure of how we estimated their annual sales tax payments 
-from their income. Without the tooltip feature, they could read through the Javascript code to figure this out. 
-However, many users will not have adequate programming knowledge or even just adequate time for this to be a 
-reasonable mode of transparency. So we added this tooltip which is accessed by hovering the pointer over a question mark icon 
-next to the sales tax estimate line. Doing this causes a box to appear which shows a graph of the government data we use to perform the 
-computation. It also includes a brief explanation of this graph and a link to the source document for the data. 
+\section{Related Work}
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.9\textwidth]{toolTipDemo}
+\includegraphics[width=0.9\textwidth]{summary}
 \caption{Tooltip that explains how a user's sales tax is estimated from their income in order to support the value of transparency.}
-\label{fig:tooltip}
+\label{fig:summary}
 \end{figure*}
+The visualization of carbon tax impact is high dimensional by its nature. There are several previous efforts in visually presenting similar data, both with and without geographic information. One of the most relevant visualization is made by the CoolClimate network project in Berkeley\cite{coolclimate} where an interactive map of carbon footprint at zipcode level is provided for all the states in US where the measurement for each zipcode is shown by different color. Similar visualizations have been seen elsewhere too \cite{almanac, powerplant}, where icons are used effectively to let users observe more detail upon zooming in. As for the non-geographic aspects, it is typically difficult to present efficient visualization of high dimensional data \cite{seo2005rank}. There have been many successes, however, in visualizing selected dimension of the data for better story-telling. For example, \cite{nytimes} shows interesting ways to segment high dimensional data using a bubble graph or Sankey diagram, which also inspires our work on non-geographic data. Connectivity and coherency between visualizations are also of great importance. \cite{nytimes-map} shows correspondence between geographic and non-geographic representations. In addition, narratives and animation techniques are also a natural supplement to enhancing the effectiveness of visualizations for similar data \cite{jheer-animation, jheer-narrative}. 
+
+
+
+
+
+
+\section{Methods}
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.9\textwidth]{bubbleOverall}
+\caption{Tooltip that explains how a user's sales tax is estimated from their income in order to support the value of transparency.}
+\label{fig:bubbleOverall}
+\end{figure*}
+All of our code was written in HTML, CSS, and Javascript and we used the D3 Javascript library to accomplish our visualization goals as described in the following sections. 
+
+\subsection{Update Design Pattern}
+Our general framework for updating the map, histogram, and bubble chart modules was designed so as to reduce the amount of computation required in order to speed up execution time to provide a better, smoother experience for users. To do this, we only read the raw data once during the website initialization. From then on, we accomplished view updates by passing around an update object which specifies the parameters necessary to accomplish the appropriate data filtering in response to mouse click events and drag events. 
+
+\subsection{Map}
+To create the geographical boundaries in our map visualization, we obtained the shapefile of the PUMAs, filtered this to a dataset containing only Washington state PUMAs, and then translated this into a TopoJSON file for use with D3. We used the Albers projection to transform the sphere of the globe into two dimensions to display the map because this is the standard projection used for the United States. Finally, we enabled zooming on the map via mouse click by computing the centroid of the PUMA that the user clicks and using these coordinates to guide the view to focus on a smaller region of the state. 
+In addition to the above mentioned features we also included the interactivity between the filters and the map. The filters enable the users to get more specific data relevant to their needs and the map responds accordingly to the filter adjustments to give the users the appropriate data.
+
+\subsection{Histogram}
+The main intention behind the incorporation of the histograms was to give the user an idea of the change in the value of the selected variable in different areas of Washington. On the click of different regions of the map the user is able to see the change in finances for a certain variable selected from the drop down list.
+In order to better inform the user the histogram provides even more data once the user hovers the mouse over a specific bin. This provides the user with data related to the number of sample households and the financial range covered by the specific bin.
+Also, to further enable our users to get more specific data relevant to their own needs we have provided filters based on - Income, dependents, bedrooms and vehicles.
+
+\subsection{Bubble}
+Another goal of our visualization is to show the relationship between both geographic areas and income groups. The map and bar chart visualization provides detailed insight into each area with customized data filtering, but it is difficult to compare two dimensions of the data at the same time. For example, to answer questions such as which income group is affected most in an area, a user needs to change the filter constantly and explore the changes on the map. Such questions, however, would be of interest to voters since it reflects the more general question of ``from where do my tax savings come’’ or ``to where does my increased tax money go’’ since this carbon tax policy can be thought of as just a shift in the tax system, with tax burdens and benefits being redistributed slightly. Our initial plan was to show the flow of the tax change between typical household types.  However, as we explored the data it became less clear what a “typical household” meant in our context. Considering the potentially high dimensionality of household characteristics, and the limitation of data availability, the final implementation is carried out with only the interaction between area and income group, as they are the two most important variables in our analysis.  Also instead of showing the flow of changes, we represent household in the same income group in each area as a bubble and arrange them horizontally by the measurement of interest for a cleaner visualization.
+
+\subsection{Interactivity}
+There are five essential components of our visualization, namely - the map, histogram, bubble chart, drop down list and filters.
+The drop down list is simplistic in nature and gives the user the option to choose different variables that impact the household finance.
+The map represents the different counties in the state of Washington. Since some of the counties are extremely small in area we implemented the zoom feature to enable the users to zoom into any area of their choice. On hovering over any of the areas the tooltip is enabled which gives the user information about the region. These details include the name of the counties, PUMA area code and the average financial impact for the variable that we are considering.
+The histogram changes in shape depending on the area selected in the map. On clicking a certain area of the map the appropriate financial data can be seen represented by the histogram. Similar to the map, on hovering over the histogram the user gets additional information via the tool tip. It is important to note here that the histogram represents the value of a particular variable in the drop down. On selecting a different variable in the drop down we get a different histogram altogether.
+To further enable the users to control the data they see we have provided filters that let the users define the conditions around which they can view the map and histogram.
+The bubble chart  
+
+
+\subsection{Data}
+The main source of data used for our visualization is from the Public Use Microdata Sample (PUMS) collected by the American Community Survey. We use the 2009-2013 5-year PUMS household data for the state of Washington \cite{pums} . The original dataset consists of records for 156,867 household in the state, including many variables such as the household gross income, household type, number of dependents, etc. In particular, the dataset contains geographic locations for each household sample in the form of Public Use Microdata Areas (PUMAs), which are special non-overlapping partitions of states so that each area contains no fewer than 100,000 people each. The location information for each household makes our geographic visualization of carbon tax impact possible. For the purpose of the carbon tax calculation, the key variables extracted from the dataset are gross household income, number of dependents, marital status, home heating fuel type, and number of bedrooms. We thus use only the 89,643 households which have no missing data among these variables. \\
+
+To have useful data for our purposes, we had to compute new variables from the survey and statistical data according to the mathematical calculations specified in the proposed carbon tax policy. These new variables included household tax savings from the sales tax reduction and working families rebate, as well as additional tax payments for fossil fuel intensive activities, in particular vehicle fuel consumption, air travel, and home energy consumption. The sales tax savings for each household are estimated from the household income \cite{salesTax}. The working families rebate is estimated using income, number of dependents, and marital status \cite{eitc}. The additional gasoline tax amount is computed for each income group from the national average gasoline consumption reported in the Consumer Expenditure Survey \cite{ces}. Unfortunately we had no available data to compute the additional air travel taxes. \\
+
+The most technically difficult variable to compute was home energy consumption. We used custom data created by Carbon Washington that lists the utilities in each zipcode and the percentage of electricity produced from fossil fuels by each utility in the state. To use this with the PUMS data, we computed the utilities in each PUMA using data on the correspondence between zipcodes and PUMAs \cite{missouri}. From the list of utilities for each PUMA, we computed the best, worst, and average percentages of electricity from fossil fuels. Finally, we used these values along with the number of bedrooms (as an approximation of house size) to compute the expected best, worst, and average possible additional home energy taxes for each household in the PUMS data.
+Our second goal of visualization is to show the relationship between both geographic areas and income groups. The map and bar chart visualization provides detailed insight into each area with customized data filtering, but it is difficult to compare two dimensions of the data at the same time. For example, to answer questions such as which income group is affected mostly in an area, user needs to change the filter constantly and explore the changes on the map. Such questions, however, are usually of interest to voters since it reflects the more general question of ``from where do my tax savings come'' or ``to where do my increased tax money go''. Our initial plan is to show the flow of net tax change between typical household types.  However, as we explore the data it becomes less clear what typical household means in our context. Considering the potentially high dimension of household characteristics, and the limitation of data availability, the final implementation is carried out with only the interaction between area and income group, as they are the two most important variables in our analysis.  Also instead of showing the flow of changes, we represent household in the same income group in each area as a bubble and arrange them horizontally by the measurement of interest for a cleaner visualization.
+
+
+\section{Results}
+\ref{fig:summary}
+\ref{fig:bubbleOverall}
+
+\ref{fig:bubbleIncome}
+\ref{fig:mapTooltip}
+For the second goal of our visualization,  This bubble chart representation allows user to easily expand the bubble chart by either income group or area and compare the distribution of households in each category. For example, by showing the net tax saving by income group, users might find from the curved trend that income groups at both lower and higher end of the spectral on average enjoy higher savings than the middle-income household. The area effect within each income group could also be examined by comparing the bubbles in each expanded rows. Thus it provides easier visualization of general trends that are otherwise difficult to observe from the map. Also the sample size in each bubble is represented by size, so smaller areas with dense population could be compared more easily. We explored different ways to jitter the bubbles so they are non-overlapping. The final version uses positions pre-calculated by an iterative algorithm of our own implementation. For some of the measurements, the position of the bubbles are still partially overlapped, mostly due to the low variability in those measurements.  
+
+
+
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.45\textwidth]{bubbleIncome}
+\caption{Initial paper prototype.}
+\label{fig:bubbleIncome}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.45\textwidth]{mapTooltip}
+\caption{Initial paper prototype.}
+\label{fig:mapTooltip}
+\end{figure}
+
+\section{Discussion}
+One of the limitation of the current implementation is that the bubble charts are not linked to the data filtering of the map. Currently the aggregation of measurements and the layout of the bubbles are pre-computed separately. More efficient ways to automatically aggregate from the user-selected data and calculate positions remain to be explored. By allowing bubble position to be determined dynamically more interactions could also be made possible, such as the merging and splitting of the bubbles at customized dimensions.
 
 
 \section{Future Work}
-\subsection{Future Features}
-In addition to the feature ideas that came out of the value scenarios above, we would like to develop other features to serve the explicitly supported values more completely:
+Future work goes here
 \begin{itemize}
-\item A section showing statewide impacts of the policy in interactive graphs would be helpful 
-to provide a greater understanding of the societal impact, which would be especially helpful 
-for policy wonks and journalist, but also other citizens. 
-\item A feature similar to public bug report forums for software would allow us to provide 
-public accountability through answering any complaints that people have about the tool. 
-\item Videos explaining how each section of the calculator works could provide transparency 
-about the inner workings through a different medium that may be preferred by some users. 
-\item A section showing estimates of how much carbon dioxide would be saved through the policy and how the policy would affect jobs would 
-help to balance out the current financial focus of the tool. 
-\item Visualizations of the uncertainty in the estimates of the calculator would serve transparency 
-by acknowledging that these values are indeed estimates and real life effects may be different. 
+\item A 
+\item B
+\item C
 
 \end{itemize}
 
 \subsection{Empirical Investigation}
-Once more features have been added, we will use an empirical investigation to determine how well 
-the features support the values of stakeholders. 
-Did users think the calculator was fair? Did they understand how the values were being calculated, 
-or at least did they feel like this information was accessible if they wanted to know 
-about the underlying computations? This would involve 
-surveys and interviews with people who have already used the tool, as well as laboratory tests 
-to obtain more detailed information on users during interactions with the tool. 
+Describe evaluation process
 
 \section{Acknowledgments}
 
 This material is based upon work supported by the National Science Foundation
-Graduate Research Fellowship Program under Grant No. (NSF grant number).
+Graduate Research Fellowship Program under Grant No. DGE-1256082.
 
 % Balancing columns in a ref list is a bit of a pain because you
 % either use a hack like flushend or balance, or manually insert

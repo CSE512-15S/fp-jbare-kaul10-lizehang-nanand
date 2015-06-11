@@ -80,7 +80,6 @@ var map_generator = function(parsedDataset){
         .scale(8000)
         .translate([250, 150])
         .precision(.1);
- 
                
     var path = d3.geo.path()
         .projection(projection);
