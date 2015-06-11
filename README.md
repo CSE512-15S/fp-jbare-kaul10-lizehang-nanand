@@ -49,3 +49,5 @@ All members in the group participated in regular discussion, literature review, 
  + Implement the bubble chart, including interaction with the main map.
 
 #Research/Development Process:
+We all met very soon after signing up for this project and we discussed the goals of the project and began storyboarding. We then discussed how to divide up the work. We communicated often throughout the process and we ended up working across our original divisions a lot when specific help was required. Throughout most of the project process we were working on getting better data and computing the variables we needed, which was somewhat annoying. However, in the end we still had ample time to develop the visualization and the project turned out well. 
+
