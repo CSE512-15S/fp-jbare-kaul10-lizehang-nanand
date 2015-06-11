@@ -35,12 +35,15 @@ All members in the group participated in regular discussion, literature review, 
  + Mouse event update scheme
 <br>
 * Nandita Anand <br>
- + ...
- + ...
+ + Implemented zoom and tooltip feature in the map
+ + Reviewed the relevant literature
+ + Brainstormed ideas and provided ideas on data representation
 <br>
 * Aditya Kaul <br>
- + ...
- + ...
+ + Implemented zoom and tooltip feature in the map
+ + Worked on the initial phase of histogram creation on map click
+ + Implemented tooltip on histogram
+ + Introduced the drop down to select different variables
 <br>
 * Zehang Richard Li
  + Navigate and locate external dataset to combine with the main PUMS data.
