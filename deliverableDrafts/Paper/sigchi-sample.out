@@ -1,10 +1,15 @@
 \BOOKMARK [1][-]{section*.3}{Introduction}{}% 1
 \BOOKMARK [1][-]{section*.4}{Related Work}{}% 2
-\BOOKMARK [2][-]{section*.5}{Subsection}{section*.4}% 3
-\BOOKMARK [1][-]{section*.6}{Methods}{}% 4
-\BOOKMARK [1][-]{section*.7}{Results}{}% 5
-\BOOKMARK [1][-]{section*.8}{Discussion}{}% 6
-\BOOKMARK [1][-]{section*.9}{Future Work}{}% 7
-\BOOKMARK [2][-]{section*.10}{Empirical Investigation}{section*.9}% 8
-\BOOKMARK [1][-]{section*.11}{Acknowledgments}{}% 9
-\BOOKMARK [1][-]{section*.12}{REFERENCES }{}% 10
+\BOOKMARK [1][-]{section*.5}{Methods}{}% 3
+\BOOKMARK [2][-]{section*.6}{Update Design Pattern}{section*.5}% 4
+\BOOKMARK [2][-]{section*.7}{Map}{section*.5}% 5
+\BOOKMARK [2][-]{section*.8}{Histogram}{section*.5}% 6
+\BOOKMARK [2][-]{section*.9}{Bubble}{section*.5}% 7
+\BOOKMARK [2][-]{section*.10}{Interactivity}{section*.5}% 8
+\BOOKMARK [2][-]{section*.11}{Data}{section*.5}% 9
+\BOOKMARK [1][-]{section*.12}{Results}{}% 10
+\BOOKMARK [1][-]{section*.13}{Discussion}{}% 11
+\BOOKMARK [1][-]{section*.14}{Future Work}{}% 12
+\BOOKMARK [2][-]{section*.15}{Empirical Investigation}{section*.14}% 13
+\BOOKMARK [1][-]{section*.16}{Acknowledgments}{}% 14
+\BOOKMARK [1][-]{section*.17}{REFERENCES }{}% 15

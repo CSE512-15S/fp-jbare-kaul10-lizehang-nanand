@@ -1,45 +1,71 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
-\bibitem{supremeCourt}
-Earley, D., and Billig, A.
-\newblock {The Pro-Money Court: How the Roberts Supreme Court Dismantled
-  Campaign Finance Law}, April 2014.
-\newblock \url{https://www.brennancenter.org/analysis/pro-money-supreme-court}.
+\bibitem{nytimes}
+Across u.s. companies, tax rates vary greatly.
+\newblock \url{
+  http://www.nytimes.com/interactive/2013/05/25/sunday-review/corporate-taxes.html
+  }.
 
-\bibitem{compMediated}
-Grimmelikhuijsen, S.~G., and Welch, E.~W.
-\newblock {Developing and Testing a Theoretical Framework for Computer-Mediated
-  Transparency of Local Governments}.
-\newblock {\em Public Administration Review 72}, 4 (2012), 562.
+\bibitem{coolclimate}
+Coolclimate maps.
+\newblock \url{ http://coolclimate.berkeley.edu/maps }.
 
-\bibitem{stanford}
-{Impartiality}, April 2011.
-\newblock \url{http://plato.stanford.edu/entries/impartiality/}.
+\bibitem{nytimes-map}
+Increased border enforcement, with varying results.
+\newblock \url{
+  http://www.nytimes.com/interactive/2013/03/01/world/americas/border-graphic.html?_r=0
+  }.
 
-\bibitem{mill}
-Mill, J.~S.
-\newblock {Utilitarianism}.
-\newblock In {\em {On Liberty and Utilitarianism}}, vol.~81 of {\em {Everyman's
-  Library}}. Knopf, {1992 [1861]}.
+\bibitem{almanac}
+Power almanac of the american midwest.
+\newblock \url{ http://www.wri.org/tools/mwalmanac/almanac.php#about }.
 
-\bibitem{moser}
-Moser, C.
-\newblock {How Open is "Open as Possible"? Three Different Approaches to
-  Transparency and Openness in Regulating Access to EU Documents}.
-\newblock {\em Political Science Series}, 80 (2001).
+\bibitem{powerplant}
+Sandbag emissions map.
+\newblock \url{ http://www.sandbag.org.uk/maps/emissionsmap/ }.
 
-\bibitem{mulgan}
-Mulgan, R.
-\newblock {Accountability: An Ever-Expanding Concept?}
-\newblock {\em Public Administration 78}, 3 (2000), 555.
+\bibitem{salesTax}
+{Tax Alternatives for Washington State: A Report to the Legislature}, 2002.
+\newblock
+  \url{http://dor.wa.gov/content/aboutus/statisticsandreports/wataxstudy/final\_report.htm}.
 
-\bibitem{sinclair}
-Sinclair, A.
-\newblock {THE CHAMELEON OF ACCOUNTABILITY: FORMS AND DISCOURSES}.
-\newblock {\em Accounting, Organizations \& Society 20}, 2 (1995).
+\bibitem{pums}
+{2009-2013 ACS PUMS DATA: Housing Record}, 2013.
+\newblock \url{http://www.census.gov/acs/www/data\_documentation/pums\_data/}.
 
-\bibitem{spending}
-{Total Outside Spending by Election Cycle, Excluding Party Committees}.
-\newblock \url{http://www.opensecrets.org/outsidespending/cycle\_tots.php}.
+\bibitem{ces}
+{Bureau of Labor Statistics: Consumer Expenditure Survey}, 2013.
+\newblock \url{http://www.bls.gov/cex/}.
+
+\bibitem{eitc}
+{Taxation and the Family: What is the Earned Income Tax Credit?}, 2014.
+\newblock
+  \url{http://www.taxpolicycenter.org/briefing-book/key-elements/family/eitc.cfm}.
+
+\bibitem{carbonWA}
+2015.
+\newblock \url{http://carbonwa.org/}.
+
+\bibitem{missouri}
+{MABLE/Geocorr12: Geographic Correspondence Engine}, 2015.
+\newblock \url{http://mcdc.missouri.edu/websas/geocorr12.html}.
+
+\bibitem{jheer-animation}
+Heer, J., and Robertson, G.~G.
+\newblock Animated transitions in statistical data graphics.
+\newblock {\em Visualization and Computer Graphics, IEEE Transactions on 13}, 6
+  (2007), 1240--1247.
+
+\bibitem{jheer-narrative}
+Segel, E., and Heer, J.
+\newblock Narrative visualization: Telling stories with data.
+\newblock {\em Visualization and Computer Graphics, IEEE Transactions on 16}, 6
+  (2010), 1139--1148.
+
+\bibitem{seo2005rank}
+Seo, J., and Shneiderman, B.
+\newblock A rank-by-feature framework for interactive exploration of
+  multidimensional data.
+\newblock {\em Information Visualization 4}, 2 (2005), 96--113.
 
 \end{thebibliography}
