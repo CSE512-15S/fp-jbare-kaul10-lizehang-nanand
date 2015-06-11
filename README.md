@@ -32,8 +32,15 @@ Justin Bare <br>
  + Map geographic boundaries display and coloring
  + Histogram computation and design
  + Mouse event update scheme
+<br>
 Nandita Anand <br>
+ + Data retrieval, cleaning, and computation
+ + Filtering and variable selection
+<br>
 Aditya Kaul <br>
+ + Data retrieval, cleaning, and computation
+ + Filtering and variable selection
+<br>
 Zehang Richard Li
  + Navigate and locate external dataset to combine with the main PUMS data.
  + Perform data cleaning and missing data imputation.
