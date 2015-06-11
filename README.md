@@ -19,6 +19,7 @@ Zehang Richard Li
 #Link to poster:
 
 #Software instructions:
+In order to access the visualization please click on the link provided above. This will redirect you to the front page of our project wherein you can redirect yourself to the actual visualization by clicking on the image or the link to the visualization.
 
 #Division of Labor:
 All members in the group participated in regular discussion, literature review, and writing. Each member's focus is provided below:
